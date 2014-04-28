@@ -1,0 +1,24 @@
+{
+    "name": "paybas/pbwow",
+    "type": "phpbb-extension",
+    "description": "This extension includes all the functionality needed to get the PBWoW 3 style for phpBB up and running.",
+    "homepage": "http://pbwow.com/",
+    "version": "3.0.0",
+    "time": "2014-03-24",
+    "license": "GPL-2.0",
+    "authors": [
+        {
+            "name": "PayBas",
+            "email": "admin@pbwow.com",
+            "homepage": "http://www.paybas.com",
+            "role": "Lead Developer"
+        }
+    ],
+    "require": {
+        "php": ">=5.3",
+        "phpbb/phpbb": "3.1.*@dev"
+    },
+    "extra": {
+        "display-name": "PBWoW Extension"
+    }
+}

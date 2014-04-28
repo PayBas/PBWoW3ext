@@ -1,0 +1,37 @@
+<div id="body-header"<!-- IF not S_DISPLAY_SEARCH or S_IN_SEARCH --> class="no-search"<!-- ENDIF -->>
+	<ul class="linklist navlinks">
+
+		<!-- DEFINE $MICRODATA = ' itemtype="http://data-vocabulary.org/Breadcrumb" itemscope=""' -->
+		<li class="small-icon icon-home breadcrumbs<!-- IF S_IS_LOCKED --> locked<!-- ENDIF -->">
+			<!-- IF U_SITE_HOME --><span class="crumb"><a href="{U_SITE_HOME}"{$MICRODATA}>{L_SITE_HOME}</a></span><!-- ENDIF -->
+			<span class="crumb"><a href="{U_INDEX}" accesskey="h"{$MICRODATA}>{L_INDEX}</a></span>
+			<!-- BEGIN navlinks --><span class="crumb"><a href="{navlinks.U_VIEW_FORUM}"{$MICRODATA}>{navlinks.FORUM_NAME}</a></span><!-- END navlinks -->
+			<!-- IF S_VIEWTOPIC --><span class="crumb crumb-topic"><a href="{U_VIEW_TOPIC}">{TOPIC_TITLE}</a></span><!-- ENDIF -->
+			<!-- EVENT overall_header_breadcrumb_append -->
+		</li>
+		
+		<!-- IF U_ACP --><li class="rightside small-icon icon-acp"><a href="{U_ACP}" title="{L_ACP}" class="to-acp"></a></li><!-- ENDIF -->
+		<!-- IF U_MCP --><li class="rightside small-icon icon-mcp"><a href="{U_MCP}" title="{L_MCP}" class="to-mcp"></a></li><!-- ENDIF -->
+		<!-- IF S_DISPLAY_SEARCH and not S_IN_SEARCH --><li class="responsive-search rightside small-icon icon-search" style="display: none;"><a href="{U_SEARCH}" title="{L_SEARCH_ADV_EXPLAIN}" class="to-search"></a></li><!-- ENDIF -->
+
+<!-- IF not S_IS_BOT -->
+	<!-- IF S_INDEX -->
+		<!-- IF S_USER_LOGGED_IN and U_MARK_FORUMS --><li class="rightside"><a href="{U_MARK_FORUMS}" accesskey="m" data-ajax="mark_forums_read">{L_MARK_FORUMS_READ}</a></li><!-- ENDIF -->
+	<!-- ELSEIF S_VIEWFORUM -->
+		<!-- IF U_MARK_TOPICS or U_MARK_FORUMS --><li class="rightside">
+		<!-- IF S_HAS_SUBFORUM and U_MARK_FORUMS --><a href="{U_MARK_FORUMS}" data-ajax="mark_forums_read">{L_MARK_SUBFORUMS_READ}</a><!-- ENDIF -->
+			<!-- IF U_MARK_TOPICS and U_MARK_FORUMS -->  &bull;  <!-- ENDIF -->
+		<!-- IF S_DISPLAY_POST_INFO and .topicrow and U_MARK_TOPICS --><a href="{U_MARK_TOPICS}" accesskey="m" data-ajax="mark_topics_read">{L_MARK_TOPICS_READ}</a><!-- ENDIF -->
+		</li><!-- ENDIF -->
+	<!-- ELSEIF S_VIEWTOPIC -->
+		<!-- IF U_VIEW_UNREAD_POST --><li class="rightside"><a href="{U_VIEW_UNREAD_POST}">{L_VIEW_UNREAD_POST}</a></li><!-- ENDIF -->
+	<!-- ELSEIF SEARCH_MATCHES and not S_IN_SEARCH -->
+		<!-- IF SEARCH_TOPIC -->
+		<li class="rightside"><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH_TOPIC}">{L_RETURN_TO_TOPIC}</a></li>
+		<!-- ELSE -->
+		<li class="rightside"><a class="arrow-{S_CONTENT_FLOW_BEGIN}" href="{U_SEARCH}" title="{L_SEARCH_ADV}">{L_RETURN_TO_SEARCH_ADV}</a></li>
+		<!-- ENDIF -->
+	<!-- ENDIF -->
+<!-- ENDIF -->
+	</ul>
+</div>

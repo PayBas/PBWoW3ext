@@ -1,0 +1,24 @@
+imports:
+    - { resource: tables.yml }
+
+services:
+    paybas.pbwow.core:
+        class: paybas\pbwow\core\pbwow
+        arguments:
+            - @config
+            - @cache
+            - @dbal.conn
+            - @dbal.tools
+            - @profilefields.manager
+            - @template
+            - @user
+            - %core.root_path%
+            - %core.php_ext%
+            - %tables.pbwow3_config%
+            - %tables.pbwow3_chars%
+    paybas.pbwow.listener:
+        class: paybas\pbwow\event\listener
+        arguments:
+            - @paybas.pbwow.core
+        tags:
+            - { name: event.listener }
