@@ -45,6 +45,7 @@ class characters_3_0_0_schema extends \phpbb\db\migration\migration
 						'gender'			=> array('TINT:3', 0),
 						'level'				=> array('TINT:3', 0),
 						'achievementPoints'	=> array('UINT', 0),
+						'URL'				=> array('VCHAR', ''),
 						'avatar'			=> array('VCHAR', ''),
 						'avatarURL'			=> array('VCHAR', ''),
 						'calcClass'			=> array('VCHAR', ''),

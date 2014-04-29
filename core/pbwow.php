@@ -153,6 +153,12 @@ class pbwow
 				'S_FIXEDBG' => true,
 			);
 			$body_class .= ' fixedbg';
+
+			if($topbar_enable && !$topbar_fixed)
+			{
+				// if we don't do this, scrolling down will look weird
+				$body_class .= ' topbar-fixed';
+			}
 		}
 
 		// Assign vars
@@ -192,13 +198,10 @@ class pbwow
 			$cachelife = isset($pbwow_config['bnetchars_cachetime']) ? intval($pbwow_config['bnetchars_cachetime']) : 86400;
 			$apitimeout = isset($pbwow_config['bnetchars_timeout']) ? intval($pbwow_config['bnetchars_timeout']) : 1;
 
-			$sql_array = array(
-				'SELECT'	=> '*',
-				'FROM'		=> array($this->pbwow_chars_table => 'c',),
-				'WHERE' 	=> $this->db->sql_in_set('user_id', $user_ids),
-			);
-
-			$sql = $this->db->sql_build_query('SELECT', $sql_array);
+			// Get all the characters of the requested users
+			$sql = 'SELECT * 
+				FROM ' . $this->pbwow_chars_table . ' 
+				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
 			$result = $this->db->sql_query($sql);
 
 			$char_data = array();
@@ -207,10 +210,11 @@ class pbwow
 				$char_data[$row['user_id']] = $row;
 			}
 			$this->db->sql_freeresult($result);
-		
+
+			// For each requested user, we will do some magic
 			foreach($user_ids as $user_id)
 			{
-				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] -1 : 0;
+				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] -1 : 0; // 1 == none, so -1 for all
 				$bnet_r = (isset($field_data[$user_id]['pf_pb_bnet_realm'])) ? $field_data[$user_id]['pf_pb_bnet_realm'] : '';
 				$bnet_n = (isset($field_data[$user_id]['pf_pb_bnet_name'])) ? $field_data[$user_id]['pf_pb_bnet_name'] : '';
 		
@@ -242,7 +246,9 @@ class pbwow
 						{
 							$callAPI = TRUE;
 						}
-					} else {
+					}
+					else
+					{
 						$callAPI = TRUE;
 					}
 		
@@ -254,7 +260,7 @@ class pbwow
 						{
 							case 1: $bnet_h = "us.battle.net"; $loc = "us"; break;
 							case 2: $bnet_h = "eu.battle.net"; $loc = "eu"; break;
-							case 3: $bnet_h = "kr.battle.net"; $loc = "ko"; break;
+							case 3: $bnet_h = "kr.battle.net"; $loc = "kr"; break;
 							case 4: $bnet_h = "tw.battle.net"; $loc = "tw"; break;
 							case 5: $bnet_h = "www.battlenet.com.cn"; $loc = "cn"; break;
 							default: $bnet_h = "us.battle.net"; $loc = "us"; break;
@@ -268,11 +274,12 @@ class pbwow
 		
 						// Get API data (should use CURL instead, but I'll do it later)
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
+						//var_dump($URL);
 						$context = stream_context_create(array('http'=>
 							array('timeout' => $apitimeout)
 						));
 						$response = @file_get_contents($URL, false, $context);
-	
+
 						if($response === FALSE)
 						{
 							// If the API data cannot be retrieved, register the number of tries to prevent flooding
@@ -284,7 +291,7 @@ class pbwow
 									'tries'		=> $char_data[$user_id]['tries'] + 1,
 									'name'		=> $bnet_n,
 									'realm'		=> $bnet_r,
-									'guild'		=> "Battle.net API error",
+									'url'		=> "Battle.net API error",
 								);
 								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
 									SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
@@ -299,13 +306,13 @@ class pbwow
 									'tries'		=> 1,
 									'name'		=> $bnet_n,
 									'realm'		=> $bnet_r,
-									'guild'		=> "Battle.net API error",
+									'url'		=> "Battle.net API error",
 								);
 								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 								$this->db->sql_query($sql);
 							}
-	
-							$field_data[$user_id]['pf_pb_wow_guild'] = "Battle.net API error";
+
+							$field_data[$user_id]['pf_pb_bnet_url'] = "Battle.net API error";
 						} 
 						else 
 						{
@@ -340,6 +347,7 @@ class pbwow
 							$data_gender = $data['gender'] + 2;
 							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
 							$data_level = $data['level'];
+							$bnetURL = "http://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/simple";
 							
 							// Insert into character DB table
 							$sql_ary = array(
@@ -356,6 +364,7 @@ class pbwow
 								'gender'			=> $data_gender,
 								'level'				=> $data_level,
 								'achievementPoints'	=> $data['achievementPoints'],
+								'URL'				=> $bnetURL,
 								'avatar'			=> $avatar,
 								'avatarURL'			=> $avatarURL,
 								'calcClass'			=> $data['calcClass'],
@@ -382,10 +391,11 @@ class pbwow
 							$field_data[$user_id]['pf_pb_wow_race']		= $data_race;
 							$field_data[$user_id]['pf_pb_wow_gender']	= $data_gender;
 							$field_data[$user_id]['pf_pb_wow_level']	= $data_level;
+							$field_data[$user_id]['pf_pb_bnet_url']		= $bnetURL;
 							$field_data[$user_id]['pf_pb_bnet_avatar']	= $avatarURL;
 						}
 					} 
-					elseif($char_data[$user_id]['avatarURL'])
+					elseif($char_data[$user_id]['avatarURL']) // No API call needed, just use the current data
 					{
 						// Merge with rest of CPF values
 						$field_data[$user_id]['pf_pb_wow_guild']	= $char_data[$user_id]['guild'];
@@ -394,11 +404,13 @@ class pbwow
 						$field_data[$user_id]['pf_pb_wow_race']		= $char_data[$user_id]['race'];
 						$field_data[$user_id]['pf_pb_wow_gender']	= $char_data[$user_id]['gender'];
 						$field_data[$user_id]['pf_pb_wow_level']	= $char_data[$user_id]['level'];
+						$field_data[$user_id]['pf_pb_bnet_url']		= $char_data[$user_id]['URL'];
 						$field_data[$user_id]['pf_pb_bnet_avatar']	= $char_data[$user_id]['avatarURL'];
 					}
-					else 
+					else  // No API call, but also no current (complete) data
 					{
 						$field_data[$user_id]['pf_pb_wow_guild']	= $char_data[$user_id]['guild'];
+						$field_data[$user_id]['pf_pb_bnet_url']		= $char_data[$user_id]['URL'];
 					}
 				}
 			}
@@ -440,6 +452,7 @@ class pbwow
 			//$bneth = (isset($tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'] : NULL; // Get the Battle.net host
 			//$bnetr = (isset($tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'] : NULL; // Get the Battle.net realm
 			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
+			$bnet_u = isset($tpl_fields['row']['PROFILE_PB_BNET_URL_VALUE']) ? $profile_row['pb_bnet_url']['value'] : NULL; // Get the Battle.net avatar
 			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : NULL; // Get the Battle.net avatar
 			
 			// I know it looks silly, but we need this to fix icon classes in templates
@@ -635,10 +648,33 @@ class pbwow
 			
 			/* Diablo */
 			elseif($d3_c !== NULL)
-			{		
-				$avatar = 'diablo/beta.jpg';
-				$width = 70;
-				$height = 70;
+			{
+				switch($d3_c)
+				{
+					case 1: // Barbarian
+						$avatar = 'barbarian';
+					break;
+					case 2: // Demon Hunter
+						$avatar = 'demonhunter';
+					break;
+					case 3: // Monk
+						$avatar = 'monk';
+					break;
+					case 4: // Witch Doctor
+						$avatar = 'witchdoctor';
+					break;
+					case 5: // Wizard
+						$avatar = 'wizard';
+					break;
+					case 6: // Crusader
+						$avatar = 'crusader';
+					break;
+				}
+
+				$d3_g = (isset($d3_g) && $d3_g > 1) ? 'female' : 'male';
+				$avatar = 'diablo/' . $avatar . '_' . $d3_g . '.png';
+				$width = 64;
+				$height = 64;
 				$faction = 3;
 			}
 			
@@ -775,8 +811,27 @@ class pbwow
 	}
 
 
+	public function global_style_append_after($event)
+	{
+		if($this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data && $this->user->data['user_id'] != ANONYMOUS)
+		{
+			$user_data = $this->user->data;
+			$user_id = $user_data['user_id'];
 
+			if(isset($user_data['user_avatar']) && empty($user_data['user_avatar']))
+			{
+				$cp = $this->profilefields_manager->grab_profile_fields_data($user_id);
+				$pf = $this->profilefields_manager->generate_profile_fields_template_data($cp[$user_id]);
 
+				if(isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
+				{
+					$this->template->assign_vars(array(
+						'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'],
+					));
+				}
+			}
+		}
+	}
 
 	public function viewtopic_cache_guest($user_cache_data)
 	{
@@ -967,85 +1022,6 @@ class pbwow
 			}
 		}
 	}
-
-
-
-
-
-/* Parses and modifies the topic preview output to include PBWoW 2 functionality such as game avatars */
-function modify_topic_preview($row, $block, $profile_fields_cache, $tp_avatars = false, $cheat_cache = false)
-{
-	global $template, $phpbb_root_path, $cp, $config;
-	
-	if (class_exists('phpbb_topic_preview') && $config['load_cpf_viewtopic'])
-	{
-		// retroactive modification when we missed blockvar assignment (like recent topics), only called once
-		if (!$row && !empty($template->_tpldata['recent_topics']) && !empty($cheat_cache))
-		{
-			foreach ($template->_tpldata['recent_topics'] as &$rtrow)
-			{
-				$p1 = $cheat_cache[$rtrow['TOPIC_ID']]['tfp'];
-				$p2 = $cheat_cache[$rtrow['TOPIC_ID']]['tlp'];
-				
-				$cp_p1 = (isset($profile_fields_cache[$p1])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$p1]) : array();
-				$cp_p2 = ($p2 == $p1) ? $cp_p2 = $cp_p1 : (isset($profile_fields_cache[$p2])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$p2]) : array();
-				if ($tp_avatars) {
-					if (isset($cp_p1['row']) && sizeof($cp_p1['row'])) {
-						$rtrow += array(
-							'TOPIC_PREVIEW_PBAVATAR'	=> isset($cp_p1['row']['PROFILE_PBAVATAR_VALUE']) ? $cp_p1['row']['PROFILE_PBAVATAR_VALUE']: '',
-							'S_TOPIC_PREVIEW_PBBNET'	=> isset($cp_p1['row']['PROFILE_PBBNETAVATAR_VALUE']) ? TRUE : FALSE // TODO
-						);
-					}
-					if (isset($cp_p2['row']) && sizeof($cp_p2['row'])) {
-						$rtrow += array(
-							'TOPIC_PREVIEW_PBAVATAR2'	=> isset($cp_p2['row']['PROFILE_PBAVATAR_VALUE']) ? $cp_p2['row']['PROFILE_PBAVATAR_VALUE']: '',
-							'S_TOPIC_PREVIEW_PBBNET2'	=> isset($cp_p2['row']['PROFILE_PBBNETAVATAR_VALUE']) ? TRUE : FALSE // TODO
-						);
-					}
-				}
-				if (!empty($rtrow['TOPIC_AUTHOR_FULL'])) {
-					preg_match('/(#[A-Fa-f0-9]{6}|#[A-Fa-f0-9]{3})/',$rtrow['TOPIC_AUTHOR_FULL'],$matches);
-					$rtrow += array('TOPIC_PREVIEW_COLOUR' => (isset($matches[0]) ? $matches[0] : ''));
-				}
-				$rtrow += array(
-					'TOPIC_PREVIEW_COLOUR2'		=> (!empty($rtrow['LAST_POST_AUTHOR_COLOUR'])) ? $rtrow['LAST_POST_AUTHOR_COLOUR'] : '',
-				);
-				//var_dump($rtrow);
-			}
-		// normal blockvar operations, called for each row
-		} else {
-			$p1 = $row['topic_poster'];
-			$p2 = $row['topic_last_poster_id'];
-
-			$cp_p1 = (isset($profile_fields_cache[$p1])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$p1]) : array();
-			$cp_p2 = ($p2 == $p1) ? $cp_p2 = $cp_p1 : (isset($profile_fields_cache[$p2])) ? $cp->generate_profile_fields_template('show', false, $profile_fields_cache[$p2]) : array();
-			
-			$insert = array();
-
-			if ($tp_avatars) {
-				if (isset($cp_p1['row']) && sizeof($cp_p1['row'])) {
-					$insert += array(
-						'TOPIC_PREVIEW_PBAVATAR'	=> isset($cp_p1['row']['PROFILE_PBAVATAR_VALUE']) ? $cp_p1['row']['PROFILE_PBAVATAR_VALUE']: '',
-						'S_TOPIC_PREVIEW_PBBNET'	=> isset($cp_p1['row']['PROFILE_PBBNETAVATAR_VALUE']) ? TRUE : FALSE // TODO
-					);
-				}
-				if (isset($cp_p2['row']) && sizeof($cp_p2['row'])) {
-					$insert += array(
-						'TOPIC_PREVIEW_PBAVATAR2'	=> isset($cp_p2['row']['PROFILE_PBAVATAR_VALUE']) ? $cp_p2['row']['PROFILE_PBAVATAR_VALUE']: '',
-						'S_TOPIC_PREVIEW_PBBNET2'	=> isset($cp_p2['row']['PROFILE_PBBNETAVATAR_VALUE']) ? TRUE : FALSE // TODO
-					);
-				}
-			}
-			$insert += array(
-				'TOPIC_PREVIEW_COLOUR'		=> (!empty($row['first_user_colour'])) ? '#'.$row['first_user_colour'] : '',
-				'TOPIC_PREVIEW_COLOUR2'		=> (!empty($row['last_user_colour'])) ? '#'.$row['last_user_colour'] : '',
-			);
-
-			$template->alter_block_array($block, $insert, true, 'change');
-			//var_dump($template->_tpldata['topicrow']);
-		}
-	}
-}
 
 	protected function get_pbwow_config()
 	{

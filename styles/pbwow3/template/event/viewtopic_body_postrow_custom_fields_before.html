@@ -30,17 +30,15 @@
 </div>
 <!-- ENDIF -->
 
-
+<!-- IF postrow.RANK_IMG and ((postrow.POSTS_RANK_TITLE neq postrow.RANK_TITLE) or (not postrow.S_PROFILE_PB_WOW_RACE and not postrow.S_PROFILE_PB_DIABLO_CLASS and not postrow.S_PROFILE_PB_WILDSTAR_RACE)) -->
 <div class="rank-icon">
-	<!-- IF postrow.RANK_IMG and ((postrow.POSTS_RANK_TITLE neq postrow.RANK_TITLE) or (not postrow.S_PROFILE_PB_WOW_RACE and not postrow.S_PROFILE_PB_DIABLO_CLASS and not postrow.S_PROFILE_PB_WILDSTAR_RACE)) -->
 	{postrow.RANK_IMG}
-	<!-- ELSEIF postrow.S_PROFILE_PB_WOW_LEVEL and postrow.PROFILE_PB_WOW_LEVEL_VALUE neq 0 -->
-	<b><small>{postrow.PROFILE_PBLEVEL_VALUE}</small></b>
-	<!-- ELSE -->
-	<div class="norank"></div>
-	<!-- ENDIF -->
 </div>
-
+<!-- ELSEIF postrow.S_PROFILE_PB_WOW_LEVEL and postrow.PROFILE_PB_WOW_LEVEL_VALUE neq 0 -->
+<div class="rank-icon">
+	<b><small>{postrow.PROFILE_PB_WOW_LEVEL_VALUE}</small></b>
+</div>
+<!-- ENDIF -->
 
 <div class="context-container">
 	<div id="p{postrow.POST_ID}-context" class="context">

@@ -29,7 +29,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		/* WoW */
 		'pb_wow_race' => array(
 			'profilefield_oldname'			=> 'pbrace',
-			'profilefield_database_type'	=> array('INT:', NULL),
+			'profilefield_database_type'	=> array('INT:', null),
 			'profilefield_lang_name'		=> 'WoW character race',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -73,7 +73,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wow_class' => array(
 			'profilefield_oldname'			=> 'pbclass',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WoW character class',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -115,7 +115,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wow_gender' => array(
 			'profilefield_oldname'			=> 'pbgender',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WoW character gender',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -148,7 +148,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wow_level' => array(
 			'profilefield_oldname'			=> 'pblevel',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WoW character level',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -205,7 +205,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		/* Diablo */
 		'pb_diablo_class' => array(
 			'profilefield_oldname'			=> 'pbdclass',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'Diablo character class',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -242,7 +242,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_diablo_follower' => array(
 			'profilefield_oldname'			=> 'pbdfollower',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'Diablo character follower',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -276,7 +276,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_diablo_gender' => array(
 			'profilefield_oldname'			=> 'pbdgender',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'Diablo character gender',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -310,7 +310,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		/* WildStar */
 		'pb_wildstar_race' => array(
 			'profilefield_oldname'			=> 'pbwsrace',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WildStar character race',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -349,7 +349,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wildstar_class' => array(
 			'profilefield_oldname'			=> 'pbwsclass',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WildStar character class',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -386,7 +386,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wildstar_gender' => array(
 			'profilefield_oldname'			=> 'pbwsgender',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WildStar character gender',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -419,7 +419,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		),
 		'pb_wildstar_path' => array(
 			'profilefield_oldname'			=> '',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WildStar character path',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -455,7 +455,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		/* Battle.net */
 		'pb_bnet_host' => array(
 			'profilefield_oldname'			=> 'pbbnethost',
-			'profilefield_database_type'	=> array('UINT', NULL),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'Battle.net region',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -627,13 +627,12 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		{
 			if($this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $profilefield_name))
 			{
-				var_dump($profilefield_name);
 				// Already exists (and seems to be up to date)
 				continue;
 			}
 			elseif(isset($meta['profilefield_oldname']) && $this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $meta['profilefield_oldname']))
 			{
-				// Update existing old version. We can safely assume that the phpBB 3.1 migration has converted them to the new format succesfully
+				// Update existing old version. We can safely assume that the phpBB 3.1 migration has already converted them to the new format succesfully
 
 				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields
 					SET field_name = "' . $profilefield_name . '", field_ident = "' . $profilefield_name . '"
@@ -652,7 +651,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 				}
 				else
 				{
-					// Since perform_schema_changes doesn't allow NULL values, we have to use the alternative
+					// Since perform_schema_changes doesn't allow null values, we have to use the alternative
 					$type = $this->db_tools->get_column_type($meta['profilefield_database_type'][0]);
 					$sql = $this->add_field_ident('pf_' . $profilefield_name, $type[0]);
 					$this->db->sql_query($sql);
@@ -739,7 +738,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 				}
 				else
 				{
-					// Since perform_schema_changes doesn't allow NULL values, we have to use the alternative
+					// Since perform_schema_changes doesn't allow null values, we have to use the alternative
 					$coltype = $this->db_tools->get_column_type($meta['profilefield_database_type'][0]);
 					$sql = $this->add_field_ident('pf_' . $profilefield_name, $coltype[0]);
 					$this->db->sql_query($sql);
@@ -840,4 +839,3 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		return $sql;
 	}
 }
-//Anyone know why sql_prepare_column_data() is designed to always assign NOT NULL to new columns... even though the migration scheme allows setting 

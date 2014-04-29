@@ -34,6 +34,7 @@ class listener implements EventSubscriberInterface
 	{
 		return array(
 			'core.page_header'								=> 'page_header',
+			'core.page_header_after'						=> 'page_header_after',
 
 			'core.grab_profile_fields_data'					=> 'profile_fields_grab',
 			'core.generate_profile_fields_template_data'	=> 'profile_fields_show',
@@ -56,7 +57,10 @@ class listener implements EventSubscriberInterface
 	{
 		$this->pbwow->global_style_append($event);
 	}
-
+	public function page_header_after($event)
+	{
+		$this->pbwow->global_style_append_after($event);
+	}
 
 	public function profile_fields_grab($event)
 	{
