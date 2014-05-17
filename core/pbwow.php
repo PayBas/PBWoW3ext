@@ -439,16 +439,16 @@ class pbwow
 		
 		if($avatars_enable && $avatars_path)
 		{
-			$wow_r = isset($tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUEID']) ? $profile_row['pb_wow_race']['value'] - 1 : NULL; // Get the WoW race ID
-			$wow_c = isset($tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUEID']) ? $profile_row['pb_wow_class']['value'] - 1 : NULL; // Get the WoW class ID
-			$wow_g = isset($tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUEID']) ? $profile_row['pb_wow_gender']['value'] - 1 : NULL; // Get the WoW gender ID
-			$wow_l = isset($tpl_fields['row']['PROFILE_PB_WOW_LEVEL_VALUEID']) ? $profile_row['pb_wow_level']['value'] - 1 : NULL; // Get the WoW level
-			$d3_c = isset($tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUEID']) ? $profile_row['pb_diablo_class']['value'] - 1 : NULL; // Get the Diablo class ID
-			$d3_f = isset($tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUEID']) ? $profile_row['pb_diablo_follower']['value'] - 1 : NULL; // Get the Diablo class ID
-			$d3_g = isset($tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUEID']) ? $profile_row['pb_diablo_gender']['value'] - 1 : NULL; // Get the Diablo gender ID
-			$ws_r = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUEID']) ? $profile_row['pb_wildstar_race']['value'] - 1 : NULL; // Get the Wildstar race ID
-			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUEID']) ? $profile_row['pb_wildstar_class']['value'] - 1 : NULL; // Get the Wildstar class ID
-			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUEID']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : NULL; // Get the Wildstar class ID
+			$wow_r = isset($tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW']) ? $profile_row['pb_wow_race']['value'] - 1 : NULL; // Get the WoW race ID
+			$wow_c = isset($tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW']) ? $profile_row['pb_wow_class']['value'] - 1 : NULL; // Get the WoW class ID
+			$wow_g = isset($tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW']) ? $profile_row['pb_wow_gender']['value'] - 1 : NULL; // Get the WoW gender ID
+			$wow_l = isset($tpl_fields['row']['PROFILE_PB_WOW_LEVEL_VALUE_RAW']) ? $profile_row['pb_wow_level']['value'] - 1 : NULL; // Get the WoW level
+			$d3_c = isset($tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUE_RAW']) ? $profile_row['pb_diablo_class']['value'] - 1 : NULL; // Get the Diablo class ID
+			$d3_f = isset($tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW']) ? $profile_row['pb_diablo_follower']['value'] - 1 : NULL; // Get the Diablo class ID
+			$d3_g = isset($tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUE_RAW']) ? $profile_row['pb_diablo_gender']['value'] - 1 : NULL; // Get the Diablo gender ID
+			$ws_r = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW']) ? $profile_row['pb_wildstar_race']['value'] - 1 : NULL; // Get the Wildstar race ID
+			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW']) ? $profile_row['pb_wildstar_class']['value'] - 1 : NULL; // Get the Wildstar class ID
+			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : NULL; // Get the Wildstar class ID
 			//$bneth = (isset($tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'] : NULL; // Get the Battle.net host
 			//$bnetr = (isset($tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'] : NULL; // Get the Battle.net realm
 			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
@@ -456,15 +456,15 @@ class pbwow
 			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : NULL; // Get the Battle.net avatar
 			
 			// I know it looks silly, but we need this to fix icon classes in templates
-			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUEID'] = $wow_r; }
-			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUEID'] = $wow_c; }
-			if($wow_g > 0) { $tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUEID'] = $wow_g; }
-			if($d3_c > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUEID'] = $d3_c; }
-			if($d3_f > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUEID'] = $d3_f; }
-			if($d3_g > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUEID'] = $d3_g; }
-			if($ws_r > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUEID'] = $ws_r; }
-			if($ws_c > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUEID'] = $ws_c; }
-			if($ws_g > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUEID'] = $ws_g; }
+			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW'] = $wow_r; }
+			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW'] = $wow_c; }
+			if($wow_g > 0) { $tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW'] = $wow_g; }
+			if($d3_c > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUE_RAW'] = $d3_c; }
+			if($d3_f > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW'] = $d3_f; }
+			if($d3_g > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUE_RAW'] = $d3_g; }
+			if($ws_r > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW'] = $ws_r; }
+			if($ws_c > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW'] = $ws_c; }
+			if($ws_g > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW'] = $ws_g; }
 
 			$avatar = $path = '';
 			$faction = 0;
