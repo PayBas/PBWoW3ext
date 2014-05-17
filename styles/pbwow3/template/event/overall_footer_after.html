@@ -24,6 +24,8 @@ $(document).ready(function($){
 	});
 
 	<!-- IF S_VIEWTOPIC -->
+	phpbb.dropdownVisibleContainers += ', .context-container';
+
 	$('.postprofile').each(function() {
 		var $this = $(this),
 			trigger = $this.find('dt a'),
