@@ -75,15 +75,15 @@ $lang = array_merge($lang, array(
 	'PBWOW_DB_BAD_EXPLAIN'				=> 'Run the PBWoW installation script included in the MOD package. This will create and populate the appropriate database table.',
 
 	'PBWOW_VERSION_CHECK'				=> 'PBWoW Version Check',
-	'PBWOW_DATABASE_VERSION'			=> 'Database version',
 	'PBWOW_EXT_VERSION'					=> 'Extension version',
 	'PBWOW_STYLE_VERSION'				=> 'Style version',
 	'PBWOW_VERSION_ERROR'				=> 'Unable to determine version!',
 	'PBWOW_CHECK_UPDATE'				=> 'Check <a href="http://pbwow.com/forum/index.php">PBWoW.com</a> to see if there are updates available.',
 
 	'PBWOW_CPF_CHECK'					=> 'Custom Profile Fields Check',
-	'PBWOW_CPF_CREATE_LOCATION'			=> 'Create or enable this field via ACP > Users and Groups > Custom profile fields',
+	//'PBWOW_CPF_CREATE_LOCATION'			=> 'Create or enable this field via ACP > Users and Groups > Custom profile fields',
 	'PBWOW_CPF_LOAD_LOCATION'			=> 'Enable this via ACP > General > Board Configuration > Board Features',
+	'PBWOW_GAME_EXPLAIN'				=> 'The custom profile fields for this game are currently disabled.',
 
 	'PBWOW_BNETCHARS'					=> 'Battle.net API character information functionality',
 	'PBWOW_CHARSDB_GOOD'				=> 'PBWoW characters table found (%s)',
@@ -98,26 +98,16 @@ $lang = array_merge($lang, array(
 	'PBWOW_DONATE_EXPLAIN'				=> 'PBWoW is 100% free. It is a hobby project that I am spending my time and money on, just for the fun of it. If you enjoy using PBWoW, please consider making a donation. I would really appreciate it. No strings attached.',
 
 
-
 	// LEGACY CHECKS //
 
 	'PBWOW_LEGACY_CHECK'				=> 'PBWoW Legacy Check',
 
-	'PBWOW_LEGACY_CONSTANTS1'			=> 'PBWoW v1 Constants',
-	'PBWOW_LEGACY_CONSTANTS1_EXPLAIN'	=> 'If detected, this means that there are still (partial) MODs of PBWoW v1 active! This could potentially lead to errors. That is why we strongly urge you to uninstall any active (PBWoW) MODs before upgrading to the latest phpBB version. Either that, or install a clean phpBB version and use the database update function of the phpBB installer.',
-	'PBWOW_LEGACY_DATABASE1'			=> 'PBWoW v1 Config Database',
-	'PBWOW_LEGACY_DATABASE1_EXPLAIN'	=> 'The config table of PBWoW v1 is still active. This is no problem, since PBWoW 3 does not interact with it. But you can drop/delete the table if you want (and are no longer using it).',
-
-	'PBWOW_LEGACY_CONSTANTS2'			=> 'PBWoW v2 Constants',
-	'PBWOW_LEGACY_CONSTANTS2_EXPLAIN'	=> 'If detected, this means that there are still (partial) MODs of PBWoW v2 active! This could potentially lead to errors. That is why we strongly urge you to uninstall any active (PBWoW) MODs before upgrading to the latest phpBB version. Either that, or install a clean phpBB version and use the database update function of the phpBB installer.',
-	'PBWOW_LEGACY_DATABASE2'			=> 'PBWoW v2 Config Database',
-	'PBWOW_LEGACY_DATABASE2_EXPLAIN'	=> 'The config table of PBWoW v2 is still active. This is no problem, since PBWoW 3 does not interact with it. But you can drop/delete the table if you want (and are no longer using it).',
-
-	'PBWOW_LEGACY_TOPICS_MOD'			=> 'PBWoW v1 Topic Table MOD',
-	'PBWOW_LEGACY_TOPICS_MOD_EXPLAIN'	=> 'If you use this old PBWoW v1 MOD in combination with PBWoW 3, you might get SQL errors when trying to post new topics (and vice versa). We advise you to remove this MOD <u>if you are no longer using PBWoW v1</u>.',
+	'PBWOW_LEGACY_CONSTANTS'			=> 'PBWoW Legacy Constants',
+	'PBWOW_LEGACY_CONSTANTS_EXPLAIN'	=> 'If detected, this means that there are still (partial) MODs of PBWoW v1 or v2 active! This could potentially lead to errors. That is why we strongly urge you to uninstall any active (PBWoW) MODs before upgrading to the latest phpBB version. Either that, or install a clean phpBB version and use the database update function of the phpBB installer.',
+	'PBWOW_LEGACY_DATABASE'				=> 'PBWoW Legacy Database(s)',
+	'PBWOW_LEGACY_DATABASE_EXPLAIN'		=> 'The config table of PBWoW v1 or v2 is still active. This is no problem, since PBWoW 3 does not interact with it. But you can drop/delete the table if you want (and are no longer using it).',
 
 	'PBWOW_LEGACY_NONE'					=> 'No obvious potentially problematic traces of older PBWoW versions were found. This is good.',
-
 
 
 	// CONFIG //
@@ -182,7 +172,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_TOOLTIPS_REGION_EXPLAIN'		=> 'Some (not all) tooltip scripts have regional distribution. Depending on your user\'s demographics, it might be advisable to choose the one with the lowest latency.',
 
 
-
 	// POSTSTYLING //
 
 	'PBWOW_POSTSTYLING_TITLE'			=> 'PBWoW Post Styling Settings',
@@ -211,7 +200,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_RED_ENABLE_EXPLAIN'			=> 'Enable this feature to let the rank(s) selected below display as "Red" posters. I don&rsquo;t really know what it&rsquo;s for.',
 	'PBWOW_RED_RANKS'					=> 'Red post styling ranks',
 	'PBWOW_RED_RANKS_EXPLAIN'			=> 'Choose the user rank(s) that you want to display as "Red" posters (hold down the CTRL key to select multiple).',
-
 
 
 	// ADVERTISEMENTS //

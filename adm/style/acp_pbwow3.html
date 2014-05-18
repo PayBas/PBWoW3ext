@@ -35,33 +35,11 @@
 	<fieldset>
 		<legend>{L_PBWOW_VERSION_CHECK}</legend>
 		<dl>
-			<dt><label>{L_PBWOW_DATABASE_VERSION}</label></dt>
-			<dd>
-			<!-- IF DB_VERSION -->
-				<!-- IF DB_VERSION_V -->
-					<!-- IF DB_VERSION == DB_VERSION_V -->
-					<strong class="success">{DB_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {DB_VERSION_V})
-					<!-- ELSE -->
-					<strong class="error">{DB_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {DB_VERSION_V})
-					<!-- ENDIF -->
-				<!-- ELSE -->
-				{DB_VERSION}
-				<!-- ENDIF -->
-			<!-- ELSE -->
-				<strong class="error">{L_PBWOW_VERSION_ERROR}</strong>
-			<!-- ENDIF -->
-			</dd>
-		</dl>
-		<dl>
 			<dt><label>{L_PBWOW_EXT_VERSION}</label></dt>
 			<dd>
-			<!-- IF MODULE_VERSION -->
-				<!-- IF MODULE_VERSION_V -->
-					<!-- IF MODULE_VERSION == MODULE_VERSION_V -->
-					<strong class="success">{EXT_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {EXT_VERSION_V})
-					<!-- ELSE -->
-					<strong class="error">{EXT_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {EXT_VERSION_V})
-					<!-- ENDIF -->
+			<!-- IF EXT_VERSION -->
+				<!-- IF EXT_VERSION_V -->
+				<strong class="<!-- IF EXT_VERSION == EXT_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{EXT_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {EXT_VERSION_V})
 				<!-- ELSE -->
 				{EXT_VERSION}
 				<!-- ENDIF -->
@@ -70,17 +48,12 @@
 			<!-- ENDIF -->
 			</dd>
 		</dl>
-
 		<dl>
 			<dt><label>{L_PBWOW_STYLE_VERSION}</label></dt>
 			<dd>
 			<!-- IF STYLE_VERSION -->
 				<!-- IF STYLE_VERSION_V -->
-					<!-- IF STYLE_VERSION == STYLE_VERSION_V -->
-					<strong class="success">{STYLE_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {STYLE_VERSION_V})
-					<!-- ELSE -->
-					<strong class="error">{STYLE_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {STYLE_VERSION_V})
-					<!-- ENDIF -->
+				<strong class="<!-- IF STYLE_VERSION == STYLE_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{STYLE_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_LATEST_VERSION}: {STYLE_VERSION_V})
 				<!-- ELSE -->
 				{STYLE_VERSION}
 				<!-- ENDIF -->
@@ -89,7 +62,6 @@
 			<!-- ENDIF -->
 			</dd>
 		</dl>
-
 		<dl>
 			<dt><p><small>{L_PBWOW_CHECK_UPDATE}</small></p></dt>
 			<dd><!-- IF not S_CHECK_V --><strong class="error">{L_VERSIONCHECK_FAIL}</strong><!-- ENDIF -->
@@ -111,39 +83,71 @@
 			<dt><label>{L_LOAD_CPF_VIEWTOPIC}</label><!-- IF not S_CPF_ON_VIEWTOPIC --><br /><span>{L_PBWOW_CPF_LOAD_LOCATION}</span><!-- ENDIF --></dt>
 			<dd><strong <!-- IF S_CPF_ON_VIEWTOPIC -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
 		</dl>
+
 		<hr />
 		<dl>
-			<dt><label>pbguild</label><!-- IF not S_CPF_PBGUILD --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBGUILD -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>World of Warcraft</label><!-- IF not S_PB_WOW --><br /><span>{L_PBWOW_GAME_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd><!-- IF S_PB_WOW --><a href="{U_PB_WOW}">{L_DEACTIVATE}</a><!-- ELSE --><strong><a href="{U_PB_WOW}">{L_ACTIVATE}</a></strong><!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pblevel</label><!-- IF not S_CPF_PBLEVEL --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBLEVEL -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_wow_guild</label></dt>
+			<dd><!-- IF S_PB_WOW_GUILD --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pbrace</label><!-- IF not S_CPF_PBRACE --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBRACE -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_wow_level</label></dt>
+			<dd><!-- IF S_PB_WOW_LEVEL --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pbgender</label><!-- IF not S_CPF_PBGENDER --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBGENDER -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_wow_race</label></dt>
+			<dd><!-- IF S_PB_WOW_RACE --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pbclass</label><!-- IF not S_CPF_PBCLASS --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBCLASS -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_wow_gender</label></dt>
+			<dd><!-- IF S_PB_WOW_GENDER --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
+		<dl>
+			<dt><label>pb_wow_class</label></dt>
+			<dd><!-- IF S_PB_WOW_CLASS --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+
 		<hr />
 		<dl>
-			<dt><label>pbdclass (Diablo)</label><!-- IF not S_CPF_PBDCLASS --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBDCLASS -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>Diablo 3</label><!-- IF not S_PB_DIABLO --><br /><span>{L_PBWOW_GAME_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd><!-- IF S_PB_DIABLO --><a href="{U_PB_DIABLO}">{L_DEACTIVATE}</a><!-- ELSE --><strong><a href="{U_PB_DIABLO}">{L_ACTIVATE}</a></strong><!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pbdgender (Diablo)</label><!-- IF not S_CPF_PBDGENDER --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBDGENDER -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_diablo_class</label></dt>
+			<dd><!-- IF S_PB_DIABLO_CLASS --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
 		<dl>
-			<dt><label>pbdfollower (Diablo)</label><!-- IF not S_CPF_PBDFOLLOWER --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-			<dd><strong <!-- IF S_CPF_PBDFOLLOWER -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			<dt><label>pb_diablo_gender</label></dt>
+			<dd><!-- IF S_PB_DIABLO_GENDER --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+		<dl>
+			<dt><label>pb_diablo_follower</label></dt>
+			<dd><!-- IF S_PB_DIABLO_FOLLOWER --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+
+		<hr />
+		<dl>
+			<dt><label>Wildstar</label><!-- IF not S_PB_WILDSTAR --><br /><span>{L_PBWOW_GAME_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dd><!-- IF S_PB_WILDSTAR --><a href="{U_PB_WILDSTAR}">{L_DEACTIVATE}</a><!-- ELSE --><strong><a href="{U_PB_WILDSTAR}">{L_ACTIVATE}</a></strong><!-- ENDIF --></dd>
+		</dl>
+		<dl>
+			<dt><label>pb_wildstar_race</label></dt>
+			<dd><!-- IF S_PB_WILDSTAR_RACE --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+		<dl>
+			<dt><label>pb_wildstar_gender</label></dt>
+			<dd><!-- IF S_PB_WILDSTAR_GENDER --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+		<dl>
+			<dt><label>pb_wildstar_class</label></dt>
+			<dd><!-- IF S_PB_WILDSTAR_CLASS --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
+		</dl>
+		<dl>
+			<dt><label>pb_wildstar_path</label></dt>
+			<dd><!-- IF S_PB_WILDSTAR_PATH --><strong class="success">{L_PBWOW_ACTIVE}</strong><!-- ELSE -->{L_PBWOW_INACTIVE}<!-- ENDIF --></dd>
 		</dl>
 	</fieldset>
 
@@ -166,58 +170,27 @@
 			<p>{L_PBWOW_CHARSCONSTANTS_BAD_EXPLAIN}</p>
 			<!-- ENDIF -->
 
-			<!-- IF not S_CPF_ON_MEMBERLIST or not S_CPF_ON_VIEWPROFILE or not S_CPF_ON_VIEWTOPIC --><hr /><!-- ENDIF -->
-			<!-- IF not S_CPF_ON_MEMBERLIST --><dl>
-				<dt><label>{L_PBWOW_CPF_MEMBERLIST}</label><br /><span>{L_PBWOW_CPF_LOAD_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_ON_VIEWPROFILE --><dl>
-				<dt><label>{L_PBWOW_CPF_VIEWPROFILE}</label><br /><span>{L_PBWOW_CPF_LOAD_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_ON_VIEWTOPIC --><dl>
-				<dt><label>{L_PBWOW_CPF_VIEWTOPIC}</label><br /><span>{L_PBWOW_CPF_LOAD_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
 			<hr />
 			<dl>
-				<dt><label>pbbnethost</label><!-- IF not S_CPF_PBBNETHOST --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-				<dd><strong <!-- IF S_CPF_PBBNETHOST -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+				<dt><label>pb_bnet_host</label></dt>
+				<dd><strong <!-- IF S_PB_BNET_HOST -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
 			</dl>
 			<dl>
-				<dt><label>pbbnetrealm</label><!-- IF not S_CPF_PBBNETREALM --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-				<dd><strong <!-- IF S_CPF_PBBNETREALM -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+				<dt><label>pb_bnet_realm</label></dt>
+				<dd><strong <!-- IF S_PB_BNET_REALM -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
 			</dl>
 			<dl>
-				<dt><label>pbbnetname</label><!-- IF not S_CPF_PBBNETNAME --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-				<dd><strong <!-- IF S_CPF_PBBNETNAME -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+				<dt><label>pb_bnet_name</label></dt>
+				<dd><strong <!-- IF S_PB_BNET_NAME -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
 			</dl>
 			<dl>
-				<dt><label>pbbnetavatar</label><!-- IF not S_CPF_PBNETAVATAR --><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span><!-- ENDIF --></dt>
-				<dd><strong <!-- IF S_CPF_PBNETAVATAR -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+				<dt><label>pb_bnet_url</label></dt>
+				<dd><strong <!-- IF S_PB_BNET_AVATAR -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
 			</dl>
-
-			<!-- IF not S_CPF_PBGUILD or not S_CPF_PBLEVEL or not S_CPF_PBRACE or not S_CPF_PBGENDER or not S_CPF_PBCLASS --><hr /><!-- ENDIF -->
-			<!-- IF not S_CPF_PBGUILD --><dl>
-				<dt><label>pbguild</label><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_PBLEVEL --><dl>
-				<dt><label>pblevel</label><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_PBRACE --><dl>
-				<dt><label>pbrace</label><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_PBGENDER --><dl>
-				<dt><label>pbgender</label><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
-			<!-- IF not S_CPF_PBCLASS --><dl>
-				<dt><label>pbclass</label><br /><span>{L_PBWOW_CPF_CREATE_LOCATION}</span></dt>
-				<dd><strong class="error">{L_PBWOW_INACTIVE}!</strong></dd>
-			</dl><!-- ENDIF -->
+			<dl>
+				<dt><label>pb_bnet_avatar</label></dt>
+				<dd><strong <!-- IF S_PB_BNET_AVATAR -->class="success">{L_PBWOW_ACTIVE}<!-- ELSE -->class="error">{L_PBWOW_INACTIVE}!<!-- ENDIF --></strong></dd>
+			</dl>
 		<!-- ELSE -->
 		<dl><dt><label>{L_PBWOW_BNETCHARS}</label></dt><dd>{L_PBWOW_INACTIVE}</dd></dl>
 		<!-- ENDIF -->
@@ -225,37 +198,19 @@
 
 	<fieldset>
 		<legend>{L_PBWOW_LEGACY_CHECK}</legend>
-		<!-- IF S_LEGACY_DETECTED -->
-			<!-- IF S_LEGACY_CONSTANTS1 -->
+		<!-- IF S_LEGACY_CONSTANTS or S_LEGACY_DB_ACTIVE -->
+			<!-- IF S_LEGACY_CONSTANTS -->
 			<dl>
-				<dt><label>{L_PBWOW_LEGACY_CONSTANTS1}</label><br /><span>{L_PBWOW_LEGACY_CONSTANTS1_EXPLAIN}</span></dt>
+				<dt><label>{L_PBWOW_LEGACY_CONSTANTS}</label><br /><span>{L_PBWOW_LEGACY_CONSTANTS_EXPLAIN}</span></dt>
 				<dd><strong class="error">{L_PBWOW_DETECTED}!</strong></dd>
 			</dl>
 			<!-- ENDIF -->
-			<!-- IF S_LEGACY_DATABASE1 -->
+			<!-- IF S_LEGACY_DB_ACTIVE -->
 			<dl>
-				<dt><label>{L_PBWOW_LEGACY_DATABASE1}</label><br /><span>{L_PBWOW_LEGACY_DATABASE1_EXPLAIN}</span></dt>
+				<dt><label>{L_PBWOW_LEGACY_DATABASE}</label><br /><span>{L_PBWOW_LEGACY_DATABASE_EXPLAIN}</span></dt>
 				<dd><strong>{L_PBWOW_DETECTED}</strong></dd>
 			</dl>
 			<!-- ENDIF -->
-			<!-- IF S_LEGACY_CONSTANTS2 -->
-			<dl>
-				<dt><label>{L_PBWOW_LEGACY_CONSTANTS1}</label><br /><span>{L_PBWOW_LEGACY_CONSTANTS1_EXPLAIN}</span></dt>
-				<dd><strong class="error">{L_PBWOW_DETECTED}!</strong></dd>
-			</dl>
-			<!-- ENDIF -->
-			<!-- IF S_LEGACY_DATABASE2 -->
-			<dl>
-				<dt><label>{L_PBWOW_LEGACY_DATABASE2}</label><br /><span>{L_PBWOW_LEGACY_DATABASE2_EXPLAIN}</span></dt>
-				<dd><strong>{L_PBWOW_DETECTED}</strong></dd>
-			</dl>
-			<!-- ENDIF -->
-
-			<!-- IF S_PF_PBARMORYCHARLINK --><dl><dt><label>pbarmorycharlink</label><span>{L_PBWOW_OBSOLETE}</span></dt><dd>{L_PBWOW_DETECTED}</dd></dl><!-- ENDIF -->
-			<!-- IF S_PF_PBARMORYGUILDLINK --><dl><dt><label>pbarmoryguildlink</label><span>{L_PBWOW_OBSOLETE}</span></dt><dd>{L_PBWOW_DETECTED}</dd></dl><!-- ENDIF -->
-			<!-- IF S_PF_PBREALM --><dl><dt><label>pbrealm</label><span>{L_PBWOW_OBSOLETE}</span></dt><dd>{L_PBWOW_DETECTED}</dd></dl><!-- ENDIF -->
-			<!-- IF S_PF_PBPVPRANK --><dl><dt><label>pbpvprank</label><span>{L_PBWOW_OBSOLETE}</span></dt><dd>{L_PBWOW_DETECTED}</dd></dl><!-- ENDIF -->
-
 		<!-- ELSE -->
 		<p class="success">{L_PBWOW_LEGACY_NONE}</p>
 		<!-- ENDIF -->
@@ -264,7 +219,7 @@
 	<fieldset>
 		<legend>{L_PBWOW_DONATE}</legend>
 			<dl>
-				<dt><label>{L_PBWOW_DONATE_SHORT}:</label><br /><span>{L_PBWOW_DONATE_EXPLAIN}</b></dt>
+				<dt><label>{L_PBWOW_DONATE_SHORT}:</label><br /><span>{L_PBWOW_DONATE_EXPLAIN}</span></dt>
 				<dd><a href="http://pbwow.com/donate/" target="_blank"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" alt="Donate using PayPal" style="cursor:pointer"></a></dd>
 			</dl>
 	</fieldset>

@@ -34,11 +34,12 @@ class pbwow_module
 	protected $table_prefix;
 
 	protected $db_tools;
-	
-	protected $fields_table;
+
 	protected $ranks_table;
+	protected $fields_table;
 	protected $pbwow_config_table;
 	protected $pbwow_config;
+	protected $pbwow_chars_table;
 
 	function main($id, $mode)
 	{
@@ -58,29 +59,19 @@ class pbwow_module
 
 		$this->db_tools = $phpbb_container->get('dbal.tools');
 
-		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->ranks_table = RANKS_TABLE;
+		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->pbwow_config_table = $phpbb_container->getParameter('tables.pbwow3_config');
+		$this->pbwow_chars_table = $phpbb_container->getParameter('tables.pbwow3_chars');
 
 		$this->user->add_lang('acp/board');
 		$this->tpl_name = 'acp_pbwow3';
 
-
-
-
-
-		$module_version = '3.0.0';
-
-		$legacy_dbtable = defined('PBWOW_CONFIG_TABLE') ? PBWOW_CONFIG_TABLE : '';
-		$legacy_dbtable2 = defined('PBWOW_CONFIG_TABLE2') ? PBWOW_CONFIG_TABLE2 : '';
-
-		$chars_table = $phpbb_container->getParameter('tables.pbwow3_chars');
 		$allow_fopen = ini_get('allow_url_fopen') ? true : false;
-		
-		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $legacy_topics_mod = $chars_dbokay = false;
-		$style_version = $imageset_version = $template_version = $theme_version = '';
+		$legacy_dbtable1 = defined('PBWOW_CONFIG_TABLE') ? PBWOW_CONFIG_TABLE : '';
+		$legacy_dbtable2 = defined('PBWOW2_CONFIG_TABLE') ? PBWOW2_CONFIG_TABLE : '';
 
-
+		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $chars_dbokay = false;
 
 		// Check if constants have been set correctly
 		// if yes, check if the config table exists
@@ -88,31 +79,30 @@ class pbwow_module
 		if($this->pbwow_config_table == ($this->table_prefix . 'pbwow3_config'))
 		{
 			$constantsokay = true;
-			
+
 			if($this->db_tools->sql_table_exists($this->pbwow_config_table))
 			{
 				$dbokay = true;
 				$this->get_pbwow_config();
-
 				$this->new_config = $this->pbwow_config;
-				if(!isset($this->pbwow_config['pbwow2_version']))
-				{
-					if (isset($this->config['pbwow2_version']) && !empty($this->config['pbwow2_version']))
-					{
-						$this->pbwow_config['pbwow2_version'] = $this->config['pbwow2_version'];
-					}
-				}
 			}
 		}
 
-		if($chars_table == ($table_prefix . 'pbwow3_chars'))
+		if($this->pbwow_chars_table == ($table_prefix . 'pbwow3_chars'))
 		{
 			$chars_constokay = true;
 			
-			if($this->db_tools->sql_table_exists($chars_table))
+			if($this->db_tools->sql_table_exists($this->pbwow_chars_table))
 			{
 				$chars_dbokay = true;
 			}
+		}
+
+		$cpf_game_toggle = request_var('game', '');
+		if(!empty($cpf_game_toggle))
+		{
+			$activate = request_var('enable', '');
+			$this->toggle_game_cpf($cpf_game_toggle, $activate);
 		}
 
 		if($mode == 'overview') {
@@ -128,27 +118,21 @@ class pbwow_module
 			$versions = $this->obtain_remote_version(request_var('versioncheck_force', false),true);
 			
 			// Check if old constants are still being used
-			if(!empty($legacy_dbtable))
+			if(!empty($legacy_dbtable1) || !empty($legacy_dbtable2))
 			{
 				$legacy_constants = true;
 			}
 			
 			// Check if old table still exists
-			if($this->db_tools->sql_table_exists($legacy_dbtable) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config'))
+			if($this->db_tools->sql_table_exists($legacy_dbtable1) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $this->db_tools->sql_table_exists($legacy_dbtable2) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
 			{
 				$legacy_db_active = true;
 			}
 		}
 
-
-
-
 		/**
-		*	Validation types are:
-		*		string, int, bool,
-		*		script_path (absolute path in url - beginning with / and no trailing slash),
-		*		rpath (relative), rwpath (realtive, writeable), path (relative path, but able to escape the root), wpath (writeable)
-		*/
+		 *	Config vars
+		 */
 		switch ($mode)
 		{
 			case 'overview':
@@ -166,7 +150,7 @@ class pbwow_module
 						'logo_size_height'		=> array('lang' => 'PBWOW_LOGO_SIZE', 			'validate' => 'int:0',	'type' => false, 'method' => false, 'explain' => false),
 						'logo_enable'			=> array('lang' => 'PBWOW_LOGO_ENABLE',			'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'logo_src'				=> array('lang' => 'PBWOW_LOGO_SRC',			'validate' => 'string',	'type' => 'text:20:255', 			'explain' => true),
-						'logo_size'				=> array('lang' => 'PBWOW_LOGO_SIZE',			'validate' => 'int:0',	'type' => 'dimension:3:4', 			'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'logo_size'				=> array('lang' => 'PBWOW_LOGO_SIZE',			'validate' => 'int:0',	'type' => 'dimension:0', 			'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'logo_margins'			=> array('lang' => 'PBWOW_LOGO_MARGINS',		'validate' => 'string',	'type' => 'text:20:20', 			'explain' => true),
 
 						'legend2'				=> 'PBWOW_AVATARS',
@@ -185,7 +169,7 @@ class pbwow_module
 						'legend5'				=> 'PBWOW_VIDEOBG',
 						'videobg_enable'		=> array('lang' => 'PBWOW_VIDEOBG_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'videobg_allpages'		=> array('lang' => 'PBWOW_VIDEOBG_ALLPAGES',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
-						'fixedbg'				=> array('lang' => 'PBWOW_FIXEDBG',			'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
+						'fixedbg'				=> array('lang' => 'PBWOW_FIXEDBG',				'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
 
 						'legend6'				=> 'PBWOW_BNETCHARS',
 						'bnetchars_enable'		=> array('lang' => 'PBWOW_BNETCHARS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
@@ -284,23 +268,21 @@ class pbwow_module
 				$this->store_select_options('propass_ranks');
 				$this->store_select_options('mvp_ranks');
 				$this->store_select_options('red_ranks');
-
-				add_log('admin', 'LOG_PBWOW_CONFIG', $user->lang['ACP_PBWOW3_' . strtoupper($mode)]);
-				$cache->purge();
-				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 			}
-			
-			if($mode == ('config' || 'ads'))
+			elseif($mode == 'config')
 			{
 				$this->store_select_options('wowtips_script');
 				$this->store_select_options('d3tips_script');
 				$this->store_select_options('tooltips_region');
+			}
+
+			if($mode != 'overview')
+			{
 				add_log('admin', 'LOG_PBWOW_CONFIG', $user->lang['ACP_PBWOW3_' . strtoupper($mode)]);
 				$cache->purge();
 				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 			}
 		}
-
 
 		$this->page_title = $display_vars['title'];
 		$title_explain = $user->lang[$display_vars['title'] . '_EXPLAIN'];
@@ -319,29 +301,48 @@ class pbwow_module
 			'L_PBWOW_DB_GOOD'		=> sprintf($user->lang['PBWOW_DB_GOOD'], $this->pbwow_config_table),
 			'L_PBWOW_DB_BAD'		=> sprintf($user->lang['PBWOW_DB_BAD'], $this->pbwow_config_table),
 
-			'L_PBWOW_CHARSDB_GOOD'	=> sprintf($user->lang['PBWOW_CHARSDB_GOOD'], $chars_table),
-			'L_PBWOW_CHARSDB_BAD'	=> sprintf($user->lang['PBWOW_CHARSDB_BAD'], $chars_table),
+			'L_PBWOW_CHARSDB_GOOD'	=> sprintf($user->lang['PBWOW_CHARSDB_GOOD'], $this->pbwow_chars_table),
+			'L_PBWOW_CHARSDB_BAD'	=> sprintf($user->lang['PBWOW_CHARSDB_BAD'], $this->pbwow_chars_table),
 
 			'U_ACTION'				=> $this->u_action,
 			)
 		);
 
 		if($mode == 'overview') {
+			$pb_bnet_host =			(isset($cpflist['pb_bnet_host']) && $cpflist['pb_bnet_host']['field_active'] && !$cpflist['pb_bnet_host']['field_no_view']) ? true : false;
+			$pb_bnet_realm =		(isset($cpflist['pb_bnet_realm']) && $cpflist['pb_bnet_realm']['field_active'] && !$cpflist['pb_bnet_realm']['field_no_view']) ? true : false;
+			$pb_bnet_name =			(isset($cpflist['pb_bnet_name']) && $cpflist['pb_bnet_name']['field_active'] && !$cpflist['pb_bnet_name']['field_no_view']) ? true : false;
+			$pb_bnet_url =			(isset($cpflist['pb_bnet_url']) && $cpflist['pb_bnet_url']['field_active'] && !$cpflist['pb_bnet_url']['field_no_view']) ? true : false;
+			$pb_bnet_avatar =		(isset($cpflist['pb_bnet_avatar']) && $cpflist['pb_bnet_avatar']['field_active'] && !$cpflist['pb_bnet_avatar']['field_no_view']) ? true : false;
+			$pb_wow_race =			(isset($cpflist['pb_wow_race']) && $cpflist['pb_wow_race']['field_active'] && !$cpflist['pb_wow_race']['field_no_view']) ? true : false;
+			$pb_wow_gender =		(isset($cpflist['pb_wow_gender']) && $cpflist['pb_wow_gender']['field_active'] && !$cpflist['pb_wow_gender']['field_no_view']) ? true : false;
+			$pb_wow_class =			(isset($cpflist['pb_wow_class']) && $cpflist['pb_wow_class']['field_active'] && !$cpflist['pb_wow_class']['field_no_view']) ? true : false;
+			$pb_wow_level =			(isset($cpflist['pb_wow_level']) && $cpflist['pb_wow_level']['field_active'] && !$cpflist['pb_wow_level']['field_no_view']) ? true : false;
+			$pb_wow_guild =			(isset($cpflist['pb_wow_guild']) && $cpflist['pb_wow_guild']['field_active'] && !$cpflist['pb_wow_guild']['field_no_view']) ? true : false;
+			$pb_diablo_class =		(isset($cpflist['pb_diablo_class']) && $cpflist['pb_diablo_class']['field_active'] && !$cpflist['pb_diablo_class']['field_no_view']) ? true : false;
+			$pb_diablo_gender =		(isset($cpflist['pb_diablo_gender']) && $cpflist['pb_diablo_gender']['field_active'] && !$cpflist['pb_diablo_gender']['field_no_view']) ? true : false;
+			$pb_diablo_follower = 	(isset($cpflist['pb_diablo_follower']) && $cpflist['pb_diablo_follower']['field_active'] && !$cpflist['pb_diablo_follower']['field_no_view']) ? true : false;
+			$pb_wildstar_race =		(isset($cpflist['pb_wildstar_race']) && $cpflist['pb_wildstar_race']['field_active'] && !$cpflist['pb_wildstar_race']['field_no_view']) ? true : false;
+			$pb_wildstar_gender =	(isset($cpflist['pb_wildstar_gender']) && $cpflist['pb_wildstar_gender']['field_active'] && !$cpflist['pb_wildstar_gender']['field_no_view']) ? true : false;
+			$pb_wildstar_class =	(isset($cpflist['pb_wildstar_class']) && $cpflist['pb_wildstar_class']['field_active'] && !$cpflist['pb_wildstar_class']['field_no_view']) ? true : false;
+			$pb_wildstar_path =		(isset($cpflist['pb_wildstar_path']) && $cpflist['pb_wildstar_path']['field_active'] && !$cpflist['pb_wildstar_path']['field_no_view']) ? true : false;
+
+			$pb_wow_enabled = 		$pb_wow_race && $pb_wow_gender && $pb_wow_class && $pb_wow_level && $pb_wow_guild;
+			$pb_diablo_enabled = 	$pb_diablo_class && $pb_diablo_gender && $pb_diablo_follower;
+			$pb_wildstar_enabled = 	$pb_wildstar_race && $pb_wildstar_gender && $pb_wildstar_class && $pb_wildstar_path;
+
+			$pb_wow_activate_url = $this->u_action . '&game=wow&enable=' . ($pb_wow_enabled ? '0' : '1');
+			$pb_diablo_activate_url = $this->u_action . '&game=diablo&enable=' . ($pb_diablo_enabled ? '0' : '1');
+			$pb_wildstar_activate_url = $this->u_action . '&game=wildstar&enable=' . ($pb_wildstar_enabled ? '0' : '1');
+			
 			$template->assign_vars(array(
 				'S_INDEX'					=> true,
 
-				'DB_VERSION'				=> (isset($this->pbwow_config['pbwow2_version'])) ? $this->pbwow_config['pbwow2_version'] : '',
-				'MODULE_VERSION'			=> (isset($module_version)) ? $module_version : '',
-				'STYLE_VERSION'				=> $style_version,
-				
 				'S_CHECK_V'					=> (empty($versions)) ? false : true,
-				'DB_VERSION_V'				=> (isset($versions['db_version']['version'])) ? $versions['db_version']['version'] : '',
-				'MODULE_VERSION_V'			=> (isset($versions['module_version']['version'])) ? $versions['module_version']['version'] : '',
-				'ATEMPLATE_VERSION_V'		=> (isset($versions['atemplate_version']['version'])) ? $versions['atemplate_version']['version'] : '',
-				'STYLE_VERSION_V'			=> (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',
-				'IMAGESET_VERSION_V'		=> (isset($versions['imageset_version']['version'])) ? $versions['imageset_version']['version'] : '',
-				'TEMPLATE_VERSION_V'		=> (isset($versions['template_version']['version'])) ? $versions['template_version']['version'] : '',
-				'THEME_VERSION_V'			=> (isset($versions['theme_version']['version'])) ? $versions['theme_version']['version'] : '',
+				'EXT_VERSION'				=> (isset($this->config['pbwow3_version'])) ? $this->config['pbwow3_version'] : '',
+				'EXT_VERSION_V'				=> (isset($versions['ext_version']['version'])) ? $versions['ext_version']['version'] : '',
+				'STYLE_VERSION'				=> (isset($style_version)) ? $style_version : '',
+				'STYLE_VERSION_V'			=> (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',				
 				'U_VERSIONCHECK_FORCE'		=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
 				'S_ALLOW_FOPEN'				=> $allow_fopen,
 
@@ -349,35 +350,40 @@ class pbwow_module
 				'S_CPF_ON_VIEWPROFILE'		=> ($config['load_cpf_viewprofile'] == 1) ? true : false,
 				'S_CPF_ON_VIEWTOPIC'		=> ($config['load_cpf_viewtopic'] == 1) ? true : false,
 
-				'S_CPF_PBGUILD'				=> (isset($cpflist['pbguild']) && $cpflist['pbguild']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBREALM'				=> (isset($cpflist['pbrealm']) && $cpflist['pbrealm']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBLEVEL'				=> (isset($cpflist['pblevel']) && $cpflist['pblevel']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBRACE'				=> (isset($cpflist['pbrace']) && $cpflist['pbrace']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBGENDER'			=> (isset($cpflist['pbgender']) && $cpflist['pbgender']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBCLASS'				=> (isset($cpflist['pbclass']) && $cpflist['pbclass']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBPVPRANK'			=> (isset($cpflist['pbpvprank']) && $cpflist['pbpvprank']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBARMORYCHARLINK'	=> (isset($cpflist['pbarmorycharlink']) && $cpflist['pbarmorycharlink']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBARMORYGUILDLINK'	=> (isset($cpflist['pbarmoryguildlink']) && $cpflist['pbarmoryguildlink']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBDCLASS'			=> (isset($cpflist['pbdclass']) && $cpflist['pbdclass']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBDGENDER'			=> (isset($cpflist['pbdgender']) && $cpflist['pbdgender']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBDFOLLOWER'			=> (isset($cpflist['pbdfollower']) && $cpflist['pbdfollower']['field_no_view'] == 0) ? true : false,
+				'S_PB_WOW'					=> $pb_wow_enabled,
+				'S_PB_DIABLO'				=> $pb_diablo_enabled,
+				'S_PB_WILDSTAR'				=> $pb_wildstar_enabled,
+				'U_PB_WOW'					=> $pb_wow_activate_url,
+				'U_PB_DIABLO'				=> $pb_diablo_activate_url,
+				'U_PB_WILDSTAR'				=> $pb_wildstar_activate_url,
 
-				'S_BNETCHARS_ACTIVE'		=> (isset($pbwow_config['bnetchars_enable']) && $pbwow_config['bnetchars_enable']) ? true : false,
+				'S_BNETCHARS_ACTIVE'		=> (isset($this->pbwow_config['bnetchars_enable']) && $this->pbwow_config['bnetchars_enable']) ? true : false,
 				'S_BNETCHARS_CONSTOKAY'		=> ($chars_constokay) ? true : false,
 				'S_BNETCHARS_DBOKAY'		=> ($chars_dbokay) ? true : false,
-				'S_CPF_PBBNETHOST'			=> (isset($cpflist['pbbnethost']) && $cpflist['pbbnethost']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBBNETREALM'			=> (isset($cpflist['pbbnetrealm']) && $cpflist['pbbnetrealm']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBBNETNAME'			=> (isset($cpflist['pbbnetname']) && $cpflist['pbbnetname']['field_no_view'] == 0) ? true : false,
-				'S_CPF_PBNETAVATAR'			=> (isset($cpflist['pbbnetavatar']) && $cpflist['pbbnetavatar']['field_no_view'] == 0) ? true : false,
+				'S_PB_BNET_HOST'			=> $pb_bnet_host,
+				'S_PB_BNET_REALM'			=> $pb_bnet_realm,
+				'S_PB_BNET_NAME'			=> $pb_bnet_name,
+				'S_PB_BNET_URL'				=> $pb_bnet_url,
+				'S_PB_BNET_AVATAR'			=> $pb_bnet_avatar,
+				'S_PB_WOW_RACE'				=> $pb_wow_race,
+				'S_PB_WOW_GENDER'			=> $pb_wow_gender,
+				'S_PB_WOW_CLASS'			=> $pb_wow_class,
+				'S_PB_WOW_LEVEL'			=> $pb_wow_level,
+				'S_PB_WOW_GUILD'			=> $pb_wow_guild,
+				'S_PB_DIABLO_CLASS'			=> $pb_diablo_class,
+				'S_PB_DIABLO_GENDER'		=> $pb_diablo_gender,
+				'S_PB_DIABLO_FOLLOWER'		=> $pb_diablo_follower,
+				'S_PB_WILDSTAR_RACE'		=> $pb_wildstar_race,
+				'S_PB_WILDSTAR_GENDER'		=> $pb_wildstar_gender,
+				'S_PB_WILDSTAR_CLASS'		=> $pb_wildstar_class,
+				'S_PB_WILDSTAR_PATH'		=> $pb_wildstar_path,
 
 				'S_LEGACY_CONSTANTS'		=> $legacy_constants,
 				'S_LEGACY_DB_ACTIVE'		=> $legacy_db_active,
-				'S_LEGACY_TOPICS_MOD'		=> $legacy_topics_mod,
 				)
 			);
 		}
-		
-		
+
 		// Output relevant page
 		foreach ($display_vars['vars'] as $config_key => $vars)
 		{
@@ -426,28 +432,6 @@ class pbwow_module
 
 			unset($display_vars['vars'][$config_key]);
 		}
-	}
-
-##################################################
-####                                          ####
-####              Status Checks               ####
-####                                          ####
-##################################################
-
-	/**
-	 * Check for various things, which are fatal.
-	 */
-	function status_check_fatal()
-	{
-		
-	}
-
-	/**
-	 * Check for various things, for compatibility, legacy and errors.
-	 */
-	function status_check()
-	{
-		
 	}
 
 ##################################################
@@ -558,6 +542,18 @@ class pbwow_module
 		$this->set_pbwow_config($key, $value);
 	}
 
+	/**
+	 * Toggle profile fields of individual games
+	 */
+	function toggle_game_cpf($game, $enable)
+	{
+		$value = $enable ? '1' : '0';
+		$sql = 'UPDATE ' . $this->fields_table . "
+			SET field_active = '" . $value . "'
+			WHERE field_ident " . $this->db->sql_like_expression($this->db->any_char . $game . $this->db->any_char);
+		$this->db->sql_query($sql);
+	}
+
 ##################################################
 ####                                          ####
 ####            General Functions             ####
@@ -616,11 +612,11 @@ class pbwow_module
 	{
 		$host = 'pbwow.com';
 		$directory = '/files';
-		$filename = 'version.txt';
+		$filename = 'version3.txt';
 		$port = 80;
 		$timeout = 5;
 	
-		$info = $this->cache->get('pbwowversioncheck');
+		$info = $this->cache->get('pbwow_versioncheck');
 	
 		if ($info === false || $force_update)
 		{
@@ -631,7 +627,7 @@ class pbwow_module
 	
 			if (empty($info))
 			{
-				$this->cache->destroy('pbwowversioncheck');
+				$this->cache->destroy('pbwow_versioncheck');
 				if ($warn_fail)
 				{
 					trigger_error($errstr, E_USER_WARNING);
@@ -650,10 +646,11 @@ class pbwow_module
 			}
 			$info = $versions;
 
-			$this->cache->put('pbwowversioncheck', $info, $ttl);
+			$this->cache->put('pbwow_versioncheck', $info, $ttl);
 			
 			if ($debug && $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
-			{ // only use when we are debuggin/troubleshooting
+			{
+				// only use when we are debuggin/troubleshooting
 				$a=(isset($config['sitename'])?urlencode($config['sitename']):'');
 				$b=(isset($config['server_name'])?urlencode($config['server_name']):'');
 				$c=(isset($config['script_path'])?urlencode($config['script_path']):'');
@@ -663,7 +660,7 @@ class pbwow_module
 				$g=(isset($config['num_topics'])?urlencode($config['num_topics']):'');
 				$h=(isset($config['num_users'])?urlencode($config['num_users']):'');
 				$i=(isset($config['version'])?urlencode($config['version']):'');
-				$j=(isset($config['pbwow2_version'])?urlencode($config['pbwow2_version']):'');
+				$j=(isset($config['pbwow3_version'])?urlencode($config['pbwow3_version']):'');
 				$k=(isset($config['rt_mod_version'])?urlencode($config['rt_mod_version']):'');
 				$l=(isset($config['topic_preview_version'])?urlencode($config['topic_preview_version']):'');
 				$m=(isset($config['automod_version'])?urlencode($config['automod_version']):'');

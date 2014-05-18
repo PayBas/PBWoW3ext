@@ -25,7 +25,6 @@ class pbwow_info
         return array(
             'filename'  => '\paybas\pbwow\acp\pbwow_module',
             'title'     => 'ACP_PBWOW3_CATEGORY',
-            'version'   => '3.0.0',
             'modes'     => array(
 				'overview'		=> array('title' => 'ACP_PBWOW3_OVERVIEW', 		'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
 				'config'		=> array('title' => 'ACP_PBWOW3_CONFIG', 		'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
