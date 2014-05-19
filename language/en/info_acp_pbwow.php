@@ -44,23 +44,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_NOT_DETECTED'		=> 'not detected',
 	'PBWOW_OBSOLETE'			=> 'no longer used',
 
-
-
-
-	// Miscellaneous
-	'LOG_PBWOW_CONFIG'					=> '<strong>Altered PBWoW settings</strong><br />&raquo; %s',
-
-	'ANNOUNCEMENT_TOPIC'				=> 'Release Announcement',
-	'CURRENT_VERSION'					=> 'Current version',
-	'DOWNLOAD_LATEST'					=> 'Download Latest Version',
-	'LATEST_VERSION'					=> 'Latest version',
-	'NO_INFO'							=> 'Version server could not be contacted',
-	'NOT_UP_TO_DATE'					=> '%s is not up to date',
-	'RELEASE_ANNOUNCEMENT'				=> 'Annoucement Topic',
-	'UP_TO_DATE'						=> '%s is up to date',
-	'VERSION_CHECK'						=> 'MOD Version Check',
-
-
+	'LOG_PBWOW_CONFIG'			=> '<strong>Altered PBWoW settings</strong><br />&raquo; %s',
 
 
 	// OVERVIEW //
@@ -75,6 +59,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_DB_BAD_EXPLAIN'				=> 'Run the PBWoW installation script included in the MOD package. This will create and populate the appropriate database table.',
 
 	'PBWOW_VERSION_CHECK'				=> 'PBWoW Version Check',
+	'PBWOW_LATEST_VERSION'				=> 'Latest version',
 	'PBWOW_EXT_VERSION'					=> 'Extension version',
 	'PBWOW_STYLE_VERSION'				=> 'Style version',
 	'PBWOW_VERSION_ERROR'				=> 'Unable to determine version!',
