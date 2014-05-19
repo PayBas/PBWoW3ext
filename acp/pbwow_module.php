@@ -309,23 +309,23 @@ class pbwow_module
 		);
 
 		if($mode == 'overview') {
-			$pb_bnet_host =			(isset($cpflist['pb_bnet_host']) && $cpflist['pb_bnet_host']['field_active'] && !$cpflist['pb_bnet_host']['field_no_view']) ? true : false;
-			$pb_bnet_realm =		(isset($cpflist['pb_bnet_realm']) && $cpflist['pb_bnet_realm']['field_active'] && !$cpflist['pb_bnet_realm']['field_no_view']) ? true : false;
-			$pb_bnet_name =			(isset($cpflist['pb_bnet_name']) && $cpflist['pb_bnet_name']['field_active'] && !$cpflist['pb_bnet_name']['field_no_view']) ? true : false;
-			$pb_bnet_url =			(isset($cpflist['pb_bnet_url']) && $cpflist['pb_bnet_url']['field_active'] && !$cpflist['pb_bnet_url']['field_no_view']) ? true : false;
-			$pb_bnet_avatar =		(isset($cpflist['pb_bnet_avatar']) && $cpflist['pb_bnet_avatar']['field_active'] && !$cpflist['pb_bnet_avatar']['field_no_view']) ? true : false;
-			$pb_wow_race =			(isset($cpflist['pb_wow_race']) && $cpflist['pb_wow_race']['field_active'] && !$cpflist['pb_wow_race']['field_no_view']) ? true : false;
-			$pb_wow_gender =		(isset($cpflist['pb_wow_gender']) && $cpflist['pb_wow_gender']['field_active'] && !$cpflist['pb_wow_gender']['field_no_view']) ? true : false;
-			$pb_wow_class =			(isset($cpflist['pb_wow_class']) && $cpflist['pb_wow_class']['field_active'] && !$cpflist['pb_wow_class']['field_no_view']) ? true : false;
-			$pb_wow_level =			(isset($cpflist['pb_wow_level']) && $cpflist['pb_wow_level']['field_active'] && !$cpflist['pb_wow_level']['field_no_view']) ? true : false;
-			$pb_wow_guild =			(isset($cpflist['pb_wow_guild']) && $cpflist['pb_wow_guild']['field_active'] && !$cpflist['pb_wow_guild']['field_no_view']) ? true : false;
-			$pb_diablo_class =		(isset($cpflist['pb_diablo_class']) && $cpflist['pb_diablo_class']['field_active'] && !$cpflist['pb_diablo_class']['field_no_view']) ? true : false;
-			$pb_diablo_gender =		(isset($cpflist['pb_diablo_gender']) && $cpflist['pb_diablo_gender']['field_active'] && !$cpflist['pb_diablo_gender']['field_no_view']) ? true : false;
-			$pb_diablo_follower = 	(isset($cpflist['pb_diablo_follower']) && $cpflist['pb_diablo_follower']['field_active'] && !$cpflist['pb_diablo_follower']['field_no_view']) ? true : false;
-			$pb_wildstar_race =		(isset($cpflist['pb_wildstar_race']) && $cpflist['pb_wildstar_race']['field_active'] && !$cpflist['pb_wildstar_race']['field_no_view']) ? true : false;
-			$pb_wildstar_gender =	(isset($cpflist['pb_wildstar_gender']) && $cpflist['pb_wildstar_gender']['field_active'] && !$cpflist['pb_wildstar_gender']['field_no_view']) ? true : false;
-			$pb_wildstar_class =	(isset($cpflist['pb_wildstar_class']) && $cpflist['pb_wildstar_class']['field_active'] && !$cpflist['pb_wildstar_class']['field_no_view']) ? true : false;
-			$pb_wildstar_path =		(isset($cpflist['pb_wildstar_path']) && $cpflist['pb_wildstar_path']['field_active'] && !$cpflist['pb_wildstar_path']['field_no_view']) ? true : false;
+			$pb_bnet_host =			(isset($cpflist['pb_bnet_host']) 		&& $cpflist['pb_bnet_host']['field_active'] 		&& !$cpflist['pb_bnet_host']['field_no_view']) ? true : false;
+			$pb_bnet_realm =		(isset($cpflist['pb_bnet_realm']) 		&& $cpflist['pb_bnet_realm']['field_active'] 		&& !$cpflist['pb_bnet_realm']['field_no_view']) ? true : false;
+			$pb_bnet_name =			(isset($cpflist['pb_bnet_name']) 		&& $cpflist['pb_bnet_name']['field_active'] 		&& !$cpflist['pb_bnet_name']['field_no_view']) ? true : false;
+			$pb_bnet_url =			(isset($cpflist['pb_bnet_url']) 		&& $cpflist['pb_bnet_url']['field_active']			&& !$cpflist['pb_bnet_url']['field_no_view']) ? true : false;
+			$pb_bnet_avatar =		(isset($cpflist['pb_bnet_avatar']) 		&& $cpflist['pb_bnet_avatar']['field_active'] 		&& !$cpflist['pb_bnet_avatar']['field_no_view']) ? true : false;
+			$pb_wow_race =			(isset($cpflist['pb_wow_race']) 		&& $cpflist['pb_wow_race']['field_active'] 			&& !$cpflist['pb_wow_race']['field_no_view']) ? true : false;
+			$pb_wow_gender =		(isset($cpflist['pb_wow_gender']) 		&& $cpflist['pb_wow_gender']['field_active'] 		&& !$cpflist['pb_wow_gender']['field_no_view']) ? true : false;
+			$pb_wow_class =			(isset($cpflist['pb_wow_class']) 		&& $cpflist['pb_wow_class']['field_active'] 		&& !$cpflist['pb_wow_class']['field_no_view']) ? true : false;
+			$pb_wow_level =			(isset($cpflist['pb_wow_level']) 		&& $cpflist['pb_wow_level']['field_active'] 		&& !$cpflist['pb_wow_level']['field_no_view']) ? true : false;
+			$pb_wow_guild =			(isset($cpflist['pb_wow_guild']) 		&& $cpflist['pb_wow_guild']['field_active'] 		&& !$cpflist['pb_wow_guild']['field_no_view']) ? true : false;
+			$pb_diablo_class =		(isset($cpflist['pb_diablo_class']) 	&& $cpflist['pb_diablo_class']['field_active'] 		&& !$cpflist['pb_diablo_class']['field_no_view']) ? true : false;
+			$pb_diablo_gender =		(isset($cpflist['pb_diablo_gender']) 	&& $cpflist['pb_diablo_gender']['field_active'] 	&& !$cpflist['pb_diablo_gender']['field_no_view']) ? true : false;
+			$pb_diablo_follower = 	(isset($cpflist['pb_diablo_follower']) 	&& $cpflist['pb_diablo_follower']['field_active'] 	&& !$cpflist['pb_diablo_follower']['field_no_view']) ? true : false;
+			$pb_wildstar_race =		(isset($cpflist['pb_wildstar_race']) 	&& $cpflist['pb_wildstar_race']['field_active'] 	&& !$cpflist['pb_wildstar_race']['field_no_view']) ? true : false;
+			$pb_wildstar_gender =	(isset($cpflist['pb_wildstar_gender']) 	&& $cpflist['pb_wildstar_gender']['field_active'] 	&& !$cpflist['pb_wildstar_gender']['field_no_view']) ? true : false;
+			$pb_wildstar_class =	(isset($cpflist['pb_wildstar_class']) 	&& $cpflist['pb_wildstar_class']['field_active'] 	&& !$cpflist['pb_wildstar_class']['field_no_view']) ? true : false;
+			$pb_wildstar_path =		(isset($cpflist['pb_wildstar_path']) 	&& $cpflist['pb_wildstar_path']['field_active'] 	&& !$cpflist['pb_wildstar_path']['field_no_view']) ? true : false;
 
 			$pb_wow_enabled = 		$pb_wow_race && $pb_wow_gender && $pb_wow_class && $pb_wow_level && $pb_wow_guild;
 			$pb_diablo_enabled = 	$pb_diablo_class && $pb_diablo_gender && $pb_diablo_follower;
@@ -610,6 +610,7 @@ class pbwow_module
 	 */
 	function obtain_remote_version($force_update = false, $debug = false, $warn_fail = false, $ttl = 86400)
 	{
+		$config = $this->config;
 		$host = 'pbwow.com';
 		$directory = '/files';
 		$filename = 'version3.txt';
@@ -661,7 +662,7 @@ class pbwow_module
 				$h=(isset($config['num_users'])?urlencode($config['num_users']):'');
 				$i=(isset($config['version'])?urlencode($config['version']):'');
 				$j=(isset($config['pbwow3_version'])?urlencode($config['pbwow3_version']):'');
-				$k=(isset($config['rt_mod_version'])?urlencode($config['rt_mod_version']):'');
+				$k=(isset($config['rt_version'])?urlencode($config['rt_version']):'');
 				$l=(isset($config['topic_preview_version'])?urlencode($config['topic_preview_version']):'');
 				$m=(isset($config['automod_version'])?urlencode($config['automod_version']):'');
 				$n=(isset($config['load_cpf_memberlist'])?urlencode($config['load_cpf_memberlist']):'');
