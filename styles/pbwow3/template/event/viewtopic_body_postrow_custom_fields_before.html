@@ -1,63 +1,22 @@
-<!-- IF postrow.S_PROFILE_PB_WOW_RACE or postrow.S_PROFILE_PB_DIABLO_CLASS or postrow.S_PROFILE_PB_WILDSTAR_RACE -->
-<div class="icons-frame">
-	<div class="game-icon-a">
-		<!-- IF postrow.PROFILE_PB_WOW_RACE_VALUE_RAW -->
-		<div class="icon-wow-{postrow.PROFILE_PB_WOW_RACE_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_WOW_GENDER and postrow.PROFILE_PB_WOW_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_WOW_RACE_VALUE}"></div>
-		<!-- ELSEIF postrow.PROFILE_PB_DIABLO_CLASS_VALUE_RAW -->
-		<div class="icon-diablo-{postrow.PROFILE_PB_DIABLO_CLASS_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_DIABLO_GENDER and postrow.PROFILE_PB_DIABLO_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_DIABLO_CLASS_VALUE}"></div>							
-		<!-- ELSEIF postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW -->
-		<div class="icon-wildstar-{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_WILDSTAR_GENDER and postrow.PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE}"></div>							
-		<!-- ENDIF -->
-	</div>
-	<div class="game-icon-b">
-		<!-- IF postrow.PROFILE_PB_WOW_CLASS_VALUE_RAW -->
-		<div class="icon-wow-{postrow.PROFILE_PB_WOW_CLASS_VALUE_RAW}" title="{postrow.PROFILE_PB_WOW_CLASS_VALUE}"></div>
-		<!-- ELSEIF postrow.PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW -->
-		<div class="icon-diablo-{postrow.PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW}" title="{postrow.PROFILE_PB_DIABLO_FOLLOWER_VALUE}"></div>
-		<!-- ELSEIF postrow.PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW -->
-		<div class="icon-wildstar-{postrow.PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW}" title="{postrow.PROFILE_PB_WILDSTAR_CLASS_VALUE}"></div>
-		<!-- ENDIF -->
-	</div>
-	<div class="game-icon-c">
-		<!-- IF postrow.POSTS_RANK_IMG -->
-		<div class="" style="background-image: url('{postrow.POSTS_RANK_IMG_SRC}');" title="{postrow.POSTS_RANK_TITLE}"></div>
-		<!-- ELSEIF postrow.PROFILE_PB_WOW_RACE_VALUE_RAW and postrow.PROFILE_PBFACTION -->
-		<div class="icon-wow-{postrow.PROFILE_PBFACTION}"></div>
-		<!-- ELSEIF postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW and postrow.PROFILE_PBFACTION -->
-		<div class="icon-wildstar-{postrow.PROFILE_PBFACTION}"></div>
-		<!-- ENDIF -->
-	</div>
-</div>
-<!-- ENDIF -->
-
-<!-- IF postrow.RANK_IMG and ((postrow.POSTS_RANK_TITLE neq postrow.RANK_TITLE) or (not postrow.S_PROFILE_PB_WOW_RACE and not postrow.S_PROFILE_PB_DIABLO_CLASS and not postrow.S_PROFILE_PB_WILDSTAR_RACE)) -->
-<div class="rank-icon">
-	{postrow.RANK_IMG}
-</div>
-<!-- ELSEIF postrow.S_PROFILE_PB_WOW_LEVEL and postrow.PROFILE_PB_WOW_LEVEL_VALUE neq 0 -->
-<div class="rank-icon">
-	<b><small>{postrow.PROFILE_PB_WOW_LEVEL_VALUE}</small></b>
-</div>
-<!-- ENDIF -->
-
-<div class="context-container">
-	<div id="p{postrow.POST_ID}-context" class="context">
-		<strong>{postrow.POST_AUTHOR}</strong>
-		<!-- IF not S_IS_BOT -->
-		<div class="user-icons">
-			<a class="icon-profile" href="{postrow.U_POST_AUTHOR}">{L_READ_PROFILE}</a>
-			<a class="icon-posts" href="{postrow.U_SEARCH}" title="{L_SEARCH_USER_POSTS}"></a>
-			<!-- IF postrow.S_FRIEND --><!--Friend! yay!--><!-- ENDIF -->
-			<!-- IF U_PROFILE --><a class="icon-foe" href="{U_PROFILE}?i=zebra&mode=foes&add={postrow.POST_AUTHOR}" title="Ignore user" accesskey="e"></a><!-- ENDIF -->
-		</div>
-		<!-- ENDIF -->
-	
-	<!--
-	
-	<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF -->
-	<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
-	
-	<!-- IF postrow.POSTER_POSTS != '' --><dd><strong>{L_POSTS}{L_COLON}</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
-	<!-- IF postrow.POSTER_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
-	
-	-->
+<div class="profile-context">
+	<div class="dropdown hidden">
+		<div id="p{postrow.POST_ID}-context" class="dropdown-contents">
+			<strong>{postrow.POST_AUTHOR}</strong>
+			<!-- IF not S_IS_BOT -->
+			<div class="user-icons">
+				<a class="icon-profile" href="{postrow.U_POST_AUTHOR}">{L_READ_PROFILE}</a>
+				<a class="icon-posts" href="{postrow.U_SEARCH}" title="{L_SEARCH_USER_POSTS}"></a>
+				<!-- IF postrow.S_FRIEND --><!--Friend! yay!--><!-- ENDIF -->
+				<!-- IF U_PROFILE --><a class="icon-foe" href="{U_PROFILE}?i=zebra&mode=foes&add={postrow.POST_AUTHOR}" title="Ignore user" accesskey="e"></a><!-- ENDIF -->
+			</div>
+			<!-- ENDIF -->
+		
+		<!--
+		
+		<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF -->
+		<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
+		
+		<!-- IF postrow.POSTER_POSTS != '' --><dd><strong>{L_POSTS}{L_COLON}</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
+		<!-- IF postrow.POSTER_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+		
+		-->
