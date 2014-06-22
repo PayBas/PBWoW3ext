@@ -24,12 +24,12 @@ $(document).ready(function($){
 	});
 
 	<!-- IF S_VIEWTOPIC -->
-	phpbb.dropdownVisibleContainers += ', .context-container';
+	phpbb.dropdownVisibleContainers += ', .profile-context';
 
 	$('.postprofile').each(function() {
 		var $this = $(this),
 			trigger = $this.find('dt a'),
-			contents = $this.find('.context'),
+			contents = $this.find('.profile-context .dropdown'),
 			options = {
 				direction: 'auto',
 				verticalDirection: 'auto'
