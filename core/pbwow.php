@@ -952,10 +952,22 @@ class pbwow
 			}
 
 			$user_ids = array_unique($user_ids);
-			$pf_avatars = array();
+			$pf_fields = $pf_avatars = array();
 
 			// Get the profile data of the specified users
 			$pf_data = $this->profilefields_manager->grab_profile_fields_data($user_ids);
+
+			foreach ($pf_data as $user_id => $profile_fields)
+			{
+				foreach ($profile_fields as $used_ident => $profile_field)
+				{
+					$pf_fields[] = $profile_field;
+				}
+			}
+
+			// Get the profile field language values and put them in the cache.
+			// We don't use them, but this prevents them from being pulled from the DB 1 by 1.
+			$pf_lang = $this->profilefields_manager->cache_profile_fields_lang_options($pf_fields);
 
 			if (!empty($pf_data))
 			{
