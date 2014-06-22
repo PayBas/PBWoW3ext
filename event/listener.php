@@ -38,7 +38,7 @@ class listener implements EventSubscriberInterface
 
 			'core.grab_profile_fields_data'					=> 'profile_fields_grab',
 			'core.generate_profile_fields_template_data'	=> 'profile_fields_show',
-			
+
 			'core.viewtopic_cache_guest_data'				=> 'viewtopic_cache_guest',
 			'core.viewtopic_cache_user_data'				=> 'viewtopic_cache_user',
 			'core.viewtopic_modify_post_row'				=> 'viewtopic_modify_post',
@@ -48,8 +48,12 @@ class listener implements EventSubscriberInterface
 
 			'core.search_get_posts_data'					=> 'search_get_posts_data',
 			'core.search_modify_tpl_ary'					=> 'search_modify_tpl_ary',
-			
-			'vse.topicpreview.display_topic_preview'		=> 'display_topic_preview',
+
+			// Topic Preview
+			'core.viewforum_modify_topics_data'				=> 'topic_preview_modify_row',
+			'core.search_modify_rowset'						=> 'topic_preview_modify_row',
+			'paybas.recenttopics.modify_topics_list'		=> 'topic_preview_modify_row',
+			'vse.topicpreview.display_topic_preview'		=> 'topic_preview_modify_display',
 		);
 	}
 
@@ -99,7 +103,6 @@ class listener implements EventSubscriberInterface
 	public function search_get_posts_data($event)
 	{
 		$array = $event['sql_array'];
-		/*$array['SELECT'] .= ', u.user_rank, u.user_posts, u.user_avatar, u.user_avatar_type, u.user_avatar_width, u.user_avatar_height';*/
 		$array['SELECT'] .= ', u.user_rank, u.user_posts';
 		$event['sql_array'] = $array; 
 	}
@@ -109,10 +112,22 @@ class listener implements EventSubscriberInterface
 			$event['tpl_ary'] = $this->pbwow->search_modify_tpl_ary($event['row'], $event['tpl_ary'], $event['show_results']);
 		}
 	}
-	
-	
-	public function display_topic_preview($event)
+
+
+	public function topic_preview_modify_row($event)
 	{
-		$event['block'] = $this->pbwow->display_topic_preview($event['row'], $event['block'], $event['tp_avatars']);
+		if (sizeof($event['rowset']))
+		{
+			if ($event['show_results'] && $event['show_results'] == 'posts')
+			{
+				return;
+			}
+
+			$event['rowset'] = $this->pbwow->topic_preview_modify_row($event['rowset']);
+		}
+	}	
+	public function topic_preview_modify_display($event)
+	{
+		$event['block'] = $this->pbwow->topic_preview_modify_display($event['row'], $event['block'], $event['tp_avatars']);
 	}
 }

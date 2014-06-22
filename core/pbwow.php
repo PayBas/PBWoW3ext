@@ -906,28 +906,14 @@ class pbwow
 		return $template_data;
 	}
 
+
 	public function search_modify_tpl_ary($row, $tpl_ary, $show_results)
 	{
 		$this->get_user_rank_global($row['user_rank'], $row['user_posts'], $rank_title, $rank_image, $rank_image_src);
 		$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
 		$user_special_styling = $this->get_rank_styling($row['user_rank']);
 
-		/*$avatar = array(
-			'avatar'		=> $row['user_avatar'],
-			'avatar_type'	=> $row['user_avatar_type'],
-			'avatar_width'	=> $row['user_avatar_width'],
-			'avatar_height'	=> $row['user_avatar_height'],
-		);
-		$avatar = phpbb_get_avatar($avatar, 'USER_AVATAR');*/
-
 		$tpl_ary += array(
-			/*'POSTER_AVATAR'			=> $avatar,
-			'RANK_TITLE'			=> isset($rank_title) ? $rank_title : '',
-			'RANK_IMG'				=> isset($rank_image) ? $rank_image : '',
-			'RANK_IMG_SRC'			=> isset($rank_image_src) ? $rank_image_src : '',
-			'POSTS_RANK_TITLE'		=> isset($posts_rank_title) ? $posts_rank_title : '',
-			'POSTS_RANK_IMG'		=> isset($posts_rank_image) ? $posts_rank_image : '',
-			'POSTS_RANK_IMG_SRC'	=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',*/
 			'USER_SPECIAL_STYLING'	=> isset($user_special_styling) ? $user_special_styling : '',
 		);
 
@@ -935,42 +921,93 @@ class pbwow
 	}
 
 
-
-	public function display_topic_preview($row, $block, $tp_avatars)
+	/**
+	* Modify the topic preview display output, by inserting the custom avatar
+	* if no "normal" avatar is specified (and if a CPF avatar-generated is available).
+	*
+	* @var	array	rowset	Array with topics data (in topic_id => topic_data format)
+	*/
+	public function topic_preview_modify_row($rowset)
 	{
-		if($this->config['load_cpf_viewtopic'] && $tp_avatars)
+		$tp_enabled = (!empty($this->config['topic_preview_limit']) && !empty($this->user->data['user_topic_preview'])) ? true : false;
+		$tp_avatars = (!empty($this->config['topic_preview_avatars']) && $this->config['allow_avatar'] && $this->user->optionget('viewavatars')) ? true : false;
+		$tp_last_post = (!empty($this->config['topic_preview_last_post'])) ? true : false;
+
+		// Only proceed if we want to display avatars and the CPF-generated avatars feature is enabled
+		if ($tp_enabled && $tp_avatars && $this->config['load_cpf_viewtopic'] && $this->pbwow_config['avatars_enable'])
 		{
-			$grab_ids = array();
+			$user_ids = array();
 
-			if(empty($row['first_poster_avatar']))
+			// Get all the user_ids that we want to query
+			foreach ($rowset as $topic)
 			{
-				$grab_ids[] = $row['topic_poster'];
-			}
-			if($row['topic_poster'] !== $row['topic_last_poster_id'] && empty($row['last_poster_avatar']))
-			{
-				$grab_ids[] = $row['topic_last_poster_id'];
-			}
-
-			if(!empty($grab_ids))
-			{
-				$cp = $this->profilefields_manager->grab_profile_fields_data($grab_ids);
-
-				if(empty($row['first_poster_avatar']) && isset($cp[$row['topic_poster']]))
+				if (!$topic['fp_avatar'])
 				{
-					$profile_fields = $this->profilefields_manager->generate_profile_fields_template_data($cp[$row['topic_poster']]);
-					$block['TOPIC_PREVIEW_FIRST_AVATAR'] = isset($profile_fields['row']['PROFILE_PBAVATAR']) ? $profile_fields['row']['PROFILE_PBAVATAR'] : '';
+					$user_ids[] = $topic['topic_poster'];
 				}
-
-				if(empty($row['last_poster_avatar']) && isset($cp[$row['topic_last_poster_id']]))
+				if ($tp_last_post && !$topic['lp_avatar'])
 				{
-					if($row['topic_poster'] == $row['topic_last_poster_id'])
+					$user_ids[] = $topic['topic_last_poster_id'];
+				}
+			}
+
+			$user_ids = array_unique($user_ids);
+			$pf_avatars = array();
+
+			// Get the profile data of the specified users
+			$pf_data = $this->profilefields_manager->grab_profile_fields_data($user_ids);
+
+			if (!empty($pf_data))
+			{
+				// Process the profile data and get an array of all users that have a CPF-generated avatar
+				foreach ($pf_data as $user_id => $pf_row)
+				{
+					$pf_values = $this->profilefields_manager->generate_profile_fields_template_data($pf_row);
+
+					if (isset($pf_values['row']['PROFILE_PBAVATAR']))
 					{
-						$block['TOPIC_PREVIEW_LAST_AVATAR'] = $block['TOPIC_PREVIEW_FIRST_AVATAR'];
-					} else {
-						$profile_fields = $this->profilefields_manager->generate_profile_fields_template_data($cp[$row['topic_last_poster_id']]);
-						$block['TOPIC_PREVIEW_LAST_AVATAR'] = isset($profile_fields['row']['PROFILE_PBAVATAR']) ? $profile_fields['row']['PROFILE_PBAVATAR'] : '';
+						$pf_avatars[$user_id] = $pf_values['row']['PROFILE_PBAVATAR'];
 					}
 				}
+			}
+
+			// Merge the CPF-generated avatars into the topic rows
+			foreach ($rowset as &$topic)
+			{
+				if (isset($pf_avatars[$topic['topic_poster']]))
+				{
+					$topic['fp_pbavatar'] = $pf_avatars[$topic['topic_poster']];
+				}
+
+				if (isset($pf_avatars[$topic['topic_last_poster_id']]))
+				{
+					$topic['lp_pbavatar'] = $pf_avatars[$topic['topic_last_poster_id']];
+				}
+			}
+		}
+		return $rowset;
+	}
+
+	/**
+	* Modify the topic preview display output, by inserting the custom avatar
+	* if no "normal" avatar is specified (and if a PBWoW avatar is available).
+	*
+	* @var array $row 		Row data
+	* @var array $block		Template vars array
+	* @var int $tp_avatars	Display avatars setting
+	*/
+	public function topic_preview_modify_display($row, $block, $tp_avatars)
+	{
+		if($tp_avatars && $this->pbwow_config['avatars_enable'])
+		{
+			if(empty($row['fp_avatar']) && isset($row['fp_pbavatar']))
+			{
+				$block['TOPIC_PREVIEW_FIRST_AVATAR'] = $row['fp_pbavatar'];
+			}
+
+			if(empty($row['lp_avatar']) && isset($row['lp_pbavatar']))
+			{
+				$block['TOPIC_PREVIEW_LAST_AVATAR'] = $row['lp_pbavatar'];
 			}
 		}
 		return $block;
