@@ -4,7 +4,7 @@
     "description": "This extension includes all the functionality needed to get the PBWoW 3 style for phpBB up and running.",
     "homepage": "http://pbwow.com/",
     "version": "3.0.0",
-    "time": "2014-03-24",
+    "time": "2014-06-30",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -19,6 +19,11 @@
         "phpbb/phpbb": "3.1.*@dev"
     },
     "extra": {
-        "display-name": "PBWoW Extension"
+        "display-name": "PBWoW 3 Extension",
+        "version-check": {
+            "host": "paybas.github.io",
+            "directory": "/PBWoW3ext",
+            "filename": "version.json"
+        }
     }
 }
