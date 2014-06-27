@@ -1,7 +1,7 @@
 <div class="profile-context">
 	<div class="dropdown hidden">
 		<div id="p{postrow.POST_ID}-context" class="dropdown-contents">
-			<strong>{postrow.POST_AUTHOR}</strong>
+			<strong class="username">{postrow.POST_AUTHOR}</strong>
 			<!-- IF not S_IS_BOT -->
 			<div class="user-icons">
 				<a class="icon-profile" href="{postrow.U_POST_AUTHOR}">{L_READ_PROFILE}</a>
@@ -10,13 +10,7 @@
 				<!-- IF U_PROFILE --><a class="icon-foe" href="{U_PROFILE}?i=zebra&mode=foes&add={postrow.POST_AUTHOR}" title="Ignore user" accesskey="e"></a><!-- ENDIF -->
 			</div>
 			<!-- ENDIF -->
-		
-		<!--
-		
-		<!-- IF not postrow.U_POST_AUTHOR --><strong>{postrow.POST_AUTHOR_FULL}</strong><!-- ELSE -->{postrow.POST_AUTHOR_FULL}<!-- ENDIF -->
-		<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_TITLE}<!-- IF postrow.RANK_TITLE and postrow.RANK_IMG --><br /><!-- ENDIF -->{postrow.RANK_IMG}</dd><!-- ENDIF -->
-		
-		<!-- IF postrow.POSTER_POSTS != '' --><dd><strong>{L_POSTS}{L_COLON}</strong> {postrow.POSTER_POSTS}</dd><!-- ENDIF -->
-		<!-- IF postrow.POSTER_JOINED --><dd><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
-		
-		-->
+
+			<!-- IF postrow.POSTER_JOINED --><dd class="profile-joined"><strong>{L_JOINED}{L_COLON}</strong> {postrow.POSTER_JOINED}</dd><!-- ENDIF -->
+			<!-- IF postrow.RANK_TITLE or postrow.RANK_IMG --><dd class="profile-rank">{postrow.RANK_IMG} {postrow.RANK_TITLE}</dd><!-- ENDIF -->
+			<!-- IF (postrow.POSTS_RANK_TITLE or postrow.POSTS_RANK_IMG) and (postrow.POSTS_RANK_TITLE !== postrow.RANK_TITLE) --><dd class="profile-posts-rank">{postrow.POSTS_RANK_IMG} {postrow.POSTS_RANK_TITLE}</dd><!-- ENDIF -->
