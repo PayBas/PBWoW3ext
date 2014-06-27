@@ -29,7 +29,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 		/* WoW */
 		'pb_wow_race' => array(
 			'profilefield_oldname'			=> 'pbrace',
-			'profilefield_database_type'	=> array('INT:', null),
+			'profilefield_database_type'	=> array('UINT', null),
 			'profilefield_lang_name'		=> 'WoW character race',
 			'profilefield_lang_explain'		=> '',
 			'profilefield_data' 			=> array(
@@ -640,24 +640,15 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 				$this->db->sql_query($sql);
 
 				// Add the new version column to the profile fields data table
-				if($meta['profilefield_database_type'][0] == 'VCHAR' && isset($FAKE_JUST_REMOVE_THIS_LATER))
-				{
-					$schema_change = array('add_columns' => array(
-						$this->table_prefix . 'profile_fields_data'	=> array(
-							'pf_' . $profilefield_name => $meta['profilefield_database_type'],
-						),
-					));
-					$this->db_tools->perform_schema_changes($schema_change);
-				}
-				else
-				{
-					// Since perform_schema_changes doesn't allow null values, we have to use the alternative
-					$type = $this->db_tools->get_column_type($meta['profilefield_database_type'][0]);
-					$sql = $this->add_field_ident('pf_' . $profilefield_name, $type[0]);
-					$this->db->sql_query($sql);
-				}
+				$schema_change = array('add_columns' => array(
+					$this->table_prefix . 'profile_fields_data'	=> array(
+						'pf_' . $profilefield_name => $meta['profilefield_database_type'],
+					),
+				));
+				$this->db_tools->perform_schema_changes($schema_change);
 
 				// Copy the user data to the new column
+// TODO use buffer
 				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields_data
 					SET pf_' . $profilefield_name . ' = pf_' . $meta['profilefield_oldname'];
 				$this->db->sql_query($sql);
@@ -727,115 +718,13 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 				$insert_buffer2->flush();
 				
 				// Add a column to the profile fields data table
-				if($meta['profilefield_database_type'][0] == 'VCHAR' && isset($FAKE_JUST_REMOVE_THIS_LATER))
-				{
-					$schema_change = array('add_columns' => array(
-						$this->table_prefix . 'profile_fields_data'	=> array(
-							'pf_' . $profilefield_name => $meta['profilefield_database_type'],
-						),
-					));
-					$this->db_tools->perform_schema_changes($schema_change);
-				}
-				else
-				{
-					// Since perform_schema_changes doesn't allow null values, we have to use the alternative
-					$coltype = $this->db_tools->get_column_type($meta['profilefield_database_type'][0]);
-					$sql = $this->add_field_ident('pf_' . $profilefield_name, $coltype[0]);
-					$this->db->sql_query($sql);
-				}
+				$schema_change = array('add_columns' => array(
+					$this->table_prefix . 'profile_fields_data'	=> array(
+						'pf_' . $profilefield_name => $meta['profilefield_database_type'],
+					),
+				));
+				$this->db_tools->perform_schema_changes($schema_change);
 			}
 		}
-	}
-	
-	/**
-	* Return sql statement for adding a new field ident (profile field) to the profile fields data table
-	* copied from includes/acp/acp_profile.php
-	*/
-	private function add_field_ident($field_ident, $sql_type)
-	{
-		$db = $this->db;
-
-		switch ($db->sql_layer)
-		{
-			case 'mysql':
-			case 'mysql4':
-			case 'mysqli':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD `$field_ident` " . $sql_type;
-
-			break;
-
-			case 'sqlite':
-				if (version_compare(sqlite_libversion(), '3.0') == -1)
-				{
-					$sql = "SELECT sql
-						FROM sqlite_master
-						WHERE type = 'table'
-							AND name = '" . PROFILE_FIELDS_DATA_TABLE . "'
-						ORDER BY type DESC, name;";
-					$result = $db->sql_query($sql);
-					$row = $db->sql_fetchrow($result);
-					$db->sql_freeresult($result);
-
-					// Create a temp table and populate it, destroy the existing one
-					$db->sql_query(preg_replace('#CREATE\s+TABLE\s+"?' . PROFILE_FIELDS_DATA_TABLE . '"?#i', 'CREATE TEMPORARY TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp', $row['sql']));
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . '_temp SELECT * FROM ' . PROFILE_FIELDS_DATA_TABLE);
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE);
-
-					preg_match('#\((.*)\)#s', $row['sql'], $matches);
-
-					$new_table_cols = trim($matches[1]);
-					$old_table_cols = explode(',', $new_table_cols);
-					$column_list = array();
-
-					foreach ($old_table_cols as $declaration)
-					{
-						$entities = preg_split('#\s+#', trim($declaration));
-						if ($entities[0] == 'PRIMARY')
-						{
-							continue;
-						}
-						$column_list[] = $entities[0];
-					}
-
-					$columns = implode(',', $column_list);
-
-					$new_table_cols = $field_ident . ' ' . $sql_type . ',' . $new_table_cols;
-
-					// create a new table and fill it up. destroy the temp one
-					$db->sql_query('CREATE TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $new_table_cols . ');');
-					$db->sql_query('INSERT INTO ' . PROFILE_FIELDS_DATA_TABLE . ' (' . $columns . ') SELECT ' . $columns . ' FROM ' . PROFILE_FIELDS_DATA_TABLE . '_temp;');
-					$db->sql_query('DROP TABLE ' . PROFILE_FIELDS_DATA_TABLE . '_temp');
-				}
-				else
-				{
-					$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident [$sql_type]";
-				}
-
-			break;
-
-			case 'mssql':
-			case 'mssql_odbc':
-			case 'mssqlnative':
-				$sql = 'ALTER TABLE [' . PROFILE_FIELDS_DATA_TABLE . "] ADD [$field_ident] " . $sql_type;
-
-			break;
-
-			case 'postgres':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD COLUMN \"$field_ident\" " . $sql_type;
-
-			break;
-
-			case 'firebird':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . ' ADD "' . strtoupper($field_ident) . '" ' . $sql_type;
-
-			break;
-
-			case 'oracle':
-				$sql = 'ALTER TABLE ' . PROFILE_FIELDS_DATA_TABLE . " ADD $field_ident " . $sql_type;
-
-			break;
-		}
-
-		return $sql;
 	}
 }
