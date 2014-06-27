@@ -33,6 +33,9 @@ class pbwow
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
+	/** @var \phpbb\extension\manager */
+	protected $extension_manager;
+
 	/** @var \phpbb\profilefields\manager */
 	protected $profilefields_manager;
 
@@ -54,12 +57,13 @@ class pbwow
 
 	protected $ranks;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
 		$this->config = $config;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
+		$this->extension_manager = $extension_manager;
 		$this->profilefields_manager = $profilefields_manager;
 		$this->template = $template;
 		$this->user = $user;
@@ -813,7 +817,7 @@ class pbwow
 
 	public function global_style_append_after($event)
 	{
-		if($this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data && $this->user->data['user_id'] != ANONYMOUS)
+		if($this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
 		{
 			$user_data = $this->user->data;
 			$user_id = $user_data['user_id'];
@@ -929,6 +933,11 @@ class pbwow
 	*/
 	public function topic_preview_modify_row($rowset)
 	{
+		if (!$this->extension_manager->is_enabled('vse/topicpreview'))
+		{
+			return $rowset;
+		}
+
 		$tp_enabled = (!empty($this->config['topic_preview_limit']) && !empty($this->user->data['user_topic_preview'])) ? true : false;
 		$tp_avatars = (!empty($this->config['topic_preview_avatars']) && $this->config['allow_avatar'] && $this->user->optionget('viewavatars')) ? true : false;
 		$tp_last_post = (!empty($this->config['topic_preview_last_post'])) ? true : false;
@@ -951,6 +960,11 @@ class pbwow
 				}
 			}
 
+			if (empty($user_ids))
+			{
+				return $rowset;
+			}
+
 			$user_ids = array_unique($user_ids);
 			$pf_fields = $pf_avatars = array();
 
@@ -967,7 +981,7 @@ class pbwow
 
 			// Get the profile field language values and put them in the cache.
 			// We don't use them, but this prevents them from being pulled from the DB 1 by 1.
-			$pf_lang = $this->profilefields_manager->cache_profile_fields_lang_options($pf_fields);
+//$pf_lang = $this->profilefields_manager->cache_profile_fields_lang_options($pf_fields);
 
 			if (!empty($pf_data))
 			{
