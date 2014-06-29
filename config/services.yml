@@ -9,6 +9,7 @@ services:
             - @cache
             - @dbal.conn
             - @dbal.tools
+            - @dispatcher
             - @ext.manager
             - @profilefields.manager
             - @template

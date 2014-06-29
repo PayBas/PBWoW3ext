@@ -33,6 +33,9 @@ class pbwow
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
+	/** @var \phpbb\event\dispatcher */
+	protected $dispatcher;
+
 	/** @var \phpbb\extension\manager */
 	protected $extension_manager;
 
@@ -57,12 +60,13 @@ class pbwow
 
 	protected $ranks;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
 		$this->config = $config;
 		$this->cache = $cache;
 		$this->db = $db;
 		$this->db_tools = $db_tools;
+		$this->dispatcher = $dispatcher;
 		$this->extension_manager = $extension_manager;
 		$this->profilefields_manager = $profilefields_manager;
 		$this->template = $template;
@@ -443,6 +447,34 @@ class pbwow
 		
 		if($avatars_enable && $avatars_path)
 		{
+			$avatar = '';
+			$faction = 0;
+			$width = $height = 64;
+			// A listener can set this variable to `true` when it overrides this function
+			$function_override = false;
+
+			/**
+			* Event to modify the profile field processing script before the supported games are processed
+			*
+			* @event paybas.pbwow.modify_process_pf_before
+			* @var	array	profile_row		Array with users profile field data 
+			* @var	array	tpl_fields		Array with template data fields
+			* @var	string	avatars_path	The path to the dir containing the game-avatars
+			* @var	string	avatar			Filename of the avatar img
+			* @var	int		width			The width of the avatar img (in pixels)
+			* @var	int		height			The height of the avatar img (in pixels)
+			* @var	int		faction			The faction of the character
+			* @var	bool	function_override	Return the results right after this, or continue?
+			* @since 3.0.0
+			*/
+			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'width', 'height', 'faction', 'function_override');
+			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_before', compact($vars)));
+
+			if ($function_override)
+			{
+				return $tpl_fields;
+			}
+
 			$wow_r = isset($tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW']) ? $profile_row['pb_wow_race']['value'] - 1 : NULL; // Get the WoW race ID
 			$wow_c = isset($tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW']) ? $profile_row['pb_wow_class']['value'] - 1 : NULL; // Get the WoW class ID
 			$wow_g = isset($tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW']) ? $profile_row['pb_wow_gender']['value'] - 1 : NULL; // Get the WoW gender ID
@@ -452,7 +484,8 @@ class pbwow
 			$d3_g = isset($tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUE_RAW']) ? $profile_row['pb_diablo_gender']['value'] - 1 : NULL; // Get the Diablo gender ID
 			$ws_r = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW']) ? $profile_row['pb_wildstar_race']['value'] - 1 : NULL; // Get the Wildstar race ID
 			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW']) ? $profile_row['pb_wildstar_class']['value'] - 1 : NULL; // Get the Wildstar class ID
-			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : NULL; // Get the Wildstar class ID
+			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : NULL; // Get the Wildstar gender ID
+			$ws_p = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_PATH_VALUE_RAW']) ? $profile_row['pb_wildstar_path']['value'] - 1 : NULL; // Get the Wildstar path ID
 			//$bneth = (isset($tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'] : NULL; // Get the Battle.net host
 			//$bnetr = (isset($tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'] : NULL; // Get the Battle.net realm
 			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
@@ -461,7 +494,7 @@ class pbwow
 			
 			// I know it looks silly, but we need this to fix icon classes in templates
 			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW'] = $wow_r; }
-			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW'] = $wow_c; }
+			if($wow_c > 0) { $tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW'] = $wow_c; }
 			if($wow_g > 0) { $tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW'] = $wow_g; }
 			if($d3_c > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUE_RAW'] = $d3_c; }
 			if($d3_f > 0) { $tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW'] = $d3_f; }
@@ -469,9 +502,8 @@ class pbwow
 			if($ws_r > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW'] = $ws_r; }
 			if($ws_c > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW'] = $ws_c; }
 			if($ws_g > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW'] = $ws_g; }
+			if($ws_p > 0) { $tpl_fields['row']['PROFILE_PB_WILDSTAR_PATH_VALUE_RAW'] = $ws_p; }
 
-			$avatar = $path = '';
-			$faction = 0;
 			$valid = false; // determines whether a specific profile field combination is valid (for the game)
 			$avail = false; // determines whether an avatar image is available for the profile field combination
 
@@ -762,7 +794,25 @@ class pbwow
 				$width = 64;
 				$height = 64;
 			}
-			
+
+			/**
+			* Event to modify the profile field processing script after the supported games are processed
+			*
+			* @event paybas.pbwow.modify_process_pf_after
+			* @var	array	profile_row		Array with users profile field data 
+			* @var	array	tpl_fields		Array with template data fields
+			* @var	string	avatars_path	The path to the dir containing the game-avatars
+			* @var	string	avatar			Filename of the avatar img
+			* @var	bool	valid			Whether an PF-value combination is valid (only used in certain cases)
+			* @var	bool	avail			Whether an avatar is available (only used in certain cases)
+			* @var	int		width			The width of the avatar img (in pixels)
+			* @var	int		height			The height of the avatar img (in pixels)
+			* @var	int		faction			The faction of the character
+			* @since 3.0.0
+			*/
+			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'valid', 'avail', 'width', 'height', 'faction');
+			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_after', compact($vars)));
+
 			// Add to template fields
 			if($faction || $avatar)
 			{
@@ -817,7 +867,7 @@ class pbwow
 
 	public function global_style_append_after($event)
 	{
-		if($this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
+		if($this->pbwow_config['avatars_enable'] && $this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
 		{
 			$user_data = $this->user->data;
 			$user_id = $user_data['user_id'];
@@ -864,25 +914,36 @@ class pbwow
 
 	public function viewtopic_modify_post($user_poster_data, $post_row, $cp_row)
 	{
-		if(empty($user_poster_data['avatar']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
-		{
-			$post_row['POSTER_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
-		}
-		
 		$post_row += array(
 			'POSTS_RANK_TITLE'		=> $user_poster_data['posts_rank_title'],
 			'POSTS_RANK_IMG'		=> $user_poster_data['posts_rank_image'],
 			'POSTS_RANK_IMG_SRC'	=> $user_poster_data['posts_rank_image_src'],
 			'USER_SPECIAL_STYLING'	=> $user_poster_data['user_special_styling'],
 		);
-		
+
+		if($this->pbwow_config['avatars_enable'] && empty($user_poster_data['avatar']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
+		{
+			$post_row['POSTER_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+		}
+
 		return $post_row;
+	}
+
+
+	public function ucp_pm_view_messsage($msg_data, $cp_row)
+	{
+		if($this->pbwow_config['avatars_enable'] && empty($msg_data['AUTHOR_AVATAR']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
+		{
+			$msg_data['AUTHOR_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+		}
+
+		return $msg_data;
 	}
 
 
 	public function memberlist_view_profile($member, $profile_fields)
 	{
-		if(isset($profile_fields['row']['PROFILE_PBAVATAR']))
+		if($this->pbwow_config['avatars_enable'] && isset($profile_fields['row']['PROFILE_PBAVATAR']))
 		{
 			$member['pbavatar'] = $profile_fields['row']['PROFILE_PBAVATAR'];
 		}
@@ -895,17 +956,17 @@ class pbwow
 		$this->get_user_rank_global(0, $data['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
 		$user_special_styling = $this->get_rank_styling($data['user_rank']);
 
-		if(empty($data['user_avatar']) && isset($data['pbavatar']))
-		{
-			$template_data['AVATAR_IMG'] = $data['pbavatar'];
-		}
-
 		$template_data += array(
 			'POSTS_RANK_TITLE'		=> isset($posts_rank_title) ? $posts_rank_title : '',
 			'POSTS_RANK_IMG'		=> isset($posts_rank_image) ? $posts_rank_image : '',
 			'POSTS_RANK_IMG_SRC'	=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',
 			'USER_SPECIAL_STYLING'	=> isset($user_special_styling) ? $user_special_styling : '',
 		);
+
+		if($this->pbwow_config['avatars_enable'] && empty($data['user_avatar']) && isset($data['pbavatar']))
+		{
+			$template_data['AVATAR_IMG'] = $data['pbavatar'];
+		}
 
 		return $template_data;
 	}
@@ -933,7 +994,7 @@ class pbwow
 	*/
 	public function topic_preview_modify_row($rowset)
 	{
-		if (!$this->extension_manager->is_enabled('vse/topicpreview'))
+		if (!$this->extension_manager->is_enabled('vse/topicpreview') || !$this->pbwow_config['avatars_enable'])
 		{
 			return $rowset;
 		}
@@ -943,7 +1004,7 @@ class pbwow
 		$tp_last_post = (!empty($this->config['topic_preview_last_post'])) ? true : false;
 
 		// Only proceed if we want to display avatars and the CPF-generated avatars feature is enabled
-		if ($tp_enabled && $tp_avatars && $this->config['load_cpf_viewtopic'] && $this->pbwow_config['avatars_enable'])
+		if ($tp_enabled && $tp_avatars && $this->config['load_cpf_viewtopic'])
 		{
 			$user_ids = array();
 
