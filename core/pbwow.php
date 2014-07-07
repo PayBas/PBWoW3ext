@@ -24,7 +24,7 @@ class pbwow
 	/** @var \phpbb\config\config */
 	protected $config;
 
-	/** @var \phpbb\cache\driver\driver_interface */
+	/** @var \phpbb\cache\service */
 	protected $cache;
 	
 	/** @var \phpbb\db\driver\driver_interface */
@@ -60,7 +60,7 @@ class pbwow
 
 	protected $ranks;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\cache\driver\driver_interface $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
 		$this->config = $config;
 		$this->cache = $cache;
