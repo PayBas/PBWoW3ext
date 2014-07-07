@@ -6,7 +6,7 @@ services:
         class: paybas\pbwow\core\pbwow
         arguments:
             - @config
-            - @cache
+            - @cache.driver
             - @dbal.conn
             - @dbal.tools
             - @dispatcher
