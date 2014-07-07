@@ -550,7 +550,7 @@ class pbwow_module
 		$value = $enable ? '1' : '0';
 		$sql = 'UPDATE ' . $this->fields_table . "
 			SET field_active = '" . $value . "'
-			WHERE field_ident " . $this->db->sql_like_expression($this->db->any_char . $game . $this->db->any_char);
+			WHERE field_ident " . $this->db->sql_like_expression($this->db->get_any_char . $game . $this->db->get_any_char);
 		$this->db->sql_query($sql);
 	}
 
@@ -689,4 +689,5 @@ class pbwow_module
 	}
 
 }
+
 ?>
