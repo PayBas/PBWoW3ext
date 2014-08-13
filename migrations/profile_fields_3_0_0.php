@@ -625,12 +625,12 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 
 		foreach($this->profilefields as $profilefield_name => $meta)
 		{
-			if($this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $profilefield_name))
+			if ($this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $profilefield_name))
 			{
 				// Already exists (and seems to be up to date)
 				continue;
 			}
-			elseif(isset($meta['profilefield_oldname']) && $this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $meta['profilefield_oldname']))
+			else if (isset($meta['profilefield_oldname']) && $this->db_tools->sql_column_exists($this->table_prefix . 'profile_fields_data', 'pf_' . $meta['profilefield_oldname']))
 			{
 				// Update existing old version. We can safely assume that the phpBB 3.1 migration has already converted them to the new format succesfully
 
@@ -697,7 +697,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 						'lang_default_value'	=> '',
 					));
 
-					if($entries)
+					if ($entries)
 					{
 						// This profile field has predefined entry values, so they must be set for each lang
 						foreach($entries as $entry => $value)
