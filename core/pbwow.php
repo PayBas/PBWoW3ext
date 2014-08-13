@@ -15,7 +15,7 @@ namespace paybas\pbwow\core;
 */
 if (!defined('IN_PHPBB'))
 {
-    exit;
+	exit;
 }
 
 class pbwow
@@ -26,14 +26,14 @@ class pbwow
 
 	/** @var \phpbb\cache\service */
 	protected $cache;
-	
+
 	/** @var \phpbb\db\driver\driver_interface */
 	protected $db;
 
 	/** @var \phpbb\db\tools */
 	protected $db_tools;
 
-	/** @var \phpbb\event\dispatcher */
+	/** @var \phpbb\event\dispatcher_interface */
 	protected $dispatcher;
 
 	/** @var \phpbb\extension\manager */
@@ -44,13 +44,13 @@ class pbwow
 
 	/** @var \phpbb\template\template */
 	protected $template;
-	
+
 	/** @var \phpbb\user */
 	protected $user;
-	
+
 	/** @var string phpBB root path */
 	protected $root_path;
-	
+
 	/** @var string PHP extension */
 	protected $phpEx;
 
@@ -60,7 +60,7 @@ class pbwow
 
 	protected $ranks;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
 		$this->config = $config;
 		$this->cache = $cache;
@@ -73,7 +73,7 @@ class pbwow
 		$this->user = $user;
 		$this->root_path = $root_path;
 		$this->phpEx = $phpEx;
-		
+
 		$this->pbwow_config_table = $pbwow_config_table;
 		$this->pbwow_chars_table = $pbwow_chars_table;
 		$this->get_pbwow_config();
@@ -90,16 +90,14 @@ class pbwow
 		if(isset($pbwow_config) && is_array($pbwow_config))
 		{
 			extract($pbwow_config);
-		} else {
+		} 
+		else 
+		{
 			return;
 		}
 
 		$tpl_vars = array();
-		$body_class = ' pbwow-on';
-
-		// Add the style name to the body class
-		$style_id = $this->template->get_user_style();
-		$body_class .= isset($style_id[0]) ? ' ' . $style_id[0] : '';
+		$body_class = ' pbwow-ext';
 
 		// Logo
 		if($logo_enable && isset($logo_src) && isset($logo_size_width) && isset($logo_size_height) && $logo_size_width > 1 && $logo_size_height > 1)
@@ -113,6 +111,7 @@ class pbwow
 				'PBLOGO_HEIGHT_MOB' => floor(($logo_size_height * 0.8)),
 				'PBLOGO_MARGINS' => $logo_margins,
 			);
+
 			if(isset($logo_margins) && strlen($logo_margins) > 0)
 			{
 				$tpl_vars += array(
@@ -155,6 +154,7 @@ class pbwow
 			}
 		}
 
+		// Fixed BG
 		if($fixedbg)
 		{
 			$tpl_vars += array(
@@ -172,20 +172,36 @@ class pbwow
 		// Assign vars
 		$tpl_vars += array(
 			'HEADERLINKS_CODE' 	=> ($headerlinks_enable && isset($headerlinks_code)) ? html_entity_decode($headerlinks_code) : false,
-
-			'WOWTIPS_SCRIPT' 	=> (isset($wowtips_enable) && $wowtips_enable) ? true : false,
-			'D3TIPS_SCRIPT' 	=> (isset($d3tips_enable) && $d3tips_enable) ? true : false,
-			'ZAMTIPS_SCRIPT' 	=> (isset($zamtips_enable) && $zamtips_enable) ? true : false,
-			'TTIPS_REGION'		=> (isset($tooltips_region) && $tooltips_region > 0) ? 'eu' : 'us',
-
 			'ADS_INDEX_CODE' 	=> ($ads_index_enable && isset($ads_index_code)) ? html_entity_decode($ads_index_code) : false,
-			'ADS_TOP_CODE' 		=> ($ads_top_enable && isset($ads_top_code)) ? html_entity_decode($ads_top_code) : false,
-			'ADS_BOTTOM_CODE' 	=> ($ads_bottom_enable && isset($ads_bottom_code)) ? html_entity_decode($ads_bottom_code) : false,
-			'TRACKING_CODE' 	=> ($tracking_enable && isset($tracking_code)) ? html_entity_decode($tracking_code) : false,
 		);
 
 		$this->template->assign_vars($tpl_vars);
 		$this->template->append_var('BODY_CLASS', $body_class);
+	}
+
+	/**
+	* Generate the PBWoW avatar for the current user (for display in the header)
+	*/
+	public function global_style_append_after($event)
+	{
+		if($this->pbwow_config['avatars_enable'] && $this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
+		{
+			$user_data = $this->user->data;
+			$user_id = $user_data['user_id'];
+
+			if(isset($user_data['user_avatar']) && empty($user_data['user_avatar']))
+			{
+				$cp = $this->profilefields_manager->grab_profile_fields_data($user_id);
+				$pf = $this->profilefields_manager->generate_profile_fields_template_data($cp[$user_id]);
+
+				if(isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
+				{
+					$this->template->assign_vars(array(
+						'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'],
+					));
+				}
+			}
+		}
 	}
 
 	/**
@@ -225,16 +241,16 @@ class pbwow
 				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] -1 : 0; // 1 == none, so -1 for all
 				$bnet_r = (isset($field_data[$user_id]['pf_pb_bnet_realm'])) ? $field_data[$user_id]['pf_pb_bnet_realm'] : '';
 				$bnet_n = (isset($field_data[$user_id]['pf_pb_bnet_name'])) ? $field_data[$user_id]['pf_pb_bnet_name'] : '';
-		
+
 				if($bnet_h && $bnet_r && $bnet_n)
 				{
 					$callAPI = FALSE;
-	
+
 					// Determine if the API should be called, based on cache TTL, # of tries, and character change
 					if(isset($char_data[$user_id]))
 					{
 						$age = time() - $char_data[$user_id]['updated'];
-	
+
 						switch($char_data[$user_id]["tries"])
 						{
 							case 0: break;
@@ -244,7 +260,7 @@ class pbwow
 							case 4: $callAPI = ($age > ($cachelife / 4)) ? TRUE : FALSE ; break;
 							default: break; // More than 4 tries > just wait for TTL
 						}
-	
+
 						if($age > $cachelife)
 						{
 							$callAPI = TRUE;
@@ -259,7 +275,7 @@ class pbwow
 					{
 						$callAPI = TRUE;
 					}
-		
+
 					if($callAPI == TRUE)
 					{
 						// CPF values haven't been assigned yet, so have to do it manually
@@ -273,13 +289,13 @@ class pbwow
 							case 5: $bnet_h = "www.battlenet.com.cn"; $loc = "cn"; break;
 							default: $bnet_h = "us.battle.net"; $loc = "us"; break;
 						}
-						
+
 						// Sanitize
 						$bnet_r = strtolower($bnet_r);
 						$bnet_r = str_replace("'", "", $bnet_r);
 						$bnet_r = str_replace(" ", "-", $bnet_r);
 						$bnet_n = str_replace(" ", "-", $bnet_n);
-		
+
 						// Get API data (should use CURL instead, but I'll do it later)
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
 						//var_dump($URL);
@@ -356,7 +372,7 @@ class pbwow
 							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
 							$data_level = $data['level'];
 							$bnetURL = "http://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/simple";
-							
+
 							// Insert into character DB table
 							$sql_ary = array(
 								'user_id'			=> $user_id,
@@ -379,7 +395,7 @@ class pbwow
 								'totalHK'			=> $data['totalHonorableKills'],
 								'guild'				=> $data_guild,
 							);
-		
+
 							if(isset($char_data[$user_id]))
 							{
 								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
@@ -391,7 +407,7 @@ class pbwow
 								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 							}
 							$this->db->sql_query($sql);
-							
+
 							// Merge with rest of CPF values
 							$field_data[$user_id]['pf_pb_wow_guild']	= $data_guild;
 							//$field_data[$user_id]['pf_pb_wow_pbrealm'] = $data['realm'];
@@ -444,7 +460,7 @@ class pbwow
 		{
 			return $tpl_fields;
 		}
-		
+
 		if($avatars_enable && $avatars_path)
 		{
 			$avatar = '';
@@ -491,7 +507,7 @@ class pbwow
 			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
 			$bnet_u = isset($tpl_fields['row']['PROFILE_PB_BNET_URL_VALUE']) ? $profile_row['pb_bnet_url']['value'] : NULL; // Get the Battle.net avatar
 			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : NULL; // Get the Battle.net avatar
-			
+
 			// I know it looks silly, but we need this to fix icon classes in templates
 			if($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW'] = $wow_r; }
 			if($wow_c > 0) { $tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW'] = $wow_c; }
@@ -507,7 +523,6 @@ class pbwow
 			$valid = false; // determines whether a specific profile field combination is valid (for the game)
 			$avail = false; // determines whether an avatar image is available for the profile field combination
 
-
 			/* Battle.net API */
 			//if($bneth !== NULL && $bnet_r !== NULL && $bnet_n !== NULL && $user_id !== 0 && $bnet_a !== NULL) {
 			if($bnet_a !== NULL)
@@ -516,14 +531,14 @@ class pbwow
 				{
 					$faction = (in_array($wow_r, array(1,3,4,7,11,12))) ? 1 : 2;
 				}
-				
+
 				$width = 84;
 				$height = 84;
-	
+
 				$avatars_path = '';
 				$avatar = $bnet_a;
 			}
-	
+
 			/* WoW without Battle.net */
 			elseif($wow_r !== NULL)
 			{
@@ -534,13 +549,13 @@ class pbwow
 				// $wow_r = ($R == 3) ? 12 : $wow_r; // third item in CPF, map to race 12 (Worgen)
 				// $wow_r = ($R == 4) ? 2 : $wow_r; // fourth item in CPF, map to race 2 (Orc)
 				// etc. etc.
-				
+
 				// $C = $wow_c;
 				// $wow_c = ($C == 1) ? 1 : $wow_c; // first item in CPF (with "none" = 0), map to class 1 (Warrior)
 				// $wow_c = ($C == 2) ? 4 : $wow_c; // second item in CPF, map to class 4 (Rogue)
 				// $wow_c = ($C == 3) ? 6 : $wow_c; // third item in CPF, map to class 6 (Death Knight)
 				// etc. etc.
-				
+
 				/* For reference 
 				wow_r = 1 > Human
 				wow_r = 2 > Orc
@@ -555,7 +570,7 @@ class pbwow
 				wow_r = 11 > Draenei
 				wow_r = 12 > Worgen
 				wow_r = 13 > Pandaren
-				
+
 				wow_c = 1 > Warrior
 				wow_c = 2 > Paladin
 				wow_c = 3 > Hunter
@@ -619,7 +634,7 @@ class pbwow
 						$avail = (in_array($wow_c, array(1,3,4,5,6,7,8))) ? true : false;
 						$faction = 2;
 					break;
-	
+
 					case 9: // Goblin
 						$valid = (in_array($wow_c, array(1,3,4,5,6,7,8,9))) ? true : false;
 						//$avail = (in_array($c, array())) ? true : false;
@@ -650,9 +665,9 @@ class pbwow
 						$faction = 3;
 					break;
 				}
-				
+
 				$wow_g = max(0, $wow_g-1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
-	
+
 				if($valid && $avail)
 				{
 					if ($wow_l >= 80)
@@ -670,7 +685,7 @@ class pbwow
 					else {
 						$path = 'wow/default';
 					}
-					
+
 					$avatar = $path . '/' . $wow_g . '-' . $wow_r . '-' . $wow_c . '.gif';
 					$width = 64;
 					$height = 64;
@@ -681,7 +696,7 @@ class pbwow
 					$height = 84;
 				}
 			}
-			
+
 			/* Diablo */
 			elseif($d3_c !== NULL)
 			{
@@ -713,11 +728,10 @@ class pbwow
 				$height = 64;
 				$faction = 3;
 			}
-			
+
 			/* Wildstar */
 			elseif($ws_r !== NULL)
 			{
-	
 				/* For reference 
 				ws_r = 1 > Human
 				ws_r = 2 > Cassian
@@ -727,7 +741,7 @@ class pbwow
 				ws_r = 6 > Chua
 				ws_r = 7 > Mordesh
 				ws_r = 8 > Mechari
-				
+
 				ws_c = 1 > Warrior
 				ws_c = 2 > Esper
 				ws_c = 3 > Spellslinger
@@ -735,7 +749,7 @@ class pbwow
 				ws_c = 5 > Medic
 				ws_c = 6 > Engineer
 				*/
-	
+
 				$faction = 3; // Set faction to neutral, until we can determine correct faction
 				switch($ws_r)
 				{
@@ -779,9 +793,9 @@ class pbwow
 						$faction = 2;
 					break;
 				}
-				
+
 				$ws_g = max(0, $ws_g-1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
-	
+
 				if($valid)
 				{
 					//$avatar = 'wildstar/' . $ws_r . '-' . $wsg . '-' . $ws_c . '.jpg'; // Valid
@@ -826,74 +840,16 @@ class pbwow
 		return $tpl_fields;
 	}
 
+
 	/**
-	* Determine if any special styling should be applied to a user's post/profile, based on his rank.
-	*
-	* @var		int		$rank		Integer of the user's rank_id 
-	*
-	* @return	string	$style		String with the special styling name
+	* These functions allow us to inject the posts-rank and PBWoW avatar into the viewtopic page output
 	*/
-	public function get_rank_styling($rank)
-	{
-		$pbwow_config = $this->pbwow_config;
-		
-		$cfg_blizz_ranks = explode(',', $pbwow_config['blizz_ranks']);
-		$cfg_propass_ranks = explode(',', $pbwow_config['propass_ranks']);
-		$cfg_red_ranks = explode(',', $pbwow_config['red_ranks']);
-		$cfg_mvp_ranks = explode(',', $pbwow_config['mvp_ranks']);
-	
-		$style = '';
-
-		if(isset($cfg_blizz_ranks) && $pbwow_config['blizz_enable'] && in_array($rank, $cfg_blizz_ranks))
-		{
-			$style = 'blizz';
-		}
-		elseif(isset($cfg_mvp_ranks) && $pbwow_config['mvp_enable'] && in_array($rank, $cfg_mvp_ranks))
-		{
-			$style = 'mvp';
-		}
-		elseif(isset($cfg_propass_ranks) && $pbwow_config['propass_enable'] && in_array($rank, $cfg_propass_ranks))
-		{
-			$style = 'propass';
-		}
-		elseif(isset($cfg_red_ranks) && $pbwow_config['red_enable'] && in_array($rank, $cfg_red_ranks))
-		{
-			$style = 'red';
-		}
-		
-		return $style;
-	}
-
-
-	public function global_style_append_after($event)
-	{
-		if($this->pbwow_config['avatars_enable'] && $this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
-		{
-			$user_data = $this->user->data;
-			$user_id = $user_data['user_id'];
-
-			if(isset($user_data['user_avatar']) && empty($user_data['user_avatar']))
-			{
-				$cp = $this->profilefields_manager->grab_profile_fields_data($user_id);
-				$pf = $this->profilefields_manager->generate_profile_fields_template_data($cp[$user_id]);
-
-				if(isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
-				{
-					$this->template->assign_vars(array(
-						'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'],
-					));
-				}
-			}
-		}
-	}
-
 	public function viewtopic_cache_guest($user_cache_data)
 	{
 		$user_cache_data += array(
 			'posts_rank_title'			=> '',
 			'posts_rank_image'			=> '',
 			'posts_rank_image_src'		=> '',
-			'user_special_styling'		=> '',
 		);
 		return $user_cache_data;
 	}
@@ -901,13 +857,11 @@ class pbwow
 	public function viewtopic_cache_user($user_cache_data, $poster_id, $row)
 	{
 		$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
-		$user_special_styling = $this->get_rank_styling($row['user_rank']);
 
 		$user_cache_data += array(
 			'posts_rank_title'			=> isset($posts_rank_title) ? $posts_rank_title : '',
 			'posts_rank_image'			=> isset($posts_rank_image) ? $posts_rank_image : '',
 			'posts_rank_image_src'		=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',
-			'user_special_styling'		=> isset($user_special_styling) ? $user_special_styling : '',
 		);
 		return $user_cache_data;
 	}
@@ -918,7 +872,6 @@ class pbwow
 			'POSTS_RANK_TITLE'		=> $user_poster_data['posts_rank_title'],
 			'POSTS_RANK_IMG'		=> $user_poster_data['posts_rank_image'],
 			'POSTS_RANK_IMG_SRC'	=> $user_poster_data['posts_rank_image_src'],
-			'USER_SPECIAL_STYLING'	=> $user_poster_data['user_special_styling'],
 		);
 
 		if($this->pbwow_config['avatars_enable'] && empty($user_poster_data['avatar']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
@@ -929,7 +882,9 @@ class pbwow
 		return $post_row;
 	}
 
-
+	/**
+	* Injects the PBWoW avatar into the view-PM page
+	*/
 	public function ucp_pm_view_messsage($msg_data, $cp_row)
 	{
 		if($this->pbwow_config['avatars_enable'] && empty($msg_data['AUTHOR_AVATAR']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
@@ -940,7 +895,9 @@ class pbwow
 		return $msg_data;
 	}
 
-
+	/**
+	* Injects the PBWoW avatar into the view-profile page data preparation
+	*/
 	public function memberlist_view_profile($member, $profile_fields)
 	{
 		if($this->pbwow_config['avatars_enable'] && isset($profile_fields['row']['PROFILE_PBAVATAR']))
@@ -951,16 +908,17 @@ class pbwow
 		return $member;
 	}
 
+	/**
+	* Injects the post-rank and PBWoW avatar into the view-profile page
+	*/
 	public function memberlist_prepare_profile($data, $template_data)
 	{
 		$this->get_user_rank_global(0, $data['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
-		$user_special_styling = $this->get_rank_styling($data['user_rank']);
 
 		$template_data += array(
 			'POSTS_RANK_TITLE'		=> isset($posts_rank_title) ? $posts_rank_title : '',
 			'POSTS_RANK_IMG'		=> isset($posts_rank_image) ? $posts_rank_image : '',
 			'POSTS_RANK_IMG_SRC'	=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',
-			'USER_SPECIAL_STYLING'	=> isset($user_special_styling) ? $user_special_styling : '',
 		);
 
 		if($this->pbwow_config['avatars_enable'] && empty($data['user_avatar']) && isset($data['pbavatar']))
@@ -969,20 +927,6 @@ class pbwow
 		}
 
 		return $template_data;
-	}
-
-
-	public function search_modify_tpl_ary($row, $tpl_ary, $show_results)
-	{
-		$this->get_user_rank_global($row['user_rank'], $row['user_posts'], $rank_title, $rank_image, $rank_image_src);
-		$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
-		$user_special_styling = $this->get_rank_styling($row['user_rank']);
-
-		$tpl_ary += array(
-			'USER_SPECIAL_STYLING'	=> isset($user_special_styling) ? $user_special_styling : '',
-		);
-
-		return $tpl_ary;
 	}
 
 
@@ -1039,10 +983,6 @@ class pbwow
 					$pf_fields[] = $profile_field;
 				}
 			}
-
-			// Get the profile field language values and put them in the cache.
-			// We don't use them, but this prevents them from being pulled from the DB 1 by 1.
-//$pf_lang = $this->profilefields_manager->cache_profile_fields_lang_options($pf_fields);
 
 			if (!empty($pf_data))
 			{
@@ -1122,7 +1062,7 @@ class pbwow
 		{
 			$ranks = $this->ranks = $this->cache->obtain_ranks();
 		}
-	
+
 		if (!empty($user_rank))
 		{
 			$rank_title = (isset($ranks['special'][$user_rank]['rank_title'])) ? $ranks['special'][$user_rank]['rank_title'] : '';
@@ -1147,6 +1087,9 @@ class pbwow
 		}
 	}
 
+	/**
+	* Gets the PBWoW config data from the DB, or the cache if it is present
+	*/
 	protected function get_pbwow_config()
 	{
 		if (($this->pbwow_config = $this->cache->get('pbwow_config')) != true)

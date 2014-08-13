@@ -48,9 +48,6 @@ class listener implements EventSubscriberInterface
 			'core.memberlist_view_profile'					=> 'memberlist_view_profile',
 			'core.memberlist_prepare_profile_data'			=> 'memberlist_prepare_profile',
 
-			'core.search_get_posts_data'					=> 'search_get_posts_data',
-			'core.search_modify_tpl_ary'					=> 'search_modify_tpl_ary',
-
 			// Topic Preview
 			'core.viewforum_modify_topics_data'				=> 'topic_preview_modify_row',
 			'core.search_modify_rowset'						=> 'topic_preview_modify_row',
@@ -59,6 +56,9 @@ class listener implements EventSubscriberInterface
 		);
 	}
 
+	/**
+	* Global append functions
+	*/
 	public function page_header($event)
 	{
 		$this->pbwow->global_style_append($event);
@@ -68,6 +68,9 @@ class listener implements EventSubscriberInterface
 		$this->pbwow->global_style_append_after($event);
 	}
 
+	/**
+	* CPF processing functions
+	*/
 	public function profile_fields_grab($event)
 	{
 		$event['field_data'] = $this->pbwow->process_pf_grab($event['user_ids'], $event['field_data']);
@@ -77,7 +80,9 @@ class listener implements EventSubscriberInterface
 		$event['tpl_fields'] = $this->pbwow->process_pf_show($event['profile_row'], $event['tpl_fields']);
 	}
 
-
+	/**
+	* Simple functions that will inject post-ranks and PBWoW avatars
+	*/
 	public function viewtopic_cache_guest($event)
 	{
 		$event['user_cache_data'] = $this->pbwow->viewtopic_cache_guest($event['user_cache_data'], $event['poster_id']);
@@ -91,12 +96,10 @@ class listener implements EventSubscriberInterface
 		$event['post_row'] = $this->pbwow->viewtopic_modify_post($event['user_poster_data'], $event['post_row'], $event['cp_row']);
 	}
 
-
 	public function ucp_pm_view_messsage($event)
 	{
 		$event['msg_data'] = $this->pbwow->ucp_pm_view_messsage($event['msg_data'], $event['cp_row']);
 	}
-
 
 	public function memberlist_view_profile($event)
 	{
@@ -107,21 +110,9 @@ class listener implements EventSubscriberInterface
 		$event['template_data'] = $this->pbwow->memberlist_prepare_profile($event['data'], $event['template_data']);
 	}
 
-
-	public function search_get_posts_data($event)
-	{
-		$array = $event['sql_array'];
-		$array['SELECT'] .= ', u.user_rank, u.user_posts';
-		$event['sql_array'] = $array; 
-	}
-	public function search_modify_tpl_ary($event)
-	{
-		if($event['show_results'] == 'posts') {
-			$event['tpl_ary'] = $this->pbwow->search_modify_tpl_ary($event['row'], $event['tpl_ary'], $event['show_results']);
-		}
-	}
-
-
+	/**
+	* VSE's Topic Preview
+	*/
 	public function topic_preview_modify_row($event)
 	{
 		if (sizeof($event['rowset']))
