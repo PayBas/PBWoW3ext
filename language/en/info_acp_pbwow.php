@@ -146,16 +146,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_BNETCHARS_TIMEOUT'			=> 'API query time-out',
 	'PBWOW_BNETCHARS_TIMEOUT_EXPLAIN'	=> 'Sets the time-out interval (in seconds) of Battle.net API requests. Basically meaning the maximum time that the script will wait for Battle.net to respond. Increase this if you think that (correct) data is not being received on time, but page load time can increase!',
 
-	'PBWOW_TOOLTIPS'					=> 'Tooltips',
-	'PBWOW_WOWTIPS_ENABLE'				=> 'Enable World of Warcraft Tooltips',
-	'PBWOW_WOWTIPS_ENABLE_EXPLAIN'		=> 'If enabled, all WoW database links found on your site will feature a tooltip. For more information, visit <a href="http://www.wowhead.com/tooltips" target="_blank">WoWhead</a>.',
-	'PBWOW_D3TIPS_ENABLE'				=> 'Enable Diablo 3 Tooltips',
-	'PBWOW_D3TIPS_ENABLE_EXPLAIN'		=> 'If enabled, all Diablo 3 database links found on your site will feature a tooltip. For more information, visit <a href="http://us.battle.net/d3/en/tooltip/" target="_blank">Battle.net</a>.',
-	'PBWOW_ZAMTIPS_ENABLE'				=> 'Enable ZAM Tooltips',
-	'PBWOW_ZAMTIPS_ENABLE_EXPLAIN'		=> 'If enabled, ZAM links found on your site will feature a tooltip and an icon. This supports tooltips for: Everquest, Everquest II, Final Fantasy XI, Final Fantasy XIV, Lord of the Rings Online and Warhammer Online. For more information, visit <a href="http://www.zam.com/wiki/Tooltips" target="_blank">ZAM Tooltips Wiki</a>.',
-	'PBWOW_TOOLTIPS_REGION'				=> 'Region Settings',
-	'PBWOW_TOOLTIPS_REGION_EXPLAIN'		=> 'Some (not all) tooltip scripts have regional distribution. Depending on your user\'s demographics, it might be advisable to choose the one with the lowest latency.',
-
 	'PBWOW_ADS_INDEX'					=> 'Index Advertisement Block',
 	'PBWOW_ADS_INDEX_ENABLE'			=> 'Enable index advertisement',
 	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Enabling this ad will generate a narrow advertisement block on the forum index page (requires Recent Topics extension).',
