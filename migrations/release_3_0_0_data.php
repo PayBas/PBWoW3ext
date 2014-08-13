@@ -49,48 +49,6 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 		}
 
 		$sql_ary = array(
-			// Post styling
-			array(
-				'config_name' => 'blizz_enable',
-				'config_value' => '1',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'blizz_ranks',
-				'config_value' => '1',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'propass_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'propass_ranks',
-				'config_value' => '',
-				'config_default' => '',
-			),
-			array(
-				'config_name' => 'mvp_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'mvp_ranks',
-				'config_value' => '',
-				'config_default' => '',
-			),
-			array(
-				'config_name' => 'red_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'red_ranks',
-				'config_value' => '',
-				'config_default' => '',
-			),
-
 			// Ads
 			array(
 				'config_name' => 'ads_index_enable',
@@ -102,36 +60,6 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 				'config_value' => '<a class="donate-button" href="http://pbwow.com/donate/"></a>',
 				'config_default' => '<a class="donate-button" href="http://pbwow.com/donate/"></a>',
 			),
-			array(
-				'config_name' => 'ads_top_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'ads_top_code',
-				'config_value' => '',
-				'config_default' => '',
-			),
-			array(
-				'config_name' => 'ads_bottom_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'ads_bottom_code',
-				'config_value' => '',
-				'config_default' => '',
-			),
-			array(
-				'config_name' => 'tracking_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'tracking_code',
-				'config_value' => '',
-				'config_default' => '',
-			),
 
 			// Global styling
 			array(
@@ -141,10 +69,10 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 			),
 			array(
 				'config_name' => 'topbar_code',
-				'config_value' => '<li class="you"><strong>Hi there! This is a welcome message</strong></li>
-<li class="can link"><a href="http://pbwow.com/forum/">PBWoW</a></li>
-<li class="name link"><a href="https://www.phpbb.com/">phpBB</a></li>
-<li class="them link rightside"><a href="#">On the right</a></li>',
+				'config_value' => '<li class="icon1 small-icon" data-skip-responsive="true"><strong>Hi there! This is a welcome message.</strong></li>
+<li class="icon2 small-icon link"><a href="http://pbwow.com/forum/">PBWoW</a></li>
+<li class="icon3 small-icon link"><a href="https://www.phpbb.com/">phpBB</a></li>
+<li class="icon4 small-icon link rightside"><a href="#">On the right</a></li>',
 				'config_default' => '',
 			),
 			array(
@@ -195,28 +123,6 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 				'config_default' => '10px 10px 25px 10px',
 			),
 
-			// Tooltips
-			array(
-				'config_name' => 'wowtips_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'd3tips_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'zamtips_enable',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-			array(
-				'config_name' => 'tooltips_region',
-				'config_value' => '0',
-				'config_default' => '0',
-			),
-
 			// Miscellaneous
 			array(
 				'config_name' => 'headerlinks_enable',
@@ -225,14 +131,13 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 			),
 			array(
 				'config_name' => 'headerlinks_code',
-				'config_value' => '<li class="icon-custom2 small-icon"><a href="http://www.phpbb.com/" target="_blank">phpBB</a></li>
+				'config_value' => '<li class="icon-dkp small-icon"><a href="http://bbdkp.com/" target="_blank">DKP</a></li>
 <li class="icon-custom1 small-icon"><a href="http://pbwow.com/" target="_blank">PBWoW</a></li>
-<li class="icon-dkp small-icon"><a href="http://bbdkp.com/" target="_blank">DKP</a></li>
-<li class="icon-portal small-icon"><a href="https://www.phpbb.com/community/viewtopic.php?t=2210281" target="_blank">Portal</a></li>',
+<li class="icon-portal small-icon"><a href="http://www.phpbb.com/" target="_blank">phpBB</a></li>',
 				'config_default' => '',
 			),
 
-			// Avatars
+			// Avatars & Ranks
 			array(
 				'config_name' => 'avatars_enable',
 				'config_value' => '1',
@@ -242,6 +147,12 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 				'config_name' => 'avatars_path',
 				'config_value' => 'images/avatars/gaming',
 				'config_default' => 'images/avatars/gaming',
+			),
+
+			array(
+				'config_name' => 'smallranks_enable',
+				'config_value' => '0',
+				'config_default' => '0',
 			),
 
 			// Battle.net API

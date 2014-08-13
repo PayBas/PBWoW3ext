@@ -28,8 +28,6 @@ class pbwow_info
             'modes'     => array(
 				'overview'		=> array('title' => 'ACP_PBWOW3_OVERVIEW', 		'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
 				'config'		=> array('title' => 'ACP_PBWOW3_CONFIG', 		'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
-				'poststyling'	=> array('title' => 'ACP_PBWOW3_POSTSTYLING', 	'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
-				'ads'			=> array('title' => 'ACP_PBWOW3_ADS', 			'auth' => 'ext_paybas/pbwow && acl_a_board', 'cat' => array('ACP_PBWOW3_CATEGORY')),
             ),
         );
     }

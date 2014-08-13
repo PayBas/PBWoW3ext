@@ -34,8 +34,6 @@ $lang = array_merge($lang, array(
 	'ACP_PBWOW3_CATEGORY'		=> 'PBWoW 3',
 	'ACP_PBWOW3_OVERVIEW'		=> 'Overview',
 	'ACP_PBWOW3_CONFIG'			=> 'Configuration',
-	'ACP_PBWOW3_POSTSTYLING'	=> 'Post Styling',
-	'ACP_PBWOW3_ADS'			=> 'Advertisements',
 
 	// Common
 	'PBWOW_ACTIVE'				=> 'active',
@@ -110,12 +108,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_LOGO_MARGINS'				=> 'Logo margins',
 	'PBWOW_LOGO_MARGINS_EXPLAIN'		=> 'Set the CSS margins of your logo. This will give more control over the positioning of your image. Use valid CSS markup, e.g. <samp>10px 5px 25px 0</samp>.',
 
-	'PBWOW_AVATARS'						=> 'Gaming Avatars',
-	'PBWOW_AVATARS_ENABLE'				=> 'Enable board-wide gaming avatars (and icons)',
-	'PBWOW_AVATARS_ENABLE_EXPLAIN'		=> 'If enabled, your board will display a generated gaming avatar (based on profile field entries) if the user has no custom avatar configured.',
-	'PBWOW_AVATARS_PATH'				=> 'Gaming avatars path',
-	'PBWOW_AVATARS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory where the gaming avatars are stored, e.g. <samp>images/avatars/gaming</samp>.<br />Character icons also require this path to be set.',
-
 	'PBWOW_TOPBAR'						=> 'Top Header-Bar',
 	'PBWOW_TOPBAR_ENABLE'				=> 'Enable the top header-bar',
 	'PBWOW_TOPBAR_ENABLE_EXPLAIN'		=> 'By enabling this option, a 40px high customizable bar will be displayed at the top of each page.',
@@ -138,6 +130,14 @@ $lang = array_merge($lang, array(
 	'PBWOW_FIXEDBG'						=> 'Fixed background position',
 	'PBWOW_FIXEDBG_EXPLAIN'				=> 'Fixing the background position will prevent it from scrolling along with the rest of the content. Keep in mind that some lower resolution devices will have no option to see the entire background image.',
 
+	'PBWOW_AVATARS'						=> 'Gaming Avatars',
+	'PBWOW_AVATARS_ENABLE'				=> 'Enable board-wide gaming avatars (and icons)',
+	'PBWOW_AVATARS_ENABLE_EXPLAIN'		=> 'If enabled, your board will display a generated gaming avatar (based on profile field entries) if the user has no custom avatar configured.',
+	'PBWOW_AVATARS_PATH'				=> 'Gaming avatars path',
+	'PBWOW_AVATARS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory where the gaming avatars are stored, e.g. <samp>images/avatars/gaming</samp>.<br />Character icons also require this path to be set.',
+	'PBWOW_SMALLRANKS_ENABLE'			=> 'Use small rank-images',
+	'PBWOW_SMALLRANKS_ENABLE_EXPLAIN'	=> 'Enable this if you wish to use small rank-images that overlay the avatar (as it does on PBWoW.com). Don\'t enable this if you are using larger rank-images.',
+
 	'PBWOW_BNETCHARS'					=> 'Battle.net Character Information',
 	'PBWOW_BNETCHARS_ENABLE'			=> 'Enable Battle.net API character information',
 	'PBWOW_BNETCHARS_ENABLE_EXPLAIN'	=> 'Enable this feature to use the Battle.net API to retrieve character information (when available), for use in user profiles. The <u>Gaming Avatars</u> setting must be enabled to display Battle.net avatars!',
@@ -156,64 +156,9 @@ $lang = array_merge($lang, array(
 	'PBWOW_TOOLTIPS_REGION'				=> 'Region Settings',
 	'PBWOW_TOOLTIPS_REGION_EXPLAIN'		=> 'Some (not all) tooltip scripts have regional distribution. Depending on your user\'s demographics, it might be advisable to choose the one with the lowest latency.',
 
-
-	// POSTSTYLING //
-
-	'PBWOW_POSTSTYLING_TITLE'			=> 'PBWoW Post Styling Settings',
-	'PBWOW_POSTSTYLING_TITLE_EXPLAIN'	=> 'This page controls the PBWoW features relating to special post styling. You can enable these features for specific user groups.',
-
-	'PBWOW_BLIZZ'						=> 'Blizzard Post Styling',
-	'PBWOW_BLIZZ_ENABLE'				=> 'Enable Blizzard post styling',
-	'PBWOW_BLIZZ_ENABLE_EXPLAIN'		=> 'Enable this feature to let the rank(s) selected below display as "Blizzard" posters, usually reserved for admins and moderators.',
-	'PBWOW_BLIZZ_RANKS'					=> 'Blizzard post styling ranks',
-	'PBWOW_BLIZZ_RANKS_EXPLAIN'			=> 'Choose the user rank(s) that you want to display as "Blizzard" posters (hold down the CTRL key to select multiple).',
-
-	'PBWOW_PROPASS'						=> 'Propass Post Styling',
-	'PBWOW_PROPASS_ENABLE'				=> 'Enable Propass post styling',
-	'PBWOW_PROPASS_ENABLE_EXPLAIN'		=> 'Enable this feature to let the rank(s) selected below display as "Propass" or "Dragon" posters, usually reserved for special users.',
-	'PBWOW_PROPASS_RANKS'				=> 'Propass post styling ranks',
-	'PBWOW_PROPASS_RANKS_EXPLAIN'		=> 'Choose the user rank(s) that you want to display as "Propass" posters (hold down the CTRL key to select multiple).',
-
-	'PBWOW_MVP'							=> 'MVP Post Styling',
-	'PBWOW_MVP_ENABLE'					=> 'Enable MVP (most valued poster) post styling',
-	'PBWOW_MVP_ENABLE_EXPLAIN'			=> 'Enable this feature to let the rank(s) selected below display as "MVP" or "Green" posters, usually reserved for community leaders.',
-	'PBWOW_MVP_RANKS'					=> 'MVP post styling ranks',
-	'PBWOW_MVP_RANKS_EXPLAIN'			=> 'Choose the user rank(s) that you want to display as "MVP" posters (hold down the CTRL key to select multiple).',	
-	
-	'PBWOW_RED'							=> 'Red Post Styling',
-	'PBWOW_RED_ENABLE'					=> 'Enable Red post styling',
-	'PBWOW_RED_ENABLE_EXPLAIN'			=> 'Enable this feature to let the rank(s) selected below display as "Red" posters. I don&rsquo;t really know what it&rsquo;s for.',
-	'PBWOW_RED_RANKS'					=> 'Red post styling ranks',
-	'PBWOW_RED_RANKS_EXPLAIN'			=> 'Choose the user rank(s) that you want to display as "Red" posters (hold down the CTRL key to select multiple).',
-
-
-	// ADVERTISEMENTS //
-
-	'PBWOW_ADS_TITLE'					=> 'PBWoW Advertisement Settings',
-	'PBWOW_ADS_TITLE_EXPLAIN'			=> 'This page controls the way PBWoW displays advertisements. These blocks can of course also be used to put your own content, images, banners or whatever. Just keep in mind the size limitations.',
-
 	'PBWOW_ADS_INDEX'					=> 'Index Advertisement Block',
-	'PBWOW_ADS_INDEX_ENABLE'			=> 'Enable index advertisements',
-	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Enabling this ad will generate a square ads block on the forum index page (requires NV Recent Topics MOD).',
+	'PBWOW_ADS_INDEX_ENABLE'			=> 'Enable index advertisement',
+	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Enabling this ad will generate a narrow advertisement block on the forum index page (requires Recent Topics extension).',
 	'PBWOW_ADS_INDEX_CODE'				=> 'Index advertisment code',
-	'PBWOW_ADS_INDEX_CODE_EXPLAIN'		=> 'This block is suitable for advertisements with a <u>width</u> of: <b>300px</b>.<br />If you want to use/change custom CSS styling, please add it to <samp>styles/pbwow2/theme/custom.css</samp>',
-
-	'PBWOW_ADS_TOP'						=> 'Horizontal (Top) Advertisement Block',
-	'PBWOW_ADS_TOP_ENABLE'				=> 'Enable horizontal (top) forum advertisements',
-	'PBWOW_ADS_TOP_ENABLE_EXPLAIN'		=> 'Enabling this ad will generate a horizontal bar advertisment at the top of every page except the index page.',
-	'PBWOW_ADS_TOP_CODE'				=> 'Horizontal (top) advertisment code',
-	'PBWOW_ADS_TOP_CODE_EXPLAIN'		=> 'Technically, this block has a maximum width of 930px, but this is not advisable (due to mobile devices, etc.). This block is generally suitable for advertisements with dimensions around: <b>728 x 90</b>.<br />If you want to use/change custom CSS styling, please add it to <samp>styles/pbwow2/theme/custom.css</samp>',
-	
-	'PBWOW_ADS_BOTTOM'					=> 'Horizontal (Bottom) Advertisement Block',
-	'PBWOW_ADS_BOTTOM_ENABLE'			=> 'Enable horizontal (bottom) forum advertisements',
-	'PBWOW_ADS_BOTTOM_ENABLE_EXPLAIN'	=> 'Enabling this ad will generate a horizontal bar advertisment at the bottom of every page except the index page.',
-	'PBWOW_ADS_BOTTOM_CODE'				=> 'Horizontal (bottom) advertisment code',
-	'PBWOW_ADS_BOTTOM_CODE_EXPLAIN'		=> 'Technically, this block has a maximum width of 930px, but this is not advisable (due to mobile devices, etc.). This block is generally suitable for advertisements with dimensions around: <b>728 x 90</b>.<br />If you want to use/change custom CSS styling, please add it to <samp>styles/pbwow2/theme/custom.css</samp>',
-	
-	// tracking
-	'PBWOW_TRACKING'					=> 'Tracking Script',
-	'PBWOW_TRACKING_ENABLE'				=> 'Enable tracking script for visitors',
-	'PBWOW_TRACKING_ENABLE_EXPLAIN'		=> 'Enabling this will insert the code you enter at the bottom of the footer. This can be Google analytics or whatever scripts you want.',
-	'PBWOW_TRACKING_CODE'				=> 'Tracking script code',
-	'PBWOW_TRACKING_CODE_EXPLAIN'		=> 'Insert your tracking script code here, or whatever other script you want to use.',
+	'PBWOW_ADS_INDEX_CODE_EXPLAIN'		=> 'This block is suitable for advertisements with a <u>width</u> of: <b>300px</b>.<br />If you want to use/change custom CSS styling, please add it to <samp>styles/pbwow3/theme/custom.css</samp>',
 ));

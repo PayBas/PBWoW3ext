@@ -35,7 +35,6 @@ class pbwow_module
 
 	protected $db_tools;
 
-	protected $ranks_table;
 	protected $fields_table;
 	protected $pbwow_config_table;
 	protected $pbwow_config;
@@ -59,7 +58,6 @@ class pbwow_module
 
 		$this->db_tools = $phpbb_container->get('dbal.tools');
 
-		$this->ranks_table = RANKS_TABLE;
 		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->pbwow_config_table = $phpbb_container->getParameter('tables.pbwow3_config');
 		$this->pbwow_chars_table = $phpbb_container->getParameter('tables.pbwow3_chars');
@@ -76,11 +74,11 @@ class pbwow_module
 		// Check if constants have been set correctly
 		// if yes, check if the config table exists
 		// if yes, load the config variables
-		if($this->pbwow_config_table == ($this->table_prefix . 'pbwow3_config'))
+		if ($this->pbwow_config_table == ($this->table_prefix . 'pbwow3_config'))
 		{
 			$constantsokay = true;
 
-			if($this->db_tools->sql_table_exists($this->pbwow_config_table))
+			if ($this->db_tools->sql_table_exists($this->pbwow_config_table))
 			{
 				$dbokay = true;
 				$this->get_pbwow_config();
@@ -88,29 +86,29 @@ class pbwow_module
 			}
 		}
 
-		if($this->pbwow_chars_table == ($table_prefix . 'pbwow3_chars'))
+		if ($this->pbwow_chars_table == ($table_prefix . 'pbwow3_chars'))
 		{
 			$chars_constokay = true;
 			
-			if($this->db_tools->sql_table_exists($this->pbwow_chars_table))
+			if ($this->db_tools->sql_table_exists($this->pbwow_chars_table))
 			{
 				$chars_dbokay = true;
 			}
 		}
 
 		$cpf_game_toggle = request_var('game', '');
-		if(!empty($cpf_game_toggle))
+		if (!empty($cpf_game_toggle))
 		{
 			$activate = request_var('enable', '');
 			$this->toggle_game_cpf($cpf_game_toggle, $activate);
 		}
 
-		if($mode == 'overview') {
+		if ($mode == 'overview') {
 			$cpflist = $this->get_profile_fields_list();
 			
 			$style_root = ($this->phpbb_root_path . 'styles/pbwow3/');
 
-			if(file_exists($style_root . 'style.cfg')) {
+			if (file_exists($style_root . 'style.cfg')) {
 				$values = parse_cfg_file($style_root . 'style.cfg');
 				$style_version = (isset($values['style_version'])) ? $values['style_version'] : '';
 			}
@@ -118,13 +116,13 @@ class pbwow_module
 			$versions = $this->obtain_remote_version(request_var('versioncheck_force', false),true);
 			
 			// Check if old constants are still being used
-			if(!empty($legacy_dbtable1) || !empty($legacy_dbtable2))
+			if (!empty($legacy_dbtable1) || !empty($legacy_dbtable2))
 			{
 				$legacy_constants = true;
 			}
 			
 			// Check if old table still exists
-			if($this->db_tools->sql_table_exists($legacy_dbtable1) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $this->db_tools->sql_table_exists($legacy_dbtable2) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
+			if ($this->db_tools->sql_table_exists($legacy_dbtable1) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $this->db_tools->sql_table_exists($legacy_dbtable2) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
 			{
 				$legacy_db_active = true;
 			}
@@ -153,76 +151,33 @@ class pbwow_module
 						'logo_size'				=> array('lang' => 'PBWOW_LOGO_SIZE',			'validate' => 'int:0',	'type' => 'dimension:0', 			'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
 						'logo_margins'			=> array('lang' => 'PBWOW_LOGO_MARGINS',		'validate' => 'string',	'type' => 'text:20:20', 			'explain' => true),
 
-						'legend2'				=> 'PBWOW_AVATARS',
-						'avatars_enable'		=> array('lang' => 'PBWOW_AVATARS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'avatars_path'			=> array('lang' => 'PBWOW_AVATARS_PATH',		'validate' => 'string',	'type' => 'text:20:255', 			'explain' => true),
-
-						'legend3'				=> 'PBWOW_TOPBAR',
+						'legend2'				=> 'PBWOW_TOPBAR',
 						'topbar_enable'			=> array('lang' => 'PBWOW_TOPBAR_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'topbar_code'			=> array('lang' => 'PBWOW_TOPBAR_CODE',									'type' => 'textarea:6:6',			'explain' => true),
 						'topbar_fixed'			=> array('lang' => 'PBWOW_TOPBAR_FIXED',		'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
 
-						'legend4'				=> 'PBWOW_HEADERLINKS',
+						'legend3'				=> 'PBWOW_HEADERLINKS',
 						'headerlinks_enable'	=> array('lang' => 'PBWOW_HEADERLINKS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'headerlinks_code'		=> array('lang' => 'PBWOW_HEADERLINKS_CODE',							'type' => 'textarea:6:6',			'explain' => true),
 
-						'legend5'				=> 'PBWOW_VIDEOBG',
+						'legend4'				=> 'PBWOW_VIDEOBG',
 						'videobg_enable'		=> array('lang' => 'PBWOW_VIDEOBG_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'videobg_allpages'		=> array('lang' => 'PBWOW_VIDEOBG_ALLPAGES',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
 						'fixedbg'				=> array('lang' => 'PBWOW_FIXEDBG',				'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
+
+						'legend5'				=> 'PBWOW_AVATARS',
+						'avatars_enable'		=> array('lang' => 'PBWOW_AVATARS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
+						'avatars_path'			=> array('lang' => 'PBWOW_AVATARS_PATH',		'validate' => 'string',	'type' => 'text:20:255', 			'explain' => true),
+						'smallranks_enable'		=> array('lang' => 'PBWOW_SMALLRANKS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 
 						'legend6'				=> 'PBWOW_BNETCHARS',
 						'bnetchars_enable'		=> array('lang' => 'PBWOW_BNETCHARS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
 						'bnetchars_cachetime'	=> array('lang' => 'PBWOW_BNETCHARS_CACHETIME',	'validate' => 'int:0',	'type' => 'text:6:6', 				'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'bnetchars_timeout'		=> array('lang' => 'PBWOW_BNETCHARS_TIMEOUT',	'validate' => 'int:0',	'type' => 'text:1:1', 				'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 
-						'legend7'				=> 'PBWOW_TOOLTIPS',
-						'wowtips_enable'		=> array('lang' => 'PBWOW_WOWTIPS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'd3tips_enable'			=> array('lang' => 'PBWOW_D3TIPS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'zamtips_enable'		=> array('lang' => 'PBWOW_ZAMTIPS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'tooltips_region'		=> array('lang' => 'PBWOW_TOOLTIPS_REGION',		'validate' => 'int',	'type' => 'custom',			'explain' => true,	'method' => 'select_single'),
-					)
-				);
-			break;
-			case 'poststyling':
-				$display_vars = array(
-					'title'	=> 'PBWOW_POSTSTYLING_TITLE',
-					'vars'	=> array(
-						'legend1'			=> 'PBWOW_BLIZZ',
-						'blizz_enable'		=> array('lang' => 'PBWOW_BLIZZ_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'blizz_ranks'		=> array('lang' => 'PBWOW_BLIZZ_RANKS',		'validate' => 'string',	'type' => 'custom',					'explain' => true, 'method' => 'select_ranks'),
-
-						'legend2'			=> 'PBWOW_PROPASS',
-						'propass_enable'	=> array('lang' => 'PBWOW_PROPASS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'propass_ranks'		=> array('lang' => 'PBWOW_PROPASS_RANKS',	'validate' => 'string',	'type' => 'custom',					'explain' => true, 'method' => 'select_ranks'),
-
-						'legend3'			=> 'PBWOW_MVP',
-						'mvp_enable'		=> array('lang' => 'PBWOW_MVP_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'mvp_ranks'			=> array('lang' => 'PBWOW_MVP_RANKS',		'validate' => 'string',	'type' => 'custom',					'explain' => true, 'method' => 'select_ranks'),
-
-						'legend4'			=> 'PBWOW_RED',
-						'red_enable'	 	=> array('lang' => 'PBWOW_RED_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'red_ranks'			=> array('lang' => 'PBWOW_RED_RANKS',		'validate' => 'string',	'type' => 'custom',					'explain' => true, 'method' => 'select_ranks'),
-					)
-				);
-			break;
-			case 'ads':
-				$display_vars = array(
-					'title'	=> 'PBWOW_ADS_TITLE',
-					'vars'	=> array(
-						'legend1'			=> 'PBWOW_ADS_INDEX',
-						'ads_index_enable'	=> array('lang' => 'PBWOW_ADS_INDEX_ENABLE',	'validate' => 'bool',		'type' => 'radio:enabled_disabled',	'explain' => true),
-						'ads_index_code'	=> array('lang' => 'PBWOW_ADS_INDEX_CODE',									'type' => 'textarea:6:6',			'explain' => true),
-						'legend2'			=> 'PBWOW_ADS_TOP',
-						'ads_top_enable'	=> array('lang' => 'PBWOW_ADS_TOP_ENABLE',		'validate' => 'bool',		'type' => 'radio:enabled_disabled',	'explain' => true),
-						'ads_top_code'		=> array('lang' => 'PBWOW_ADS_TOP_CODE',									'type' => 'textarea:6:6',			'explain' => true),
-						'legend3'			=> 'PBWOW_ADS_BOTTOM',
-						'ads_bottom_enable'	=> array('lang' => 'PBWOW_ADS_BOTTOM_ENABLE',	'validate' => 'bool',		'type' => 'radio:enabled_disabled',	'explain' => true),
-						'ads_bottom_code'	=> array('lang' => 'PBWOW_ADS_BOTTOM_CODE',									'type' => 'textarea:6:6',			'explain' => true),
-
-						'legend4'			=> 'PBWOW_TRACKING',
-						'tracking_enable'	=> array('lang' => 'PBWOW_TRACKING_ENABLE',		'validate' => 'bool',		'type' => 'radio:enabled_disabled',	'explain' => true),
-						'tracking_code'		=> array('lang' => 'PBWOW_TRACKING_CODE',									'type' => 'textarea:6:6',			'explain' => true),
+						'legend7'				=> 'PBWOW_ADS_INDEX',
+						'ads_index_enable'		=> array('lang' => 'PBWOW_ADS_INDEX_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
+						'ads_index_code'		=> array('lang' => 'PBWOW_ADS_INDEX_CODE',								'type' => 'textarea:6:6',			'explain' => true),
 					)
 				);
 			break;
@@ -262,21 +217,14 @@ class pbwow_module
 		if ($submit)
 		{
 			// Get data from select boxes and store in DB
-			if($mode == 'poststyling')
-			{
-				$this->store_select_options('blizz_ranks');
-				$this->store_select_options('propass_ranks');
-				$this->store_select_options('mvp_ranks');
-				$this->store_select_options('red_ranks');
-			}
-			elseif($mode == 'config')
+			if ($mode == 'config')
 			{
 				$this->store_select_options('wowtips_script');
 				$this->store_select_options('d3tips_script');
 				$this->store_select_options('tooltips_region');
 			}
 
-			if($mode != 'overview')
+			if ($mode != 'overview')
 			{
 				add_log('admin', 'LOG_PBWOW_CONFIG', $user->lang['ACP_PBWOW3_' . strtoupper($mode)]);
 				$cache->purge();
@@ -308,7 +256,7 @@ class pbwow_module
 			)
 		);
 
-		if($mode == 'overview') {
+		if ($mode == 'overview') {
 			$pb_bnet_host =			(isset($cpflist['pb_bnet_host']) 		&& $cpflist['pb_bnet_host']['field_active'] 		&& !$cpflist['pb_bnet_host']['field_no_view']) ? true : false;
 			$pb_bnet_realm =		(isset($cpflist['pb_bnet_realm']) 		&& $cpflist['pb_bnet_realm']['field_active'] 		&& !$cpflist['pb_bnet_realm']['field_no_view']) ? true : false;
 			$pb_bnet_name =			(isset($cpflist['pb_bnet_name']) 		&& $cpflist['pb_bnet_name']['field_active'] 		&& !$cpflist['pb_bnet_name']['field_no_view']) ? true : false;
@@ -489,47 +437,6 @@ class pbwow_module
 		$el .= '</select>';
 		
 		return $el;
-	}
-
-	/**
-	 * Create rank select box.
-	 */
-	function select_ranks($current, $key)
-	{
-		$current = (isset($current) && strlen($current) > 0) ? explode(',', $current) : array();
-
-		$options = $this->rank_select_options($current);
-
-		$el = '<select id="' . $key . '" name="' . $key . '[]" multiple="multiple">';
-		$el .= $options;
-		$el .= '</select>';
-
-		return $el;
-	}
-
-	/**
-	 * Get and format rank select options.
-	 */
-	function rank_select_options($rank_id)
-	{
-		$sql = 'SELECT rank_id, rank_title, rank_special 
-			FROM ' . $this->ranks_table . "
-			ORDER BY rank_special DESC, rank_id ASC";
-		$result = $this->db->sql_query($sql);
-	
-		$options = '';
-		while ($row = $this->db->sql_fetchrow($result))
-		{
-			$selected = (in_array($row['rank_id'],$rank_id)) ? ' selected="selected"' : '';
-
-			// Just special ranks for now
-			if($row['rank_special'] == 1){
-				$options .= '<option' . (($row['rank_special'] == 1) ? ' class="sep"' : '') . ' value="' . $row['rank_id'] . '"' . $selected . '>' . $row['rank_title'] . '</option>';
-			}
-		}
-		$this->db->sql_freeresult($result);
-	
-		return $options;
 	}
 
 	/**

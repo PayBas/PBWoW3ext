@@ -24,7 +24,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 	{
 		return isset($this->config['pbwow3_version']) && version_compare($this->config['pbwow3_version'], '3.0.0', '>=');
 	}
-	
+
 	public function update_data()
 	{
 		return array(
@@ -66,7 +66,7 @@ class release_3_0_0 extends \phpbb\db\migration\migration
 				'ACP_PBWOW3_CATEGORY',
 				array(
 					'module_basename'	=> '\paybas\pbwow\acp\pbwow_module',
-					'modes'	=> array('overview', 'config', 'poststyling', 'ads'),
+					'modes'	=> array('overview', 'config'),
 				),
 			)),
 		);
