@@ -216,14 +216,6 @@ class pbwow_module
 		
 		if ($submit)
 		{
-			// Get data from select boxes and store in DB
-			if ($mode == 'config')
-			{
-				$this->store_select_options('wowtips_script');
-				$this->store_select_options('d3tips_script');
-				$this->store_select_options('tooltips_region');
-			}
-
 			if ($mode != 'overview')
 			{
 				add_log('admin', 'LOG_PBWOW_CONFIG', $user->lang['ACP_PBWOW3_' . strtoupper($mode)]);
@@ -412,44 +404,6 @@ class pbwow_module
 	}
 
 	/**
-	 * Create single-selection select box.
-	 */
-	function select_single($current, $key)
-	{
-		$options = array();
-		
-		switch ($key)
-		{
-			case 'tooltips_region':
-				$options = array(
-					0 => 'US',
-					1 => 'EU',
-				);
-			break;
-		}
-
-		$el = '<select id="' . $key . '" name="' . $key . '[]">';
-		foreach ($options as $value => $label)
-		{
-			$selected = ($value == $current) ? ' selected="selected"' : '';
-			$el .= '<option value="' . $value . '"' . $selected . '>' . $label . '</option>';		
-		}
-		$el .= '</select>';
-		
-		return $el;
-	}
-
-	/**
-	 * Store selected options
-	 */
-	function store_select_options($key)
-	{
-		$selection = request_var($key, array(0 => ''));	
-		$value = is_array($selection) ? implode(',', $selection) : $selection;
-		$this->set_pbwow_config($key, $value);
-	}
-
-	/**
 	 * Toggle profile fields of individual games
 	 */
 	function toggle_game_cpf($game, $enable)
@@ -463,7 +417,7 @@ class pbwow_module
 
 ##################################################
 ####                                          ####
-####            General Functions             ####
+####             Config Functions             ####
 ####                                          ####
 ##################################################
 
