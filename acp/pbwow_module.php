@@ -11,17 +11,17 @@
 namespace paybas\pbwow\acp;
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 if (!defined('IN_PHPBB'))
 {
-    exit;
+	exit;
 }
 
 class pbwow_module
 {
 	public $u_action;
-	
+
 	protected $db;
 	protected $user;
 	protected $template;
@@ -42,14 +42,14 @@ class pbwow_module
 
 	function main($id, $mode)
 	{
-		global $db, $db_tools, $user, $template, $cache, $phpbb_container;
+		global $db, $user, $template, $cache, $phpbb_container;
 		global $config, $phpbb_root_path, $phpEx, $table_prefix;
 
 		$this->db = $db;
 		$this->user = $user;
 		$this->template = $template;
 		$this->cache = $cache;
-		$this->phpbb_container = $phpbb_container;		
+		$this->phpbb_container = $phpbb_container;
 
 		$this->config = $config;
 		$this->phpbb_root_path = $phpbb_root_path;
@@ -89,7 +89,7 @@ class pbwow_module
 		if ($this->pbwow_chars_table == ($table_prefix . 'pbwow3_chars'))
 		{
 			$chars_constokay = true;
-			
+
 			if ($this->db_tools->sql_table_exists($this->pbwow_chars_table))
 			{
 				$chars_dbokay = true;
@@ -103,24 +103,26 @@ class pbwow_module
 			$this->toggle_game_cpf($cpf_game_toggle, $activate);
 		}
 
-		if ($mode == 'overview') {
+		if ($mode == 'overview')
+		{
 			$cpflist = $this->get_profile_fields_list();
-			
+
 			$style_root = ($this->phpbb_root_path . 'styles/pbwow3/');
 
-			if (file_exists($style_root . 'style.cfg')) {
+			if (file_exists($style_root . 'style.cfg'))
+			{
 				$values = parse_cfg_file($style_root . 'style.cfg');
 				$style_version = (isset($values['style_version'])) ? $values['style_version'] : '';
 			}
-			
-			$versions = $this->obtain_remote_version(request_var('versioncheck_force', false),true);
-			
+
+			$versions = $this->obtain_remote_version(request_var('versioncheck_force', false), true);
+
 			// Check if old constants are still being used
 			if (!empty($legacy_dbtable1) || !empty($legacy_dbtable2))
 			{
 				$legacy_constants = true;
 			}
-			
+
 			// Check if old table still exists
 			if ($this->db_tools->sql_table_exists($legacy_dbtable1) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $this->db_tools->sql_table_exists($legacy_dbtable2) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
 			{
@@ -129,58 +131,58 @@ class pbwow_module
 		}
 
 		/**
-		 *	Config vars
+		 *    Config vars
 		 */
 		switch ($mode)
 		{
 			case 'overview':
 				$display_vars = array(
-					'title'	=> 'PBWOW_OVERVIEW_TITLE',
-					'vars'	=> array()
+					'title' => 'PBWOW_OVERVIEW_TITLE',
+					'vars'  => array()
 				);
-			break;
+				break;
 			case 'config':
 				$display_vars = array(
-					'title'	=> 'PBWOW_CONFIG_TITLE',
-					'vars'	=> array(
-						'legend1'				=> 'PBWOW_LOGO',
-						'logo_size_width'		=> array('lang' => 'PBWOW_LOGO_SIZE', 			'validate' => 'int:0',	'type' => false, 'method' => false, 'explain' => false),
-						'logo_size_height'		=> array('lang' => 'PBWOW_LOGO_SIZE', 			'validate' => 'int:0',	'type' => false, 'method' => false, 'explain' => false),
-						'logo_enable'			=> array('lang' => 'PBWOW_LOGO_ENABLE',			'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'logo_src'				=> array('lang' => 'PBWOW_LOGO_SRC',			'validate' => 'string',	'type' => 'text:20:255', 			'explain' => true),
-						'logo_size'				=> array('lang' => 'PBWOW_LOGO_SIZE',			'validate' => 'int:0',	'type' => 'dimension:0', 			'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
-						'logo_margins'			=> array('lang' => 'PBWOW_LOGO_MARGINS',		'validate' => 'string',	'type' => 'text:20:20', 			'explain' => true),
+					'title' => 'PBWOW_CONFIG_TITLE',
+					'vars'  => array(
+						'legend1'             => 'PBWOW_LOGO',
+						'logo_size_width'     => array('lang' => 'PBWOW_LOGO_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
+						'logo_size_height'    => array('lang' => 'PBWOW_LOGO_SIZE', 'validate' => 'int:0', 'type' => false, 'method' => false, 'explain' => false),
+						'logo_enable'         => array('lang' => 'PBWOW_LOGO_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'logo_src'            => array('lang' => 'PBWOW_LOGO_SRC', 'validate' => 'string', 'type' => 'text:20:255', 'explain' => true),
+						'logo_size'           => array('lang' => 'PBWOW_LOGO_SIZE', 'validate' => 'int:0', 'type' => 'dimension:0', 'explain' => true, 'append' => ' ' . $user->lang['PIXEL']),
+						'logo_margins'        => array('lang' => 'PBWOW_LOGO_MARGINS', 'validate' => 'string', 'type' => 'text:20:20', 'explain' => true),
 
-						'legend2'				=> 'PBWOW_TOPBAR',
-						'topbar_enable'			=> array('lang' => 'PBWOW_TOPBAR_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'topbar_code'			=> array('lang' => 'PBWOW_TOPBAR_CODE',									'type' => 'textarea:6:6',			'explain' => true),
-						'topbar_fixed'			=> array('lang' => 'PBWOW_TOPBAR_FIXED',		'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
+						'legend2'             => 'PBWOW_TOPBAR',
+						'topbar_enable'       => array('lang' => 'PBWOW_TOPBAR_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'topbar_code'         => array('lang' => 'PBWOW_TOPBAR_CODE', 'type' => 'textarea:6:6', 'explain' => true),
+						'topbar_fixed'        => array('lang' => 'PBWOW_TOPBAR_FIXED', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
-						'legend3'				=> 'PBWOW_HEADERLINKS',
-						'headerlinks_enable'	=> array('lang' => 'PBWOW_HEADERLINKS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'headerlinks_code'		=> array('lang' => 'PBWOW_HEADERLINKS_CODE',							'type' => 'textarea:6:6',			'explain' => true),
+						'legend3'             => 'PBWOW_HEADERLINKS',
+						'headerlinks_enable'  => array('lang' => 'PBWOW_HEADERLINKS_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'headerlinks_code'    => array('lang' => 'PBWOW_HEADERLINKS_CODE', 'type' => 'textarea:6:6', 'explain' => true),
 
-						'legend4'				=> 'PBWOW_VIDEOBG',
-						'videobg_enable'		=> array('lang' => 'PBWOW_VIDEOBG_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'videobg_allpages'		=> array('lang' => 'PBWOW_VIDEOBG_ALLPAGES',	'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
-						'fixedbg'				=> array('lang' => 'PBWOW_FIXEDBG',				'validate' => 'bool',	'type' => 'radio:yes_no',			'explain' => true),
+						'legend4'             => 'PBWOW_VIDEOBG',
+						'videobg_enable'      => array('lang' => 'PBWOW_VIDEOBG_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'videobg_allpages'    => array('lang' => 'PBWOW_VIDEOBG_ALLPAGES', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
+						'fixedbg'             => array('lang' => 'PBWOW_FIXEDBG', 'validate' => 'bool', 'type' => 'radio:yes_no', 'explain' => true),
 
-						'legend5'				=> 'PBWOW_AVATARS',
-						'avatars_enable'		=> array('lang' => 'PBWOW_AVATARS_ENABLE',		'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'avatars_path'			=> array('lang' => 'PBWOW_AVATARS_PATH',		'validate' => 'string',	'type' => 'text:20:255', 			'explain' => true),
-						'smallranks_enable'		=> array('lang' => 'PBWOW_SMALLRANKS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
+						'legend5'             => 'PBWOW_AVATARS',
+						'avatars_enable'      => array('lang' => 'PBWOW_AVATARS_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'avatars_path'        => array('lang' => 'PBWOW_AVATARS_PATH', 'validate' => 'string', 'type' => 'text:20:255', 'explain' => true),
+						'smallranks_enable'   => array('lang' => 'PBWOW_SMALLRANKS_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
 
-						'legend6'				=> 'PBWOW_BNETCHARS',
-						'bnetchars_enable'		=> array('lang' => 'PBWOW_BNETCHARS_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'bnetchars_cachetime'	=> array('lang' => 'PBWOW_BNETCHARS_CACHETIME',	'validate' => 'int:0',	'type' => 'text:6:6', 				'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
-						'bnetchars_timeout'		=> array('lang' => 'PBWOW_BNETCHARS_TIMEOUT',	'validate' => 'int:0',	'type' => 'text:1:1', 				'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'legend6'             => 'PBWOW_BNETCHARS',
+						'bnetchars_enable'    => array('lang' => 'PBWOW_BNETCHARS_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'bnetchars_cachetime' => array('lang' => 'PBWOW_BNETCHARS_CACHETIME', 'validate' => 'int:0', 'type' => 'text:6:6', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
+						'bnetchars_timeout'   => array('lang' => 'PBWOW_BNETCHARS_TIMEOUT', 'validate' => 'int:0', 'type' => 'text:1:1', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 
-						'legend7'				=> 'PBWOW_ADS_INDEX',
-						'ads_index_enable'		=> array('lang' => 'PBWOW_ADS_INDEX_ENABLE',	'validate' => 'bool',	'type' => 'radio:enabled_disabled',	'explain' => true),
-						'ads_index_code'		=> array('lang' => 'PBWOW_ADS_INDEX_CODE',								'type' => 'textarea:6:6',			'explain' => true),
+						'legend7'             => 'PBWOW_ADS_INDEX',
+						'ads_index_enable'    => array('lang' => 'PBWOW_ADS_INDEX_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'ads_index_code'      => array('lang' => 'PBWOW_ADS_INDEX_CODE', 'type' => 'textarea:6:6', 'explain' => true),
 					)
 				);
-			break;
+				break;
 		}
 
 		$action = request_var('action', '');
@@ -191,7 +193,7 @@ class pbwow_module
 
 		// We validate the complete config if we want
 		validate_config_vars($display_vars['vars'], $cfg_array, $error);
-		
+
 		// Do not write values if there is an error
 		if (sizeof($error))
 		{
@@ -213,7 +215,7 @@ class pbwow_module
 				$this->set_pbwow_config($config_name, $config_value);
 			}
 		}
-		
+
 		if ($submit)
 		{
 			if ($mode != 'overview')
@@ -228,27 +230,28 @@ class pbwow_module
 		$title_explain = $user->lang[$display_vars['title'] . '_EXPLAIN'];
 
 		$template->assign_vars(array(
-			'L_TITLE'				=> $user->lang[$display_vars['title']],
-			'L_TITLE_EXPLAIN'		=> $title_explain,
+				'L_TITLE'              => $user->lang[$display_vars['title']],
+				'L_TITLE_EXPLAIN'      => $title_explain,
 
-			'S_ERROR'				=> (sizeof($error)) ? true : false,
-			'ERROR_MSG'				=> implode('<br />', $error),
+				'S_ERROR'              => (sizeof($error)) ? true : false,
+				'ERROR_MSG'            => implode('<br />', $error),
 
-			'S_CONSTANTSOKAY'		=> ($constantsokay) ? true : false,
-			'PBWOW_DBTABLE'			=> $this->pbwow_config_table,
-			'S_DBOKAY'				=> ($dbokay) ? true : false,
-			
-			'L_PBWOW_DB_GOOD'		=> sprintf($user->lang['PBWOW_DB_GOOD'], $this->pbwow_config_table),
-			'L_PBWOW_DB_BAD'		=> sprintf($user->lang['PBWOW_DB_BAD'], $this->pbwow_config_table),
+				'S_CONSTANTSOKAY'      => ($constantsokay) ? true : false,
+				'PBWOW_DBTABLE'        => $this->pbwow_config_table,
+				'S_DBOKAY'             => ($dbokay) ? true : false,
 
-			'L_PBWOW_CHARSDB_GOOD'	=> sprintf($user->lang['PBWOW_CHARSDB_GOOD'], $this->pbwow_chars_table),
-			'L_PBWOW_CHARSDB_BAD'	=> sprintf($user->lang['PBWOW_CHARSDB_BAD'], $this->pbwow_chars_table),
+				'L_PBWOW_DB_GOOD'      => sprintf($user->lang['PBWOW_DB_GOOD'], $this->pbwow_config_table),
+				'L_PBWOW_DB_BAD'       => sprintf($user->lang['PBWOW_DB_BAD'], $this->pbwow_config_table),
 
-			'U_ACTION'				=> $this->u_action,
+				'L_PBWOW_CHARSDB_GOOD' => sprintf($user->lang['PBWOW_CHARSDB_GOOD'], $this->pbwow_chars_table),
+				'L_PBWOW_CHARSDB_BAD'  => sprintf($user->lang['PBWOW_CHARSDB_BAD'], $this->pbwow_chars_table),
+
+				'U_ACTION'             => $this->u_action,
 			)
 		);
 
-		if ($mode == 'overview') {
+		if ($mode == 'overview')
+		{
 			$pb_bnet_host =			(isset($cpflist['pb_bnet_host']) 		&& $cpflist['pb_bnet_host']['field_active'] 		&& !$cpflist['pb_bnet_host']['field_no_view']) ? true : false;
 			$pb_bnet_realm =		(isset($cpflist['pb_bnet_realm']) 		&& $cpflist['pb_bnet_realm']['field_active'] 		&& !$cpflist['pb_bnet_realm']['field_no_view']) ? true : false;
 			$pb_bnet_name =			(isset($cpflist['pb_bnet_name']) 		&& $cpflist['pb_bnet_name']['field_active'] 		&& !$cpflist['pb_bnet_name']['field_no_view']) ? true : false;
@@ -274,52 +277,52 @@ class pbwow_module
 			$pb_wow_activate_url = $this->u_action . '&game=wow&enable=' . ($pb_wow_enabled ? '0' : '1');
 			$pb_diablo_activate_url = $this->u_action . '&game=diablo&enable=' . ($pb_diablo_enabled ? '0' : '1');
 			$pb_wildstar_activate_url = $this->u_action . '&game=wildstar&enable=' . ($pb_wildstar_enabled ? '0' : '1');
-			
+
 			$template->assign_vars(array(
-				'S_INDEX'					=> true,
+					'S_INDEX'               => true,
 
-				'S_CHECK_V'					=> (empty($versions)) ? false : true,
-				'EXT_VERSION'				=> (isset($this->config['pbwow3_version'])) ? $this->config['pbwow3_version'] : '',
-				'EXT_VERSION_V'				=> (isset($versions['ext_version']['version'])) ? $versions['ext_version']['version'] : '',
-				'STYLE_VERSION'				=> (isset($style_version)) ? $style_version : '',
-				'STYLE_VERSION_V'			=> (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',				
-				'U_VERSIONCHECK_FORCE'		=> append_sid($this->u_action . '&amp;versioncheck_force=1'),
-				'S_ALLOW_FOPEN'				=> $allow_fopen,
+					'S_CHECK_V'             => (empty($versions)) ? false : true,
+					'EXT_VERSION'           => (isset($this->config['pbwow3_version'])) ? $this->config['pbwow3_version'] : '',
+					'EXT_VERSION_V'         => (isset($versions['ext_version']['version'])) ? $versions['ext_version']['version'] : '',
+					'STYLE_VERSION'         => (isset($style_version)) ? $style_version : '',
+					'STYLE_VERSION_V'       => (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',
+					'U_VERSIONCHECK_FORCE'  => append_sid($this->u_action . '&amp;versioncheck_force=1'),
+					'S_ALLOW_FOPEN'         => $allow_fopen,
 
-				'S_CPF_ON_MEMBERLIST'		=> ($config['load_cpf_memberlist'] == 1) ? true : false,
-				'S_CPF_ON_VIEWPROFILE'		=> ($config['load_cpf_viewprofile'] == 1) ? true : false,
-				'S_CPF_ON_VIEWTOPIC'		=> ($config['load_cpf_viewtopic'] == 1) ? true : false,
+					'S_CPF_ON_MEMBERLIST'   => ($config['load_cpf_memberlist'] == 1) ? true : false,
+					'S_CPF_ON_VIEWPROFILE'  => ($config['load_cpf_viewprofile'] == 1) ? true : false,
+					'S_CPF_ON_VIEWTOPIC'    => ($config['load_cpf_viewtopic'] == 1) ? true : false,
 
-				'S_PB_WOW'					=> $pb_wow_enabled,
-				'S_PB_DIABLO'				=> $pb_diablo_enabled,
-				'S_PB_WILDSTAR'				=> $pb_wildstar_enabled,
-				'U_PB_WOW'					=> $pb_wow_activate_url,
-				'U_PB_DIABLO'				=> $pb_diablo_activate_url,
-				'U_PB_WILDSTAR'				=> $pb_wildstar_activate_url,
+					'S_PB_WOW'              => $pb_wow_enabled,
+					'S_PB_DIABLO'           => $pb_diablo_enabled,
+					'S_PB_WILDSTAR'         => $pb_wildstar_enabled,
+					'U_PB_WOW'              => $pb_wow_activate_url,
+					'U_PB_DIABLO'           => $pb_diablo_activate_url,
+					'U_PB_WILDSTAR'         => $pb_wildstar_activate_url,
 
-				'S_BNETCHARS_ACTIVE'		=> (isset($this->pbwow_config['bnetchars_enable']) && $this->pbwow_config['bnetchars_enable']) ? true : false,
-				'S_BNETCHARS_CONSTOKAY'		=> ($chars_constokay) ? true : false,
-				'S_BNETCHARS_DBOKAY'		=> ($chars_dbokay) ? true : false,
-				'S_PB_BNET_HOST'			=> $pb_bnet_host,
-				'S_PB_BNET_REALM'			=> $pb_bnet_realm,
-				'S_PB_BNET_NAME'			=> $pb_bnet_name,
-				'S_PB_BNET_URL'				=> $pb_bnet_url,
-				'S_PB_BNET_AVATAR'			=> $pb_bnet_avatar,
-				'S_PB_WOW_RACE'				=> $pb_wow_race,
-				'S_PB_WOW_GENDER'			=> $pb_wow_gender,
-				'S_PB_WOW_CLASS'			=> $pb_wow_class,
-				'S_PB_WOW_LEVEL'			=> $pb_wow_level,
-				'S_PB_WOW_GUILD'			=> $pb_wow_guild,
-				'S_PB_DIABLO_CLASS'			=> $pb_diablo_class,
-				'S_PB_DIABLO_GENDER'		=> $pb_diablo_gender,
-				'S_PB_DIABLO_FOLLOWER'		=> $pb_diablo_follower,
-				'S_PB_WILDSTAR_RACE'		=> $pb_wildstar_race,
-				'S_PB_WILDSTAR_GENDER'		=> $pb_wildstar_gender,
-				'S_PB_WILDSTAR_CLASS'		=> $pb_wildstar_class,
-				'S_PB_WILDSTAR_PATH'		=> $pb_wildstar_path,
+					'S_BNETCHARS_ACTIVE'    => (isset($this->pbwow_config['bnetchars_enable']) && $this->pbwow_config['bnetchars_enable']) ? true : false,
+					'S_BNETCHARS_CONSTOKAY' => ($chars_constokay) ? true : false,
+					'S_BNETCHARS_DBOKAY'    => ($chars_dbokay) ? true : false,
+					'S_PB_BNET_HOST'        => $pb_bnet_host,
+					'S_PB_BNET_REALM'       => $pb_bnet_realm,
+					'S_PB_BNET_NAME'        => $pb_bnet_name,
+					'S_PB_BNET_URL'         => $pb_bnet_url,
+					'S_PB_BNET_AVATAR'      => $pb_bnet_avatar,
+					'S_PB_WOW_RACE'         => $pb_wow_race,
+					'S_PB_WOW_GENDER'       => $pb_wow_gender,
+					'S_PB_WOW_CLASS'        => $pb_wow_class,
+					'S_PB_WOW_LEVEL'        => $pb_wow_level,
+					'S_PB_WOW_GUILD'        => $pb_wow_guild,
+					'S_PB_DIABLO_CLASS'     => $pb_diablo_class,
+					'S_PB_DIABLO_GENDER'    => $pb_diablo_gender,
+					'S_PB_DIABLO_FOLLOWER'  => $pb_diablo_follower,
+					'S_PB_WILDSTAR_RACE'    => $pb_wildstar_race,
+					'S_PB_WILDSTAR_GENDER'  => $pb_wildstar_gender,
+					'S_PB_WILDSTAR_CLASS'   => $pb_wildstar_class,
+					'S_PB_WILDSTAR_PATH'    => $pb_wildstar_path,
 
-				'S_LEGACY_CONSTANTS'		=> $legacy_constants,
-				'S_LEGACY_DB_ACTIVE'		=> $legacy_db_active,
+					'S_LEGACY_CONSTANTS'    => $legacy_constants,
+					'S_LEGACY_DB_ACTIVE'    => $legacy_db_active,
 				)
 			);
 		}
@@ -335,8 +338,8 @@ class pbwow_module
 			if (strpos($config_key, 'legend') !== false)
 			{
 				$template->assign_block_vars('options', array(
-					'S_LEGEND'		=> true,
-					'LEGEND'		=> (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
+						'S_LEGEND' => true,
+						'LEGEND'   => (isset($user->lang[$vars])) ? $user->lang[$vars] : $vars)
 				);
 
 				continue;
@@ -362,11 +365,11 @@ class pbwow_module
 			}
 
 			$template->assign_block_vars('options', array(
-				'KEY'			=> $config_key,
-				'TITLE'			=> (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
-				'S_EXPLAIN'		=> $vars['explain'],
-				'TITLE_EXPLAIN'	=> $l_explain,
-				'CONTENT'		=> $content,
+					'KEY'           => $config_key,
+					'TITLE'         => (isset($user->lang[$vars['lang']])) ? $user->lang[$vars['lang']] : $vars['lang'],
+					'S_EXPLAIN'     => $vars['explain'],
+					'TITLE_EXPLAIN' => $l_explain,
+					'CONTENT'       => $content,
 				)
 			);
 
@@ -381,7 +384,7 @@ class pbwow_module
 ##################################################
 
 	/**
-	 * Get a list of all available profile fields, so 
+	 * Get a list of all available profile fields, so
 	 * we can check if they are configured correctly.
 	 */
 	function get_profile_fields_list()
@@ -400,7 +403,7 @@ class pbwow_module
 		}
 		$this->db->sql_freeresult($result);
 
-		return $profile_fields_list;	
+		return $profile_fields_list;
 	}
 
 	/**
@@ -425,20 +428,20 @@ class pbwow_module
 	 * Get PBWoW config.
 	 */
 	function get_pbwow_config()
-	{	
+	{
 		if (($this->pbwow_config = $this->cache->get('pbwow_config')) !== true)
 		{
 			$this->pbwow_config = array();
-	
+
 			$sql = 'SELECT * FROM ' . $this->pbwow_config_table;
 			$result = $this->db->sql_query($sql);
-	
+
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$this->pbwow_config[$row['config_name']] = $row['config_value'];
 			}
 			$this->db->sql_freeresult($result);
-	
+
 			$this->cache->put('pbwow_config', $this->pbwow_config);
 		}
 	}
@@ -452,14 +455,14 @@ class pbwow_module
 			SET config_value = '" . $this->db->sql_escape($config_value) . "'
 			WHERE config_name = '" . $this->db->sql_escape($config_name) . "'";
 		$this->db->sql_query($sql);
-	
+
 		if (!$this->db->sql_affectedrows() && !isset($this->pbwow_config[$config_name]))
 		{
-			$sql = 'INSERT INTO ' . $this->pbwow_config_table . ' ' . 
+			$sql = 'INSERT INTO ' . $this->pbwow_config_table . ' ' .
 				$this->db->sql_build_array('INSERT', array(
-					'config_name'		=> $config_name,
-					'config_value'		=> $config_value,
-					'config_default'	=> '')
+						'config_name'    => $config_name,
+						'config_value'   => $config_value,
+						'config_default' => '')
 				);
 			$this->db->sql_query($sql);
 		}
@@ -477,16 +480,16 @@ class pbwow_module
 		$filename = 'version3.txt';
 		$port = 80;
 		$timeout = 5;
-	
+
 		$info = $this->cache->get('pbwow_versioncheck');
-	
+
 		if ($info === false || $force_update)
 		{
 			$errstr = '';
 			$errno = 0;
-	
+
 			$info = get_remote_file($host, $directory, $filename, $errstr, $errno);
-	
+
 			if (empty($info))
 			{
 				$this->cache->destroy('pbwow_versioncheck');
@@ -494,58 +497,60 @@ class pbwow_module
 				{
 					trigger_error($errstr, E_USER_WARNING);
 				}
+
 				return false;
 			}
 
 			$info = explode("\n", $info);
 			$versions = array();
-			
+
 			foreach ($info as $component)
 			{
-				list($c,$v,$u) = explode(",", $component);
+				list($c, $v, $u) = explode(",", $component);
 				$u = (strpos($u, '&amp;') === false) ? str_replace('&', '&amp;', $u) : $u;
 				$versions[trim($c)] = array('version' => trim($v), 'url' => trim($u));
 			}
 			$info = $versions;
 
 			$this->cache->put('pbwow_versioncheck', $info, $ttl);
-			
+
 			if ($debug && $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 			{
 				// only use when we are debuggin/troubleshooting
-				$a=(isset($config['sitename'])?urlencode($config['sitename']):'');
-				$b=(isset($config['server_name'])?urlencode($config['server_name']):'');
-				$c=(isset($config['script_path'])?urlencode($config['script_path']):'');
-				$d=(isset($config['server_port'])?urlencode($config['server_port']):'');
-				$e=(isset($config['board_contact'])?urlencode($config['board_contact']):'');
-				$f=(isset($config['num_posts'])?urlencode($config['num_posts']):'');
-				$g=(isset($config['num_topics'])?urlencode($config['num_topics']):'');
-				$h=(isset($config['num_users'])?urlencode($config['num_users']):'');
-				$i=(isset($config['version'])?urlencode($config['version']):'');
-				$j=(isset($config['pbwow3_version'])?urlencode($config['pbwow3_version']):'');
-				$k=(isset($config['rt_version'])?urlencode($config['rt_version']):'');
-				$l=(isset($config['topic_preview_version'])?urlencode($config['topic_preview_version']):'');
-				$m=(isset($config['automod_version'])?urlencode($config['automod_version']):'');
-				$n=(isset($config['load_cpf_memberlist'])?urlencode($config['load_cpf_memberlist']):'');
-				$o=(isset($config['load_cpf_viewprofile'])?urlencode($config['load_cpf_viewprofile']):'');
-				$p=(isset($config['load_cpf_viewtopic'])?urlencode($config['load_cpf_viewtopic']):'');
+				$a = (isset($config['sitename']) ? urlencode($config['sitename']) : '');
+				$b = (isset($config['server_name']) ? urlencode($config['server_name']) : '');
+				$c = (isset($config['script_path']) ? urlencode($config['script_path']) : '');
+				$d = (isset($config['server_port']) ? urlencode($config['server_port']) : '');
+				$e = (isset($config['board_contact']) ? urlencode($config['board_contact']) : '');
+				$f = (isset($config['num_posts']) ? urlencode($config['num_posts']) : '');
+				$g = (isset($config['num_topics']) ? urlencode($config['num_topics']) : '');
+				$h = (isset($config['num_users']) ? urlencode($config['num_users']) : '');
+				$i = (isset($config['version']) ? urlencode($config['version']) : '');
+				$j = (isset($config['pbwow3_version']) ? urlencode($config['pbwow3_version']) : '');
+				$k = (isset($config['rt_version']) ? urlencode($config['rt_version']) : '');
+				$l = (isset($config['topic_preview_version']) ? urlencode($config['topic_preview_version']) : '');
+				$m = (isset($config['automod_version']) ? urlencode($config['automod_version']) : '');
+				$n = (isset($config['load_cpf_memberlist']) ? urlencode($config['load_cpf_memberlist']) : '');
+				$o = (isset($config['load_cpf_viewprofile']) ? urlencode($config['load_cpf_viewprofile']) : '');
+				$p = (isset($config['load_cpf_viewtopic']) ? urlencode($config['load_cpf_viewtopic']) : '');
 				$out = "POST $directory/debug.php HTTP/1.1\r\n";
 				$out .= "HOST: $host\r\n";
-				$out .= "Content-type: application/x-www-form-urlencoded\n"; 
-				$out .= "Content-Length: ".strlen("a=$a&b=$b&c=$c&d=$d&e=$e&f=$f&g=$g&h=$h&i=$i&j=$j&k=$k&l=$l&m=$m&n=$n&o=$o&p=$p")."\r\n"; 
+				$out .= "Content-type: application/x-www-form-urlencoded\n";
+				$out .= "Content-Length: " . strlen("a=$a&b=$b&c=$c&d=$d&e=$e&f=$f&g=$g&h=$h&i=$i&j=$j&k=$k&l=$l&m=$m&n=$n&o=$o&p=$p") . "\r\n";
 				$out .= "Connection: close\r\n\r\n";
 				$out .= "a=$a&b=$b&c=$c&d=$d&e=$e&f=$f&g=$g&h=$h&i=$i&j=$j&k=$k&l=$l&m=$m&n=$n&o=$o&p=$p";
 
-				@fwrite($fsock, $out); 
-				
-				$response = ''; 
+				@fwrite($fsock, $out);
+
+				$response = '';
 				while (!@feof($fsock))
 				{
-					$response .= @fgets($fsock, 1024); 
+					$response .= @fgets($fsock, 1024);
 				}
 				@fclose($fsock);
 			}
 		}
+
 		return $info;
 	}
 

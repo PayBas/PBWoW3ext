@@ -11,8 +11,8 @@
 namespace paybas\pbwow\core;
 
 /**
-* @ignore
-*/
+ * @ignore
+ */
 if (!defined('IN_PHPBB'))
 {
 	exit;
@@ -81,17 +81,17 @@ class pbwow
 
 
 	/**
-	* Assign global template vars, based on the ACP config of the extension
-	*/
-	public function global_style_append($event)
-	{		
+	 * Assign global template vars, based on the ACP config of the extension
+	 */
+	public function global_style_append()
+	{
 		$pbwow_config = $this->pbwow_config;
-		
+
 		if (isset($pbwow_config) && is_array($pbwow_config))
 		{
 			extract($pbwow_config);
-		} 
-		else 
+		}
+		else
 		{
 			return;
 		}
@@ -103,13 +103,13 @@ class pbwow
 		if ($logo_enable && isset($logo_src) && isset($logo_size_width) && isset($logo_size_height) && $logo_size_width > 1 && $logo_size_height > 1)
 		{
 			$tpl_vars += array(
-				'S_PBLOGO' => true,
-				'PBLOGO_SRC' => html_entity_decode($logo_src),
-				'PBLOGO_WIDTH' => $logo_size_width,
-				'PBLOGO_HEIGHT' => $logo_size_height,
-				'PBLOGO_WIDTH_MOB' => floor(($logo_size_width * 0.8)),
+				'S_PBLOGO'          => true,
+				'PBLOGO_SRC'        => html_entity_decode($logo_src),
+				'PBLOGO_WIDTH'      => $logo_size_width,
+				'PBLOGO_HEIGHT'     => $logo_size_height,
+				'PBLOGO_WIDTH_MOB'  => floor(($logo_size_width * 0.8)),
 				'PBLOGO_HEIGHT_MOB' => floor(($logo_size_height * 0.8)),
-				'PBLOGO_MARGINS' => $logo_margins,
+				'PBLOGO_MARGINS'    => $logo_margins,
 			);
 
 			if (isset($logo_margins) && strlen($logo_margins) > 0)
@@ -180,9 +180,9 @@ class pbwow
 	}
 
 	/**
-	* Generate the PBWoW avatar for the current user (for display in the header)
-	*/
-	public function global_style_append_after($event)
+	 * Generate the PBWoW avatar for the current user (for display in the header)
+	 */
+	public function global_style_append_after()
 	{
 		if ($this->pbwow_config['avatars_enable'] && $this->config['load_cpf_viewtopic'] && $this->config['allow_avatar'] && $this->user->data['is_registered'])
 		{
@@ -205,18 +205,18 @@ class pbwow
 	}
 
 	/**
-	* Processes the users's profile-field data as soon as it is grabbed from the DB.
-	* It will use the profile-field data to try to grab info from the Battle.net API.
-	*
-	* @var	int|array	$user_ids		Single user id or an array of ids 
-	* @var	array		$field_data		Array with profile fields data
-	*
-	* @return	array	$field_data		Array with modified profile fields data
-	*/
+	 * Processes the users's profile-field data as soon as it is grabbed from the DB.
+	 * It will use the profile-field data to try to grab info from the Battle.net API.
+	 *
+	 * @var    int|array $user_ids   Single user id or an array of ids
+	 * @var    array     $field_data Array with profile fields data
+	 *
+	 * @return    array    $field_data        Array with modified profile fields data
+	 */
 	public function process_pf_grab($user_ids, $field_data)
 	{
 		$pbwow_config = $this->pbwow_config;
-		
+
 		if (isset($pbwow_config['bnetchars_enable']) && $pbwow_config['bnetchars_enable'])
 		{
 			$cachelife = isset($pbwow_config['bnetchars_cachetime']) ? intval($pbwow_config['bnetchars_cachetime']) : 86400;
@@ -236,58 +236,85 @@ class pbwow
 			$this->db->sql_freeresult($result);
 
 			// For each requested user, we will do some magic
-			foreach($user_ids as $user_id)
+			foreach ($user_ids as $user_id)
 			{
-				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] -1 : 0; // 1 == none, so -1 for all
+				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] - 1 : 0; // 1 == none, so -1 for all
 				$bnet_r = (isset($field_data[$user_id]['pf_pb_bnet_realm'])) ? $field_data[$user_id]['pf_pb_bnet_realm'] : '';
 				$bnet_n = (isset($field_data[$user_id]['pf_pb_bnet_name'])) ? $field_data[$user_id]['pf_pb_bnet_name'] : '';
 
 				if ($bnet_h && $bnet_r && $bnet_n)
 				{
-					$callAPI = FALSE;
+					$callAPI = false;
 
 					// Determine if the API should be called, based on cache TTL, # of tries, and character change
 					if (isset($char_data[$user_id]))
 					{
 						$age = time() - $char_data[$user_id]['updated'];
 
-						switch($char_data[$user_id]["tries"])
+						switch ($char_data[$user_id]["tries"])
 						{
-							case 0: break;
-							case 1: $callAPI = ($age > 60) ? TRUE : FALSE ; break;
-							case 2: $callAPI = ($age > 600) ? TRUE : FALSE ; break;
-							case 3: $callAPI = ($age > ($cachelife / 24)) ? TRUE : FALSE ; break;
-							case 4: $callAPI = ($age > ($cachelife / 4)) ? TRUE : FALSE ; break;
-							default: break; // More than 4 tries > just wait for TTL
+							case 0:
+								break;
+							case 1:
+								$callAPI = ($age > 60) ? true : false;
+								break;
+							case 2:
+								$callAPI = ($age > 600) ? true : false;
+								break;
+							case 3:
+								$callAPI = ($age > ($cachelife / 24)) ? true : false;
+								break;
+							case 4:
+								$callAPI = ($age > ($cachelife / 4)) ? true : false;
+								break;
+							default:
+								break; // More than 4 tries > just wait for TTL
 						}
 
 						if ($age > $cachelife)
 						{
-							$callAPI = TRUE;
+							$callAPI = true;
 						}
-						
+
 						if ($bnet_n !== $char_data[$user_id]['name'])
 						{
-							$callAPI = TRUE;
+							$callAPI = true;
 						}
 					}
 					else
 					{
-						$callAPI = TRUE;
+						$callAPI = true;
 					}
 
-					if ($callAPI == TRUE)
+					if ($callAPI == true)
 					{
 						// CPF values haven't been assigned yet, so have to do it manually
-						$loc = FALSE;
-						switch($bnet_h)
+						switch ($bnet_h)
 						{
-							case 1: $bnet_h = "us.battle.net"; $loc = "us"; break;
-							case 2: $bnet_h = "eu.battle.net"; $loc = "eu"; break;
-							case 3: $bnet_h = "kr.battle.net"; $loc = "kr"; break;
-							case 4: $bnet_h = "tw.battle.net"; $loc = "tw"; break;
-							case 5: $bnet_h = "www.battlenet.com.cn"; $loc = "cn"; break;
-							default: $bnet_h = "us.battle.net"; $loc = "us"; break;
+							case 1:
+								$bnet_h = "us.battle.net";
+								$loc = "us";
+								break;
+							case 2:
+								$bnet_h = "eu.battle.net";
+								$loc = "eu";
+								break;
+							case 3:
+								$bnet_h = "kr.battle.net";
+								$loc = "kr";
+								break;
+							case 4:
+								$bnet_h = "tw.battle.net";
+								$loc = "tw";
+								break;
+							case 5:
+								$bnet_h = "www.battlenet.com.cn";
+								$loc = "cn";
+								break;
+							default:
+								$bnet_h = "us.battle.net";
+								$loc = "us";
+								break;
 						}
 
 						// Sanitize
@@ -299,71 +326,76 @@ class pbwow
 						// Get API data (should use CURL instead, but I'll do it later)
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
 						//var_dump($URL);
-						$context = stream_context_create(array('http'=>
-							array('timeout' => $apitimeout)
+						$context = stream_context_create(array('http' =>
+																   array('timeout' => $apitimeout)
 						));
 						$response = @file_get_contents($URL, false, $context);
 
-						if ($response === FALSE)
+						if ($response === false)
 						{
 							// If the API data cannot be retrieved, register the number of tries to prevent flooding
 							if (isset($char_data[$user_id]) && $char_data[$user_id]['tries'] < 10)
 							{
 								$sql_ary = array(
-									'user_id'	=> $user_id,
-									'updated'	=> time(),
-									'tries'		=> $char_data[$user_id]['tries'] + 1,
-									'name'		=> $bnet_n,
-									'realm'		=> $bnet_r,
-									'url'		=> "Battle.net API error",
+									'user_id' => $user_id,
+									'updated' => time(),
+									'tries'   => $char_data[$user_id]['tries'] + 1,
+									'name'    => $bnet_n,
+									'realm'   => $bnet_r,
+									'url'     => "Battle.net API error",
 								);
 								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
 									SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 									WHERE user_id = ' . $user_id;
 								$this->db->sql_query($sql);
-							} 
-							else 
+							}
+							else
 							{
 								$sql_ary = array(
-									'user_id'	=> $user_id,
-									'updated'	=> time(),
-									'tries'		=> 1,
-									'name'		=> $bnet_n,
-									'realm'		=> $bnet_r,
-									'url'		=> "Battle.net API error",
+									'user_id' => $user_id,
+									'updated' => time(),
+									'tries'   => 1,
+									'name'    => $bnet_n,
+									'realm'   => $bnet_r,
+									'url'     => "Battle.net API error",
 								);
 								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 								$this->db->sql_query($sql);
 							}
 
 							$field_data[$user_id]['pf_pb_bnet_url'] = "Battle.net API error";
-						} 
-						else 
+						}
+						else
 						{
-							$data = json_decode($response, TRUE);
-							
+							$data = json_decode($response, true);
+
 							// Sometimes the Battle.net API does give a valid response, but no valid data
 							if (!isset($data['name']))
 							{
 								return $field_data;
 							}
-							
+
 							// Set avatar path
 							$avatar = (!empty($data['thumbnail'])) ? $data['thumbnail'] : '';
+							$avatarURL = '';
 							if ($avatar)
 							{
 								$avatarURL = "http://" . $bnet_h . "/static-render/" . $loc . "/" . $avatar;
 								//$avatarIMG = @file_get_contents($IMGURL);
 							}
-							
+
 							// Conform Blizzard's race ID numbers to PBWoW, so the CPF will work correctly
 							$data_race = $data['race'];
-							switch($data_race)
+							switch ($data_race)
 							{
-								case 22: $data_race = 12; break;
+								case 22:
+									$data_race = 12;
+									break;
 								case 24:
 								case 25:
-								case 26: $data_race = 13; break;
+								case 26:
+									$data_race = 13;
+									break;
 								//default: $data_race; break;
 							}
 							$data_race += 1;
@@ -375,25 +407,25 @@ class pbwow
 
 							// Insert into character DB table
 							$sql_ary = array(
-								'user_id'			=> $user_id,
-								'updated'			=> time(),
-								'tries'				=> 0,
-								'game'				=> "wow",
-								'lastModified'		=> $data['lastModified'],
-								'name'				=> $data['name'],
-								'realm'				=> $data['realm'],
-								'battlegroup'		=> $data['battlegroup'],
-								'class'				=> $data_class,
-								'race'				=> $data_race,
-								'gender'			=> $data_gender,
-								'level'				=> $data_level,
-								'achievementPoints'	=> $data['achievementPoints'],
-								'URL'				=> $bnetURL,
-								'avatar'			=> $avatar,
-								'avatarURL'			=> $avatarURL,
-								'calcClass'			=> $data['calcClass'],
-								'totalHK'			=> $data['totalHonorableKills'],
-								'guild'				=> $data_guild,
+								'user_id'           => $user_id,
+								'updated'           => time(),
+								'tries'             => 0,
+								'game'              => "wow",
+								'lastModified'      => $data['lastModified'],
+								'name'              => $data['name'],
+								'realm'             => $data['realm'],
+								'battlegroup'       => $data['battlegroup'],
+								'class'             => $data_class,
+								'race'              => $data_race,
+								'gender'            => $data_gender,
+								'level'             => $data_level,
+								'achievementPoints' => $data['achievementPoints'],
+								'URL'               => $bnetURL,
+								'avatar'            => $avatar,
+								'avatarURL'         => $avatarURL,
+								'calcClass'         => $data['calcClass'],
+								'totalHK'           => $data['totalHonorableKills'],
+								'guild'             => $data_guild,
 							);
 
 							if (isset($char_data[$user_id]))
@@ -409,48 +441,49 @@ class pbwow
 							$this->db->sql_query($sql);
 
 							// Merge with rest of CPF values
-							$field_data[$user_id]['pf_pb_wow_guild']	= $data_guild;
+							$field_data[$user_id]['pf_pb_wow_guild'] = $data_guild;
 							//$field_data[$user_id]['pf_pb_wow_pbrealm'] = $data['realm'];
-							$field_data[$user_id]['pf_pb_wow_class']	= $data_class;
-							$field_data[$user_id]['pf_pb_wow_race']		= $data_race;
-							$field_data[$user_id]['pf_pb_wow_gender']	= $data_gender;
-							$field_data[$user_id]['pf_pb_wow_level']	= $data_level;
-							$field_data[$user_id]['pf_pb_bnet_url']		= $bnetURL;
-							$field_data[$user_id]['pf_pb_bnet_avatar']	= $avatarURL;
+							$field_data[$user_id]['pf_pb_wow_class'] = $data_class;
+							$field_data[$user_id]['pf_pb_wow_race'] = $data_race;
+							$field_data[$user_id]['pf_pb_wow_gender'] = $data_gender;
+							$field_data[$user_id]['pf_pb_wow_level'] = $data_level;
+							$field_data[$user_id]['pf_pb_bnet_url'] = $bnetURL;
+							$field_data[$user_id]['pf_pb_bnet_avatar'] = $avatarURL;
 						}
-					} 
+					}
 					else if ($char_data[$user_id]['avatarURL']) // No API call needed, just use the current data
 					{
 						// Merge with rest of CPF values
-						$field_data[$user_id]['pf_pb_wow_guild']	= $char_data[$user_id]['guild'];
+						$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
 						//$field_data[$user_id]['pf_pbrealm']		= $char_data[$user_id]['realm'];
-						$field_data[$user_id]['pf_pb_wow_class']	= $char_data[$user_id]['class'];
-						$field_data[$user_id]['pf_pb_wow_race']		= $char_data[$user_id]['race'];
-						$field_data[$user_id]['pf_pb_wow_gender']	= $char_data[$user_id]['gender'];
-						$field_data[$user_id]['pf_pb_wow_level']	= $char_data[$user_id]['level'];
-						$field_data[$user_id]['pf_pb_bnet_url']		= $char_data[$user_id]['URL'];
-						$field_data[$user_id]['pf_pb_bnet_avatar']	= $char_data[$user_id]['avatarURL'];
+						$field_data[$user_id]['pf_pb_wow_class'] = $char_data[$user_id]['class'];
+						$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
+						$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];
+						$field_data[$user_id]['pf_pb_wow_level'] = $char_data[$user_id]['level'];
+						$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
+						$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarURL'];
 					}
-					else  // No API call, but also no current (complete) data
+					else // No API call, but also no current (complete) data
 					{
-						$field_data[$user_id]['pf_pb_wow_guild']	= $char_data[$user_id]['guild'];
-						$field_data[$user_id]['pf_pb_bnet_url']		= $char_data[$user_id]['URL'];
+						$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
+						$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
 					}
 				}
 			}
 		}
+
 		return $field_data;
 	}
 
 	/**
-	* Processes the users's profile-field data and generates an avatar (when available).
-	* It also tries to determine the faction of a gaming character, based on the data.
-	*
-	* @var		array	profile_row		Array with users profile field data 
-	* @var		array	tpl_fields		Array with template data fields
-	*
-	* @return	array	$tpl_fields		Array with modified template data fields
-	*/
+	 * Processes the users's profile-field data and generates an avatar (when available).
+	 * It also tries to determine the faction of a gaming character, based on the data.
+	 *
+	 * @var        array    profile_row        Array with users profile field data
+	 * @var        array    tpl_fields        Array with template data fields
+	 *
+	 * @return    array    $tpl_fields        Array with modified template data fields
+	 */
 	public function process_pf_show($profile_row, $tpl_fields)
 	{
 		$avatars_enable = $this->pbwow_config['avatars_enable'];
@@ -470,19 +503,19 @@ class pbwow
 			$function_override = false;
 
 			/**
-			* Event to modify the profile field processing script before the supported games are processed
-			*
-			* @event paybas.pbwow.modify_process_pf_before
-			* @var	array	profile_row		Array with users profile field data 
-			* @var	array	tpl_fields		Array with template data fields
-			* @var	string	avatars_path	The path to the dir containing the game-avatars
-			* @var	string	avatar			Filename of the avatar img
-			* @var	int		width			The width of the avatar img (in pixels)
-			* @var	int		height			The height of the avatar img (in pixels)
-			* @var	int		faction			The faction of the character
-			* @var	bool	function_override	Return the results right after this, or continue?
-			* @since 3.0.0
-			*/
+			 * Event to modify the profile field processing script before the supported games are processed
+			 *
+			 * @event paybas.pbwow.modify_process_pf_before
+			 * @var    array    profile_row        Array with users profile field data
+			 * @var    array    tpl_fields        Array with template data fields
+			 * @var    string    avatars_path    The path to the dir containing the game-avatars
+			 * @var    string    avatar            Filename of the avatar img
+			 * @var    int        width            The width of the avatar img (in pixels)
+			 * @var    int        height            The height of the avatar img (in pixels)
+			 * @var    int        faction            The faction of the character
+			 * @var    bool    function_override    Return the results right after this, or continue?
+			 * @since 3.0.0
+			 */
 			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'width', 'height', 'faction', 'function_override');
 			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_before', compact($vars)));
 
@@ -491,22 +524,22 @@ class pbwow
 				return $tpl_fields;
 			}
 
-			$wow_r = isset($tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW']) ? $profile_row['pb_wow_race']['value'] - 1 : NULL; // Get the WoW race ID
-			$wow_c = isset($tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW']) ? $profile_row['pb_wow_class']['value'] - 1 : NULL; // Get the WoW class ID
-			$wow_g = isset($tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW']) ? $profile_row['pb_wow_gender']['value'] - 1 : NULL; // Get the WoW gender ID
-			$wow_l = isset($tpl_fields['row']['PROFILE_PB_WOW_LEVEL_VALUE_RAW']) ? $profile_row['pb_wow_level']['value'] - 1 : NULL; // Get the WoW level
-			$d3_c = isset($tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUE_RAW']) ? $profile_row['pb_diablo_class']['value'] - 1 : NULL; // Get the Diablo class ID
-			$d3_f = isset($tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW']) ? $profile_row['pb_diablo_follower']['value'] - 1 : NULL; // Get the Diablo class ID
-			$d3_g = isset($tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUE_RAW']) ? $profile_row['pb_diablo_gender']['value'] - 1 : NULL; // Get the Diablo gender ID
-			$ws_r = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW']) ? $profile_row['pb_wildstar_race']['value'] - 1 : NULL; // Get the Wildstar race ID
-			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW']) ? $profile_row['pb_wildstar_class']['value'] - 1 : NULL; // Get the Wildstar class ID
-			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : NULL; // Get the Wildstar gender ID
-			$ws_p = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_PATH_VALUE_RAW']) ? $profile_row['pb_wildstar_path']['value'] - 1 : NULL; // Get the Wildstar path ID
+			$wow_r = isset($tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW']) ? $profile_row['pb_wow_race']['value'] - 1 : null; // Get the WoW race ID
+			$wow_c = isset($tpl_fields['row']['PROFILE_PB_WOW_CLASS_VALUE_RAW']) ? $profile_row['pb_wow_class']['value'] - 1 : null; // Get the WoW class ID
+			$wow_g = isset($tpl_fields['row']['PROFILE_PB_WOW_GENDER_VALUE_RAW']) ? $profile_row['pb_wow_gender']['value'] - 1 : null; // Get the WoW gender ID
+			$wow_l = isset($tpl_fields['row']['PROFILE_PB_WOW_LEVEL_VALUE_RAW']) ? $profile_row['pb_wow_level']['value'] - 1 : null; // Get the WoW level
+			$d3_c = isset($tpl_fields['row']['PROFILE_PB_DIABLO_CLASS_VALUE_RAW']) ? $profile_row['pb_diablo_class']['value'] - 1 : null; // Get the Diablo class ID
+			$d3_f = isset($tpl_fields['row']['PROFILE_PB_DIABLO_FOLLOWER_VALUE_RAW']) ? $profile_row['pb_diablo_follower']['value'] - 1 : null; // Get the Diablo class ID
+			$d3_g = isset($tpl_fields['row']['PROFILE_PB_DIABLO_GENDER_VALUE_RAW']) ? $profile_row['pb_diablo_gender']['value'] - 1 : null; // Get the Diablo gender ID
+			$ws_r = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_RACE_VALUE_RAW']) ? $profile_row['pb_wildstar_race']['value'] - 1 : null; // Get the Wildstar race ID
+			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW']) ? $profile_row['pb_wildstar_class']['value'] - 1 : null; // Get the Wildstar class ID
+			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : null; // Get the Wildstar gender ID
+			$ws_p = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_PATH_VALUE_RAW']) ? $profile_row['pb_wildstar_path']['value'] - 1 : null; // Get the Wildstar path ID
 			//$bneth = (isset($tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'] : NULL; // Get the Battle.net host
 			//$bnetr = (isset($tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'] : NULL; // Get the Battle.net realm
 			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
-			$bnet_u = isset($tpl_fields['row']['PROFILE_PB_BNET_URL_VALUE']) ? $profile_row['pb_bnet_url']['value'] : NULL; // Get the Battle.net avatar
-			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : NULL; // Get the Battle.net avatar
+			//$bnet_u = isset($tpl_fields['row']['PROFILE_PB_BNET_URL_VALUE']) ? $profile_row['pb_bnet_url']['value'] : null; // Get the Battle.net avatar
+			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : null; // Get the Battle.net avatar
 
 			// I know it looks silly, but we need this to fix icon classes in templates
 			if ($wow_r > 0) { $tpl_fields['row']['PROFILE_PB_WOW_RACE_VALUE_RAW'] = $wow_r; }
@@ -525,11 +558,11 @@ class pbwow
 
 			/* Battle.net API */
 			//if ($bneth !== NULL && $bnet_r !== NULL && $bnet_n !== NULL && $user_id !== 0 && $bnet_a !== NULL) {
-			if ($bnet_a !== NULL)
+			if ($bnet_a !== null)
 			{
 				if (isset($wow_r))
 				{
-					$faction = (in_array($wow_r, array(1,3,4,7,11,12))) ? 1 : 2;
+					$faction = (in_array($wow_r, array(1, 3, 4, 7, 11, 12))) ? 1 : 2;
 				}
 
 				$width = 84;
@@ -540,7 +573,7 @@ class pbwow
 			}
 
 			/* WoW without Battle.net */
-			else if ($wow_r !== NULL)
+			else if ($wow_r !== null)
 			{
 				/* Remapping options */
 				// $R = $wow_r;
@@ -585,95 +618,95 @@ class pbwow
 				*/
 
 				$faction = 3; // Set faction to neutral, until we can determine correct faction
-				switch($wow_r)
+				switch ($wow_r)
 				{
 					case 1: // Human
-						$valid = (in_array($wow_c, array(1,2,3,4,5,6,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,2,4,5,6,8,9))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 2, 3, 4, 5, 6, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 2, 4, 5, 6, 8, 9))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 2: // Orc
-						$valid = (in_array($wow_c, array(1,3,4,6,7,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,3,4,6,7,9))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 3, 4, 6, 7, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 3, 4, 6, 7, 9))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 3: // Dwarf
-						$valid = (in_array($wow_c, array(1,2,3,4,5,6,7,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,2,3,4,5,6))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 2, 3, 4, 5, 6, 7, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 2, 3, 4, 5, 6))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 4: // Night Elf
-						$valid = (in_array($wow_c, array(1,3,4,5,6,8,10,11))) ? true : false;
-						$avail = (in_array($wow_c, array(1,3,4,5,6,11))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 6, 8, 10, 11))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 3, 4, 5, 6, 11))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 5: // Undead
-						$valid = (in_array($wow_c, array(1,3,4,5,6,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,4,5,6,8,9))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 6, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 4, 5, 6, 8, 9))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 6: // Tauren
-						$valid = (in_array($wow_c, array(1,2,3,5,6,7,10,11))) ? true : false;
-						$avail = (in_array($wow_c, array(1,3,6,7,11))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 2, 3, 5, 6, 7, 10, 11))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 3, 6, 7, 11))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 7: // Gnome
-						$valid = (in_array($wow_c, array(1,4,5,6,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,4,6,8,9))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 4, 5, 6, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 4, 6, 8, 9))) ? true : false;
 						$faction = 1;
-					break;
-					
-					case 8:  // Troll
-						$valid = (in_array($wow_c, array(1,3,4,5,6,7,8,9,10,11))) ? true : false;
-						$avail = (in_array($wow_c, array(1,3,4,5,6,7,8))) ? true : false;
+						break;
+
+					case 8: // Troll
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 6, 7, 8, 9, 10, 11))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 3, 4, 5, 6, 7, 8))) ? true : false;
 						$faction = 2;
-					break;
+						break;
 
 					case 9: // Goblin
-						$valid = (in_array($wow_c, array(1,3,4,5,6,7,8,9))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 6, 7, 8, 9))) ? true : false;
 						//$avail = (in_array($c, array())) ? true : false;
 						$faction = 2;
-					break;
-					
-					case 10:  // Blood Elf
-						$valid = (in_array($wow_c, array(1,2,3,4,5,6,8,9,10))) ? true : false;
-						$avail = (in_array($wow_c, array(2,3,4,5,6,8,9))) ? true : false;
+						break;
+
+					case 10: // Blood Elf
+						$valid = (in_array($wow_c, array(1, 2, 3, 4, 5, 6, 8, 9, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(2, 3, 4, 5, 6, 8, 9))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 11: // Draenei
-						$valid = (in_array($wow_c, array(1,2,3,5,6,7,8,10))) ? true : false;
-						$avail = (in_array($wow_c, array(1,2,3,5,6,7,8))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 2, 3, 5, 6, 7, 8, 10))) ? true : false;
+						$avail = (in_array($wow_c, array(1, 2, 3, 5, 6, 7, 8))) ? true : false;
 						$faction = 1;
-					break;
-					
-					case 12:  // Worgen
-						$valid = (in_array($wow_c, array(1,3,4,5,6,8,9,11))) ? true : false;
+						break;
+
+					case 12: // Worgen
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 6, 8, 9, 11))) ? true : false;
 						//$avail = (in_array($c, array())) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 13: // Pandaren
-						$valid = (in_array($wow_c, array(1,3,4,5,7,8,10))) ? true : false;
+						$valid = (in_array($wow_c, array(1, 3, 4, 5, 7, 8, 10))) ? true : false;
 						//$avail = (in_array($c, array())) ? true : false;
 						$faction = 3;
-					break;
+						break;
 				}
 
-				$wow_g = max(0, $wow_g-1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
+				$wow_g = max(0, $wow_g - 1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
 
 				if ($valid && $avail)
 				{
 					if ($wow_l >= 80)
 					{
 						$path = 'wow/80';
-					}					
+					}
 					else if ($wow_l >= 70)
 					{
 						$path = 'wow/70';
@@ -682,15 +715,17 @@ class pbwow
 					{
 						$path = 'wow/60';
 					}
-					else {
+					else
+					{
 						$path = 'wow/default';
 					}
 
 					$avatar = $path . '/' . $wow_g . '-' . $wow_r . '-' . $wow_c . '.gif';
 					$width = 64;
 					$height = 64;
-				} 
-				else {
+				}
+				else
+				{
 					$avatar = 'wow/new/' . $wow_r . '-' . $wow_g . '.jpg';
 					$width = 84;
 					$height = 84;
@@ -698,28 +733,28 @@ class pbwow
 			}
 
 			/* Diablo */
-			else if ($d3_c !== NULL)
+			else if ($d3_c !== null)
 			{
-				switch($d3_c)
+				switch ($d3_c)
 				{
 					case 1: // Barbarian
 						$avatar = 'barbarian';
-					break;
+						break;
 					case 2: // Demon Hunter
 						$avatar = 'demonhunter';
-					break;
+						break;
 					case 3: // Monk
 						$avatar = 'monk';
-					break;
+						break;
 					case 4: // Witch Doctor
 						$avatar = 'witchdoctor';
-					break;
+						break;
 					case 5: // Wizard
 						$avatar = 'wizard';
-					break;
+						break;
 					case 6: // Crusader
 						$avatar = 'crusader';
-					break;
+						break;
 				}
 
 				$d3_g = (isset($d3_g) && $d3_g > 1) ? 'female' : 'male';
@@ -730,7 +765,7 @@ class pbwow
 			}
 
 			/* Wildstar */
-			else if ($ws_r !== NULL)
+			else if ($ws_r !== null)
 			{
 				/* For reference 
 				ws_r = 1 > Human
@@ -751,58 +786,59 @@ class pbwow
 				*/
 
 				$faction = 3; // Set faction to neutral, until we can determine correct faction
-				switch($ws_r)
+				switch ($ws_r)
 				{
 					case 1: // Human
-						$valid = $avail = (in_array($ws_c, array(1,2,3,4,5,6))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(1, 2, 3, 4, 5, 6))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 2: // Cassian
-						$valid = $avail = (in_array($ws_c, array(1,2,3,4,5,6))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(1, 2, 3, 4, 5, 6))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 3: // Granok
-						$valid = $avail = (in_array($ws_c, array(1,5,6))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(1, 5, 6))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 4: // Draken
-						$valid = $avail = (in_array($ws_c, array(1,3,4))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(1, 3, 4))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 5: // Aurin
-						$valid = $avail = (in_array($ws_c, array(2,3,4))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(2, 3, 4))) ? true : false;
 						$faction = 1;
-					break;
-					
+						break;
+
 					case 6: // Chua
-						$valid = $avail = (in_array($ws_c, array(2,3,5,6))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(2, 3, 5, 6))) ? true : false;
 						$faction = 2;
-					break;
-					
+						break;
+
 					case 7: // Mordesh
-						$valid = $avail = (in_array($ws_c, array(1,3,4,5,6))) ? true : false;
+						$valid = $avail = (in_array($ws_c, array(1, 3, 4, 5, 6))) ? true : false;
 						$faction = 1;
-					break;
-					
-					case 8:  // Mechari
-						$valid = $avail = (in_array($ws_c, array(1,4,5,6))) ? true : false;
+						break;
+
+					case 8: // Mechari
+						$valid = $avail = (in_array($ws_c, array(1, 4, 5, 6))) ? true : false;
 						$faction = 2;
-					break;
+						break;
 				}
 
-				$ws_g = max(0, $ws_g-1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
+				$ws_g = max(0, $ws_g - 1); // 0 = none, 1 = male, 2 = female, but we need a 0/1 map
 
 				if ($valid)
 				{
 					//$avatar = 'wildstar/' . $ws_r . '-' . $wsg . '-' . $ws_c . '.jpg'; // Valid
 					$avatar = 'wildstar/' . $ws_r . '.jpg'; // Valid
 				}
-				else {
-					$avatar = 'wildstar/' . $ws_r . '.jpg';  // Invalid, show generic race avatar
+				else
+				{
+					$avatar = 'wildstar/' . $ws_r . '.jpg'; // Invalid, show generic race avatar
 				}
 
 				$width = 64;
@@ -810,20 +846,20 @@ class pbwow
 			}
 
 			/**
-			* Event to modify the profile field processing script after the supported games are processed
-			*
-			* @event paybas.pbwow.modify_process_pf_after
-			* @var	array	profile_row		Array with users profile field data 
-			* @var	array	tpl_fields		Array with template data fields
-			* @var	string	avatars_path	The path to the dir containing the game-avatars
-			* @var	string	avatar			Filename of the avatar img
-			* @var	bool	valid			Whether an PF-value combination is valid (only used in certain cases)
-			* @var	bool	avail			Whether an avatar is available (only used in certain cases)
-			* @var	int		width			The width of the avatar img (in pixels)
-			* @var	int		height			The height of the avatar img (in pixels)
-			* @var	int		faction			The faction of the character
-			* @since 3.0.0
-			*/
+			 * Event to modify the profile field processing script after the supported games are processed
+			 *
+			 * @event paybas.pbwow.modify_process_pf_after
+			 * @var    array    profile_row        Array with users profile field data
+			 * @var    array    tpl_fields        Array with template data fields
+			 * @var    string    avatars_path    The path to the dir containing the game-avatars
+			 * @var    string    avatar            Filename of the avatar img
+			 * @var    bool    valid            Whether an PF-value combination is valid (only used in certain cases)
+			 * @var    bool    avail            Whether an avatar is available (only used in certain cases)
+			 * @var    int        width            The width of the avatar img (in pixels)
+			 * @var    int        height            The height of the avatar img (in pixels)
+			 * @var    int        faction            The faction of the character
+			 * @since 3.0.0
+			 */
 			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'valid', 'avail', 'width', 'height', 'faction');
 			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_after', compact($vars)));
 
@@ -831,8 +867,8 @@ class pbwow
 			if ($faction || $avatar)
 			{
 				$tpl_fields['row'] += array(
-					'PROFILE_PBFACTION'			=> ($faction) ? $faction : false,
-					'PROFILE_PBAVATAR'			=> '<img src="' . $avatars_path . $avatar . '" width="' . $width . '" height="' . $height . '" alt="" />',
+					'PROFILE_PBFACTION' => ($faction) ? $faction : false,
+					'PROFILE_PBAVATAR'  => '<img src="' . $avatars_path . $avatar . '" width="' . $width . '" height="' . $height . '" alt="" />',
 				);
 			}
 		}
@@ -842,36 +878,38 @@ class pbwow
 
 
 	/**
-	* These functions allow us to inject the posts-rank and PBWoW avatar into the viewtopic page output
-	*/
+	 * These functions allow us to inject the posts-rank and PBWoW avatar into the viewtopic page output
+	 */
 	public function viewtopic_cache_guest($user_cache_data)
 	{
 		$user_cache_data += array(
-			'posts_rank_title'			=> '',
-			'posts_rank_image'			=> '',
-			'posts_rank_image_src'		=> '',
+			'posts_rank_title'     => '',
+			'posts_rank_image'     => '',
+			'posts_rank_image_src' => '',
 		);
+
 		return $user_cache_data;
 	}
 
-	public function viewtopic_cache_user($user_cache_data, $poster_id, $row)
+	public function viewtopic_cache_user($user_cache_data, $row)
 	{
 		$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
 
 		$user_cache_data += array(
-			'posts_rank_title'			=> isset($posts_rank_title) ? $posts_rank_title : '',
-			'posts_rank_image'			=> isset($posts_rank_image) ? $posts_rank_image : '',
-			'posts_rank_image_src'		=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',
+			'posts_rank_title'     => isset($posts_rank_title) ? $posts_rank_title : '',
+			'posts_rank_image'     => isset($posts_rank_image) ? $posts_rank_image : '',
+			'posts_rank_image_src' => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
 		);
+
 		return $user_cache_data;
 	}
 
 	public function viewtopic_modify_post($user_poster_data, $post_row, $cp_row)
 	{
 		$post_row += array(
-			'POSTS_RANK_TITLE'		=> $user_poster_data['posts_rank_title'],
-			'POSTS_RANK_IMG'		=> $user_poster_data['posts_rank_image'],
-			'POSTS_RANK_IMG_SRC'	=> $user_poster_data['posts_rank_image_src'],
+			'POSTS_RANK_TITLE'   => $user_poster_data['posts_rank_title'],
+			'POSTS_RANK_IMG'     => $user_poster_data['posts_rank_image'],
+			'POSTS_RANK_IMG_SRC' => $user_poster_data['posts_rank_image_src'],
 		);
 
 		if ($this->pbwow_config['avatars_enable'] && empty($user_poster_data['avatar']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
@@ -883,8 +921,8 @@ class pbwow
 	}
 
 	/**
-	* Injects the PBWoW avatar into the view-PM page
-	*/
+	 * Injects the PBWoW avatar into the view-PM page
+	 */
 	public function ucp_pm_view_messsage($msg_data, $cp_row)
 	{
 		if ($this->pbwow_config['avatars_enable'] && empty($msg_data['AUTHOR_AVATAR']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
@@ -896,8 +934,8 @@ class pbwow
 	}
 
 	/**
-	* Injects the PBWoW avatar into the view-profile page data preparation
-	*/
+	 * Injects the PBWoW avatar into the view-profile page data preparation
+	 */
 	public function memberlist_view_profile($member, $profile_fields)
 	{
 		if ($this->pbwow_config['avatars_enable'] && isset($profile_fields['row']['PROFILE_PBAVATAR']))
@@ -909,16 +947,16 @@ class pbwow
 	}
 
 	/**
-	* Injects the post-rank and PBWoW avatar into the view-profile page
-	*/
+	 * Injects the post-rank and PBWoW avatar into the view-profile page
+	 */
 	public function memberlist_prepare_profile($data, $template_data)
 	{
 		$this->get_user_rank_global(0, $data['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
 
 		$template_data += array(
-			'POSTS_RANK_TITLE'		=> isset($posts_rank_title) ? $posts_rank_title : '',
-			'POSTS_RANK_IMG'		=> isset($posts_rank_image) ? $posts_rank_image : '',
-			'POSTS_RANK_IMG_SRC'	=> isset($posts_rank_image_src) ? $posts_rank_image_src : '',
+			'POSTS_RANK_TITLE'   => isset($posts_rank_title) ? $posts_rank_title : '',
+			'POSTS_RANK_IMG'     => isset($posts_rank_image) ? $posts_rank_image : '',
+			'POSTS_RANK_IMG_SRC' => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
 		);
 
 		if ($this->pbwow_config['avatars_enable'] && empty($data['user_avatar']) && isset($data['pbavatar']))
@@ -931,11 +969,11 @@ class pbwow
 
 
 	/**
-	* Modify the topic preview display output, by inserting the custom avatar
-	* if no "normal" avatar is specified (and if a CPF avatar-generated is available).
-	*
-	* @var	array	rowset	Array with topics data (in topic_id => topic_data format)
-	*/
+	 * Modify the topic preview display output, by inserting the custom avatar
+	 * if no "normal" avatar is specified (and if a CPF avatar-generated is available).
+	 *
+	 * @var    array    rowset    Array with topics data (in topic_id => topic_data format)
+	 */
 	public function topic_preview_modify_row($rowset)
 	{
 		if (!$this->extension_manager->is_enabled('vse/topicpreview') || !$this->pbwow_config['avatars_enable'])
@@ -976,9 +1014,9 @@ class pbwow
 			// Get the profile data of the specified users
 			$pf_data = $this->profilefields_manager->grab_profile_fields_data($user_ids);
 
-			foreach ($pf_data as $user_id => $profile_fields)
+			foreach ($pf_data as $profile_fields)
 			{
-				foreach ($profile_fields as $used_ident => $profile_field)
+				foreach ($profile_fields as $profile_field)
 				{
 					$pf_fields[] = $profile_field;
 				}
@@ -1012,17 +1050,19 @@ class pbwow
 				}
 			}
 		}
+
 		return $rowset;
 	}
 
 	/**
-	* Modify the topic preview display output, by inserting the custom avatar
-	* if no "normal" avatar is specified (and if a PBWoW avatar is available).
-	*
-	* @var array $row 		Row data
-	* @var array $block		Template vars array
-	* @var int $tp_avatars	Display avatars setting
-	*/
+	 * Modify the topic preview display output, by inserting the custom avatar
+	 * if no "normal" avatar is specified (and if a PBWoW avatar is available).
+	 *
+	 * @var array $row        Row data
+	 * @var array $block      Template vars array
+	 * @var int   $tp_avatars Display avatars setting
+	 * @return array
+	 */
 	public function topic_preview_modify_display($row, $block, $tp_avatars)
 	{
 		if ($tp_avatars && $this->pbwow_config['avatars_enable'])
@@ -1037,27 +1077,28 @@ class pbwow
 				$block['TOPIC_PREVIEW_LAST_AVATAR'] = $row['lp_pbavatar'];
 			}
 		}
+
 		return $block;
 	}
 
 
 	/**
-	* This is a modified copy of the get_user_rank function, as found in functions_display.php
-	* It has been put here so it can be called from any page, which is needed for some PBWoW
-	* features. It also reduces the risk of undefined function errors.
-	*
-	* @param int $user_rank the current stored users rank id
-	* @param int $user_posts the users number of posts
-	* @param string &$rank_title the rank title will be stored here after execution
-	* @param string &$rank_img the rank image as full img tag is stored here after execution
-	* @param string &$rank_img_src the rank image source is stored here after execution
-	*
-	* Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
-	*/
+	 * This is a modified copy of the get_user_rank function, as found in functions_display.php
+	 * It has been put here so it can be called from any page, which is needed for some PBWoW
+	 * features. It also reduces the risk of undefined function errors.
+	 *
+	 * @param int    $user_rank     the current stored users rank id
+	 * @param int    $user_posts    the users number of posts
+	 * @param string &$rank_title   the rank title will be stored here after execution
+	 * @param string &$rank_img     the rank image as full img tag is stored here after execution
+	 * @param string &$rank_img_src the rank image source is stored here after execution
+	 *
+	 * Note: since we do not want to break backwards-compatibility, this function will only properly assign ranks to guests if you call it for them with user_posts == false
+	 */
 	public function get_user_rank_global($user_rank, $user_posts, &$rank_title, &$rank_img, &$rank_img_src)
 	{
 		$ranks = $this->ranks;
-	
+
 		if (empty($ranks))
 		{
 			$ranks = $this->ranks = $this->cache->obtain_ranks();
@@ -1088,8 +1129,8 @@ class pbwow
 	}
 
 	/**
-	* Gets the PBWoW config data from the DB, or the cache if it is present
-	*/
+	 * Gets the PBWoW config data from the DB, or the cache if it is present
+	 */
 	protected function get_pbwow_config()
 	{
 		if (($this->pbwow_config = $this->cache->get('pbwow_config')) != true)
@@ -1100,7 +1141,7 @@ class pbwow
 			{
 				$sql = 'SELECT config_name, config_value FROM ' . $this->pbwow_config_table;
 				$result = $this->db->sql_query($sql);
-		
+
 				while ($row = $this->db->sql_fetchrow($result))
 				{
 					$this->pbwow_config[$row['config_name']] = $row['config_value'];
@@ -1113,4 +1154,5 @@ class pbwow
 	}
 
 }
+
 ?>
