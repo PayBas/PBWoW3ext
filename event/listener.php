@@ -43,7 +43,7 @@ class listener implements EventSubscriberInterface
 			'core.viewtopic_cache_user_data'             => 'viewtopic_cache_user',
 			'core.viewtopic_modify_post_row'             => 'viewtopic_modify_post',
 
-			'core.ucp_pm_view_messsage'                  => 'ucp_pm_view_messsage',
+			'core.ucp_pm_view_messsage'                  => 'ucp_pm_view_message',
 
 			'core.memberlist_view_profile'               => 'memberlist_view_profile',
 			'core.memberlist_prepare_profile_data'       => 'memberlist_prepare_profile',
@@ -59,12 +59,12 @@ class listener implements EventSubscriberInterface
 	/**
 	 * Global append functions
 	 */
-	public function page_header($event)
+	public function page_header()
 	{
 		$this->pbwow->global_style_append();
 	}
 
-	public function page_header_after($event)
+	public function page_header_after()
 	{
 		$this->pbwow->global_style_append_after();
 	}
@@ -100,7 +100,7 @@ class listener implements EventSubscriberInterface
 		$event['post_row'] = $this->pbwow->viewtopic_modify_post($event['user_poster_data'], $event['post_row'], $event['cp_row']);
 	}
 
-	public function ucp_pm_view_messsage($event)
+	public function ucp_pm_view_message($event)
 	{
 		$event['msg_data'] = $this->pbwow->ucp_pm_view_messsage($event['msg_data'], $event['cp_row']);
 	}
