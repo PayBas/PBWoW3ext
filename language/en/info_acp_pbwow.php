@@ -41,6 +41,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_DETECTED'			=> 'detected',
 	'PBWOW_NOT_DETECTED'		=> 'not detected',
 	'PBWOW_OBSOLETE'			=> 'no longer used',
+	'PBWOW_FATAL'				=> 'Fatal error! This really should never happen.',
 
 	'LOG_PBWOW_CONFIG'			=> '<strong>Altered PBWoW settings</strong><br />&raquo; %s',
 
@@ -54,7 +55,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_DB_CHECK'					=> 'PBWoW Database Check',
 	'PBWOW_DB_GOOD'						=> 'PBWoW configuration table found (%s)',
 	'PBWOW_DB_BAD'						=> 'No PBWoW configuration table found. Make sure that the table (%s) exists in your phpBB database.',
-	'PBWOW_DB_BAD_EXPLAIN'				=> 'Run the PBWoW installation script included in the MOD package. This will create and populate the appropriate database table.',
+	'PBWOW_DB_BAD_EXPLAIN'				=> 'Try to disable and re-enable the PBWoW 3 extension. If that does not work, disable the extension and delete the data. Then try enabling it again.',
 
 	'PBWOW_VERSION_CHECK'				=> 'PBWoW Version Check',
 	'PBWOW_LATEST_VERSION'				=> 'Latest version',
@@ -72,8 +73,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_CHARSDB_GOOD'				=> 'PBWoW characters table found (%s)',
 	'PBWOW_CHARSDB_BAD'					=> 'No PBWoW characters table found. Make sure that the table (%s) exists in your phpBB database.',
 	'PBWOW_CHARSDB_BAD_EXPLAIN'			=> 'The required PBWoW 3 Battle.net Characters database table should have been installed automatically when you installed the PBWoW extension. Please uninstall it, delete the data, and try installing it again.',
-	'PBWOW_CHARSCONSTANTS_BAD'			=> 'Constants not set! This means that the PBWoW 2 MOD was not applied correctly!',
-	'PBWOW_CHARSCONSTANTS_BAD_EXPLAIN'	=> 'Try installing the MOD again, or manually add the following line to your includes/constants.php file:<br /><br />define(\'PBWOW2_CHARS_TABLE\', $table_prefix . \'pbwow2_chars\');',
 	'PBWOW_FOPEN_BAD'					=> 'Your server does not allow &quot;file_get_contents&quot; (fopen). Check your php.ini file to set &quot;allow_url_fopen&quot;, or contact your server host.',
 
 	'PBWOW_DONATE'						=> 'Donate to PBWoW',
