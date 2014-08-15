@@ -173,7 +173,8 @@ class pbwow
 		$tpl_vars += array(
 			'HEADERLINKS_CODE' 	=> ($headerlinks_enable && isset($headerlinks_code)) ? html_entity_decode($headerlinks_code) : false,
 			'ADS_INDEX_CODE' 	=> ($ads_index_enable && isset($ads_index_code)) ? html_entity_decode($ads_index_code) : false,
-			'S_SMALL_RANKS' 	=> isset($smallranks_enable) ? $smallranks_enable : false
+			'S_PBWOW_AVATARS'	=> isset($avatars_enable) ? $avatars_enable : false,
+			'S_SMALL_RANKS' 	=> isset($smallranks_enable) ? $smallranks_enable : false //TODO use this somehow
 		);
 
 		// Assign vars
@@ -327,11 +328,8 @@ class pbwow
 
 						// Get API data (should use CURL instead, but I'll do it later)
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
-						// TODO: move away from CURL
-						$context = stream_context_create(array('http' =>
-																   array('timeout' => $apitimeout)
-						));
-						$response = @file_get_contents($URL, false, $context);
+
+						$response = $this->file_get_contents_curl($URL);
 
 						if ($response === false)
 						{
@@ -1155,6 +1153,21 @@ class pbwow
 		}
 	}
 
+	/**
+	 * Use cURL to get data from remote servers (such as Battle.net avatars)
+	 */
+	protected function file_get_contents_curl($url) {
+		$ch = curl_init();
+		// TODO: make this asynchronous somehow, so the page doesn't have to wait for Battle.net
+		curl_setopt($ch, CURLOPT_HEADER, 0);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_URL, $url);
+
+		$data = curl_exec($ch);
+		curl_close($ch);
+
+		return $data;
+	}
 }
 
 ?>
