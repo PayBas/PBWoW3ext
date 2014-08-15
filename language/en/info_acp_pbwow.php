@@ -68,7 +68,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_CPF_LOAD_LOCATION'			=> 'Enable this via ACP > General > Board Configuration > Board Features',
 	'PBWOW_GAME_EXPLAIN'				=> 'The custom profile fields for this game are currently disabled.',
 
-	'PBWOW_BNETCHARS'					=> 'Battle.net API character information functionality',
+	'PBWOW_BNETCHARS_CHECK'				=> 'Battle.net API character information functionality',
 	'PBWOW_CHARSDB_GOOD'				=> 'PBWoW characters table found (%s)',
 	'PBWOW_CHARSDB_BAD'					=> 'No PBWoW characters table found. Make sure that the table (%s) exists in your phpBB database.',
 	'PBWOW_CHARSDB_BAD_EXPLAIN'			=> 'The required PBWoW 3 Battle.net Characters database table should have been installed automatically when you installed the PBWoW extension. Please uninstall it, delete the data, and try installing it again.',
