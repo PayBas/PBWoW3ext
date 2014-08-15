@@ -169,12 +169,14 @@ class pbwow
 			}
 		}
 
-		// Assign vars
+		// Misc
 		$tpl_vars += array(
 			'HEADERLINKS_CODE' 	=> ($headerlinks_enable && isset($headerlinks_code)) ? html_entity_decode($headerlinks_code) : false,
 			'ADS_INDEX_CODE' 	=> ($ads_index_enable && isset($ads_index_code)) ? html_entity_decode($ads_index_code) : false,
+			'S_SMALL_RANKS' 	=> isset($smallranks_enable) ? $smallranks_enable : false
 		);
 
+		// Assign vars
 		$this->template->assign_vars($tpl_vars);
 		$this->template->append_var('BODY_CLASS', $body_class);
 	}
@@ -211,7 +213,7 @@ class pbwow
 	 * @var    int|array $user_ids   Single user id or an array of ids
 	 * @var    array     $field_data Array with profile fields data
 	 *
-	 * @return    array    $field_data        Array with modified profile fields data
+	 * @return array     $field_data Array with modified profile fields data
 	 */
 	public function process_pf_grab($user_ids, $field_data)
 	{
@@ -325,7 +327,7 @@ class pbwow
 
 						// Get API data (should use CURL instead, but I'll do it later)
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
-						//var_dump($URL);
+						// TODO: move away from CURL
 						$context = stream_context_create(array('http' =>
 																   array('timeout' => $apitimeout)
 						));
@@ -479,10 +481,10 @@ class pbwow
 	 * Processes the users's profile-field data and generates an avatar (when available).
 	 * It also tries to determine the faction of a gaming character, based on the data.
 	 *
-	 * @var        array    profile_row        Array with users profile field data
-	 * @var        array    tpl_fields        Array with template data fields
+	 * @var     array  profile_row  Array with users profile field data
+	 * @var     array  tpl_fields   Array with template data fields
 	 *
-	 * @return    array    $tpl_fields        Array with modified template data fields
+	 * @return  array  $tpl_fields  Array with modified template data fields
 	 */
 	public function process_pf_show($profile_row, $tpl_fields)
 	{
@@ -506,14 +508,14 @@ class pbwow
 			 * Event to modify the profile field processing script before the supported games are processed
 			 *
 			 * @event paybas.pbwow.modify_process_pf_before
-			 * @var    array    profile_row        Array with users profile field data
-			 * @var    array    tpl_fields        Array with template data fields
-			 * @var    string    avatars_path    The path to the dir containing the game-avatars
-			 * @var    string    avatar            Filename of the avatar img
-			 * @var    int        width            The width of the avatar img (in pixels)
-			 * @var    int        height            The height of the avatar img (in pixels)
-			 * @var    int        faction            The faction of the character
-			 * @var    bool    function_override    Return the results right after this, or continue?
+			 * @var    array   profile_row       Array with users profile field data
+			 * @var    array   tpl_fields        Array with template data fields
+			 * @var    string  avatars_path      The path to the dir containing the game-avatars
+			 * @var    string  avatar            Filename of the avatar img
+			 * @var    int     width             The width of the avatar img (in pixels)
+			 * @var    int     height            The height of the avatar img (in pixels)
+			 * @var    int     faction           The faction of the character
+			 * @var    bool    function_override Return the results right after this, or continue?
 			 * @since 3.0.0
 			 */
 			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'width', 'height', 'faction', 'function_override');
@@ -535,9 +537,9 @@ class pbwow
 			$ws_c = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_CLASS_VALUE_RAW']) ? $profile_row['pb_wildstar_class']['value'] - 1 : null; // Get the Wildstar class ID
 			$ws_g = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW']) ? $profile_row['pb_wildstar_gender']['value'] - 1 : null; // Get the Wildstar gender ID
 			$ws_p = isset($tpl_fields['row']['PROFILE_PB_WILDSTAR_PATH_VALUE_RAW']) ? $profile_row['pb_wildstar_path']['value'] - 1 : null; // Get the Wildstar path ID
-			//$bneth = (isset($tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETHOST_VALUE'] : NULL; // Get the Battle.net host
-			//$bnetr = (isset($tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETREALM_VALUE'] : NULL; // Get the Battle.net realm
-			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PBBNETNAME_VALUE'] : NULL; // Get the Battle.net character name
+			//$bnet_h = (isset($tpl_fields['row']['PROFILE_PB_BNET_HOST_VALUE'])) ? $tpl_fields['row']['PROFILE_PB_BNET_HOST_VALUE'] : NULL; // Get the Battle.net host
+			//$bnet_r = (isset($tpl_fields['row']['PROFILE_PB_BNET_REALM_VALUE'])) ? $tpl_fields['row']['PROFILE_PB_BNET_REALM_VALUE'] : NULL; // Get the Battle.net realm
+			//$bnet_n = (isset($tpl_fields['row']['PROFILE_PB_BNET_NAME_VALUE'])) ? $tpl_fields['row']['PROFILE_PB_BNET_NAME_VALUE'] : NULL; // Get the Battle.net character name
 			//$bnet_u = isset($tpl_fields['row']['PROFILE_PB_BNET_URL_VALUE']) ? $profile_row['pb_bnet_url']['value'] : null; // Get the Battle.net avatar
 			$bnet_a = isset($tpl_fields['row']['PROFILE_PB_BNET_AVATAR_VALUE']) ? $profile_row['pb_bnet_avatar']['value'] : null; // Get the Battle.net avatar
 
@@ -849,15 +851,15 @@ class pbwow
 			 * Event to modify the profile field processing script after the supported games are processed
 			 *
 			 * @event paybas.pbwow.modify_process_pf_after
-			 * @var    array    profile_row        Array with users profile field data
-			 * @var    array    tpl_fields        Array with template data fields
-			 * @var    string    avatars_path    The path to the dir containing the game-avatars
-			 * @var    string    avatar            Filename of the avatar img
-			 * @var    bool    valid            Whether an PF-value combination is valid (only used in certain cases)
-			 * @var    bool    avail            Whether an avatar is available (only used in certain cases)
-			 * @var    int        width            The width of the avatar img (in pixels)
-			 * @var    int        height            The height of the avatar img (in pixels)
-			 * @var    int        faction            The faction of the character
+			 * @var   array   profile_row   Array with users profile field data
+			 * @var   array   tpl_fields    Array with template data fields
+			 * @var   string  avatars_path  The path to the dir containing the game-avatars
+			 * @var   string  avatar        Filename of the avatar img
+			 * @var   bool    valid         Whether an PF-value combination is valid (only used in certain cases)
+			 * @var   bool    avail         Whether an avatar is available (only used in certain cases)
+			 * @var   int     width         The width of the avatar img (in pixels)
+			 * @var   int     height        The height of the avatar img (in pixels)
+			 * @var   int     faction       The faction of the character
 			 * @since 3.0.0
 			 */
 			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'valid', 'avail', 'width', 'height', 'faction');
