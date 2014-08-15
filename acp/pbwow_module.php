@@ -45,7 +45,7 @@ class pbwow_module
 		$legacy_dbtable1 = defined('PBWOW_CONFIG_TABLE') ? PBWOW_CONFIG_TABLE : '';
 		$legacy_dbtable2 = defined('PBWOW2_CONFIG_TABLE') ? PBWOW2_CONFIG_TABLE : '';
 
-		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $chars_dbokay = $new_config = false;
+		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $chars_constokay = $chars_dbokay = $new_config = $ext_version = false;
 
 		// Check if constants have been set correctly
 		// if yes, check if the config table exists
@@ -81,6 +81,12 @@ class pbwow_module
 
 		if ($mode == 'overview')
 		{
+			// Get the PBWoW extesion version from the composer.json file
+			$ext_manager = $phpbb_container->get('ext.manager');
+			$ext_meta_manager = $ext_manager->create_extension_metadata_manager('paybas/pbwow', $template);
+			$ext_meta_data = $ext_meta_manager->get_metadata('version');
+			$ext_version = isset($ext_meta_data['version']) ? $ext_meta_data['version'] : '';
+
 			$cpflist = $this->get_profile_fields_list();
 
 			$style_root = ($phpbb_root_path . 'styles/pbwow3/');
@@ -263,7 +269,7 @@ class pbwow_module
 					'S_INDEX'               => true,
 
 					'S_CHECK_V'             => (empty($versions)) ? false : true,
-					'EXT_VERSION'           => (isset($config['pbwow3_version'])) ? $config['pbwow3_version'] : '',
+					'EXT_VERSION'           => $ext_version,
 					'EXT_VERSION_V'         => (isset($versions['ext_version']['version'])) ? $versions['ext_version']['version'] : '',
 					'STYLE_VERSION'         => (isset($style_version)) ? $style_version : '',
 					'STYLE_VERSION_V'       => (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',
