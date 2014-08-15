@@ -22,19 +22,6 @@ class pbwow_module
 {
 	public $u_action;
 
-	protected $db;
-	protected $user;
-	protected $template;
-	protected $cache;
-	protected $phpbb_container;
-
-	protected $config;
-	protected $phpbb_root_path;
-	protected $phpEx;
-	protected $table_prefix;
-
-	protected $db_tools;
-
 	protected $fields_table;
 	protected $pbwow_config_table;
 	protected $pbwow_config;
@@ -42,47 +29,36 @@ class pbwow_module
 
 	function main($id, $mode)
 	{
-		global $db, $user, $template, $cache, $phpbb_container;
-		global $config, $phpbb_root_path, $phpEx, $table_prefix;
+		global $user, $request, $template, $cache, $log;
+		global $config, $phpbb_root_path, $table_prefix, $phpbb_container;
 
-		$this->db = $db;
-		$this->user = $user;
-		$this->template = $template;
-		$this->cache = $cache;
-		$this->phpbb_container = $phpbb_container;
-
-		$this->config = $config;
-		$this->phpbb_root_path = $phpbb_root_path;
-		$this->phpEx = $phpEx;
-		$this->table_prefix = $table_prefix;
-
-		$this->db_tools = $phpbb_container->get('dbal.tools');
+		$db_tools = $phpbb_container->get('dbal.tools');
 
 		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->pbwow_config_table = $phpbb_container->getParameter('tables.pbwow3_config');
 		$this->pbwow_chars_table = $phpbb_container->getParameter('tables.pbwow3_chars');
 
-		$this->user->add_lang('acp/board');
+		$user->add_lang('acp/board');
 		$this->tpl_name = 'acp_pbwow3';
 
 		$allow_fopen = ini_get('allow_url_fopen') ? true : false;
 		$legacy_dbtable1 = defined('PBWOW_CONFIG_TABLE') ? PBWOW_CONFIG_TABLE : '';
 		$legacy_dbtable2 = defined('PBWOW2_CONFIG_TABLE') ? PBWOW2_CONFIG_TABLE : '';
 
-		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $chars_dbokay = false;
+		$constantsokay = $dbokay = $legacy_constants = $legacy_db_active = $chars_dbokay = $new_config = false;
 
 		// Check if constants have been set correctly
 		// if yes, check if the config table exists
 		// if yes, load the config variables
-		if ($this->pbwow_config_table == ($this->table_prefix . 'pbwow3_config'))
+		if ($this->pbwow_config_table == ($table_prefix . 'pbwow3_config'))
 		{
 			$constantsokay = true;
 
-			if ($this->db_tools->sql_table_exists($this->pbwow_config_table))
+			if ($db_tools->sql_table_exists($this->pbwow_config_table))
 			{
 				$dbokay = true;
 				$this->get_pbwow_config();
-				$this->new_config = $this->pbwow_config;
+				$new_config = $this->pbwow_config;
 			}
 		}
 
@@ -90,16 +66,16 @@ class pbwow_module
 		{
 			$chars_constokay = true;
 
-			if ($this->db_tools->sql_table_exists($this->pbwow_chars_table))
+			if ($db_tools->sql_table_exists($this->pbwow_chars_table))
 			{
 				$chars_dbokay = true;
 			}
 		}
 
-		$cpf_game_toggle = request_var('game', '');
+		$cpf_game_toggle = $request->variable('game', '');
 		if (!empty($cpf_game_toggle))
 		{
-			$activate = request_var('enable', '');
+			$activate = $request->variable('enable', '');
 			$this->toggle_game_cpf($cpf_game_toggle, $activate);
 		}
 
@@ -107,7 +83,7 @@ class pbwow_module
 		{
 			$cpflist = $this->get_profile_fields_list();
 
-			$style_root = ($this->phpbb_root_path . 'styles/pbwow3/');
+			$style_root = ($phpbb_root_path . 'styles/pbwow3/');
 
 			if (file_exists($style_root . 'style.cfg'))
 			{
@@ -115,7 +91,7 @@ class pbwow_module
 				$style_version = (isset($values['style_version'])) ? $values['style_version'] : '';
 			}
 
-			$versions = $this->obtain_remote_version(request_var('versioncheck_force', false), true);
+			$versions = $this->obtain_remote_version($request->variable('versioncheck_force', false), true);
 
 			// Check if old constants are still being used
 			if (!empty($legacy_dbtable1) || !empty($legacy_dbtable2))
@@ -124,7 +100,7 @@ class pbwow_module
 			}
 
 			// Check if old table still exists
-			if ($this->db_tools->sql_table_exists($legacy_dbtable1) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $this->db_tools->sql_table_exists($legacy_dbtable2) || $this->db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
+			if ($db_tools->sql_table_exists($legacy_dbtable1) || $db_tools->sql_table_exists($table_prefix . 'pbwow_config') || $db_tools->sql_table_exists($legacy_dbtable2) || $db_tools->sql_table_exists($table_prefix . 'pbwow2_config'))
 			{
 				$legacy_db_active = true;
 			}
@@ -183,12 +159,17 @@ class pbwow_module
 					)
 				);
 				break;
+			default:
+				$display_vars = array(
+					'title' => 'ACP_PBWOW3_CATEGORY',
+					'vars'  => array()
+				);
+				break;
 		}
 
-		$action = request_var('action', '');
-		$submit = (isset($_POST['submit'])) ? true : false;
+		$submit = $request->is_set_post('submit');
 
-		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc(request_var('config', array('' => ''), true)) : $this->new_config;
+		$cfg_array = (isset($_REQUEST['config'])) ? utf8_normalize_nfc($request->variable('config', array('' => ''), true)) : $new_config;
 		$error = array();
 
 		// We validate the complete config if we want
@@ -208,7 +189,7 @@ class pbwow_module
 				continue;
 			}
 
-			$this->new_config[$config_name] = $config_value = $cfg_array[$config_name];
+			$new_config[$config_name] = $config_value = $cfg_array[$config_name];
 
 			if ($submit)
 			{
@@ -220,7 +201,7 @@ class pbwow_module
 		{
 			if ($mode != 'overview')
 			{
-				add_log('admin', 'LOG_PBWOW_CONFIG', $user->lang['ACP_PBWOW3_' . strtoupper($mode)]);
+				$log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PBWOW_CONFIG');
 				$cache->purge();
 				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 			}
@@ -282,7 +263,7 @@ class pbwow_module
 					'S_INDEX'               => true,
 
 					'S_CHECK_V'             => (empty($versions)) ? false : true,
-					'EXT_VERSION'           => (isset($this->config['pbwow3_version'])) ? $this->config['pbwow3_version'] : '',
+					'EXT_VERSION'           => (isset($config['pbwow3_version'])) ? $config['pbwow3_version'] : '',
 					'EXT_VERSION_V'         => (isset($versions['ext_version']['version'])) ? $versions['ext_version']['version'] : '',
 					'STYLE_VERSION'         => (isset($style_version)) ? $style_version : '',
 					'STYLE_VERSION_V'       => (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',
@@ -357,7 +338,7 @@ class pbwow_module
 				$l_explain = (isset($user->lang[$vars['lang'] . '_EXPLAIN'])) ? $user->lang[$vars['lang'] . '_EXPLAIN'] : '';
 			}
 
-			$content = build_cfg_template($type, $config_key, $this->new_config, $config_key, $vars);
+			$content = build_cfg_template($type, $config_key, $new_config, $config_key, $vars);
 
 			if (empty($content))
 			{
@@ -389,19 +370,21 @@ class pbwow_module
 	 */
 	function get_profile_fields_list()
 	{
+		global $db;
+
 		$sql = 'SELECT *
-			FROM ' . $this->fields_table . " f
-			WHERE f.field_active = 1
-			ORDER BY f.field_order";
-		$result = $this->db->sql_query($sql);
+			FROM ' . $this->fields_table . "
+			WHERE field_active = 1
+			ORDER BY field_order";
+		$result = $db->sql_query($sql);
 
 		$profile_fields_list = array();
 
-		while ($row = $this->db->sql_fetchrow($result))
+		while ($row = $db->sql_fetchrow($result))
 		{
 			$profile_fields_list[$row['field_name']] = $row;
 		}
-		$this->db->sql_freeresult($result);
+		$db->sql_freeresult($result);
 
 		return $profile_fields_list;
 	}
@@ -411,11 +394,13 @@ class pbwow_module
 	 */
 	function toggle_game_cpf($game, $enable)
 	{
+		global $db;
+
 		$value = $enable ? '1' : '0';
 		$sql = 'UPDATE ' . $this->fields_table . "
 			SET field_active = '" . $value . "'
-			WHERE field_ident " . $this->db->sql_like_expression($this->db->get_any_char . $game . $this->db->get_any_char);
-		$this->db->sql_query($sql);
+			WHERE field_ident " . $db->sql_like_expression($db->get_any_char() . $game . $db->get_any_char());
+		$db->sql_query($sql);
 	}
 
 ##################################################
@@ -429,20 +414,22 @@ class pbwow_module
 	 */
 	function get_pbwow_config()
 	{
-		if (($this->pbwow_config = $this->cache->get('pbwow_config')) !== true)
+		global $cache, $db;
+
+		if (($this->pbwow_config = $cache->get('pbwow_config')) !== true)
 		{
 			$this->pbwow_config = array();
 
 			$sql = 'SELECT * FROM ' . $this->pbwow_config_table;
-			$result = $this->db->sql_query($sql);
+			$result = $db->sql_query($sql);
 
-			while ($row = $this->db->sql_fetchrow($result))
+			while ($row = $db->sql_fetchrow($result))
 			{
 				$this->pbwow_config[$row['config_name']] = $row['config_value'];
 			}
-			$this->db->sql_freeresult($result);
+			$db->sql_freeresult($result);
 
-			$this->cache->put('pbwow_config', $this->pbwow_config);
+			$cache->put('pbwow_config', $this->pbwow_config);
 		}
 	}
 
@@ -451,20 +438,22 @@ class pbwow_module
 	 */
 	function set_pbwow_config($config_name, $config_value)
 	{
-		$sql = 'UPDATE ' . $this->pbwow_config_table . "
-			SET config_value = '" . $this->db->sql_escape($config_value) . "'
-			WHERE config_name = '" . $this->db->sql_escape($config_name) . "'";
-		$this->db->sql_query($sql);
+		global $db;
 
-		if (!$this->db->sql_affectedrows() && !isset($this->pbwow_config[$config_name]))
+		$sql = 'UPDATE ' . $this->pbwow_config_table . "
+			SET config_value = '" . $db->sql_escape($config_value) . "'
+			WHERE config_name = '" . $db->sql_escape($config_name) . "'";
+		$db->sql_query($sql);
+
+		if (!$db->sql_affectedrows() && !isset($this->pbwow_config[$config_name]))
 		{
 			$sql = 'INSERT INTO ' . $this->pbwow_config_table . ' ' .
-				$this->db->sql_build_array('INSERT', array(
+				$db->sql_build_array('INSERT', array(
 						'config_name'    => $config_name,
 						'config_value'   => $config_value,
 						'config_default' => '')
 				);
-			$this->db->sql_query($sql);
+			$db->sql_query($sql);
 		}
 		$this->pbwow_config[$config_name] = $config_value;
 	}
@@ -474,14 +463,15 @@ class pbwow_module
 	 */
 	function obtain_remote_version($force_update = false, $debug = false, $warn_fail = false, $ttl = 86400)
 	{
-		$config = $this->config;
+		global $cache, $config;
+
 		$host = 'pbwow.com';
 		$directory = '/files';
 		$filename = 'version3.txt';
 		$port = 80;
 		$timeout = 5;
 
-		$info = $this->cache->get('pbwow_versioncheck');
+		$info = $cache->get('pbwow_versioncheck');
 
 		if ($info === false || $force_update)
 		{
@@ -492,7 +482,7 @@ class pbwow_module
 
 			if (empty($info))
 			{
-				$this->cache->destroy('pbwow_versioncheck');
+				$cache->destroy('pbwow_versioncheck');
 				if ($warn_fail)
 				{
 					trigger_error($errstr, E_USER_WARNING);
@@ -512,7 +502,7 @@ class pbwow_module
 			}
 			$info = $versions;
 
-			$this->cache->put('pbwow_versioncheck', $info, $ttl);
+			$cache->put('pbwow_versioncheck', $info, $ttl);
 
 			if ($debug && $fsock = @fsockopen($host, $port, $errno, $errstr, $timeout))
 			{
@@ -553,7 +543,6 @@ class pbwow_module
 
 		return $info;
 	}
-
 }
 
 ?>
