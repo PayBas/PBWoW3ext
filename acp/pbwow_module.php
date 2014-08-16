@@ -29,10 +29,11 @@ class pbwow_module
 
 	function main($id, $mode)
 	{
-		global $user, $request, $template, $cache, $log;
-		global $config, $phpbb_root_path, $table_prefix, $phpbb_container;
+		global $cache, $config, $request, $template, $user;
+		global $phpbb_root_path, $table_prefix, $phpbb_container;
 
 		$db_tools = $phpbb_container->get('dbal.tools');
+		$log = $phpbb_container->get('log');
 
 		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->pbwow_config_table = $phpbb_container->getParameter('tables.pbwow3_config');
