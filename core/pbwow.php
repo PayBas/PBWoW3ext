@@ -195,13 +195,15 @@ class pbwow
 			if (isset($user_data['user_avatar']) && empty($user_data['user_avatar']))
 			{
 				$cp = $this->profilefields_manager->grab_profile_fields_data($user_id);
-				$pf = $this->profilefields_manager->generate_profile_fields_template_data($cp[$user_id]);
 
-				if (isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
+				if (!empty($cp))
 				{
-					$this->template->assign_vars(array(
-						'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'],
-					));
+					$pf = $this->profilefields_manager->generate_profile_fields_template_data($cp[$user_id]);
+
+					if (isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
+					{
+						$this->template->assign_vars(array( 'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'] ));
+					}
 				}
 			}
 		}
