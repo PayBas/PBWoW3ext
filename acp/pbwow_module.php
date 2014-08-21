@@ -73,6 +73,7 @@ class pbwow_module
 			}
 		}
 
+		// Detect if a game has been enabled/disabled in the overview. This must be done before we retrieve the $cplist
 		$cpf_game_toggle = $request->variable('game', '');
 		if (!empty($cpf_game_toggle))
 		{
@@ -82,7 +83,7 @@ class pbwow_module
 
 		if ($mode == 'overview')
 		{
-			// Get the PBWoW extesion version from the composer.json file
+			// Get the PBWoW extension version from the composer.json file
 			$ext_manager = $phpbb_container->get('ext.manager');
 			$ext_meta_manager = $ext_manager->create_extension_metadata_manager('paybas/pbwow', $template);
 			$ext_meta_data = $ext_meta_manager->get_metadata('version');
@@ -92,6 +93,7 @@ class pbwow_module
 
 			$style_root = ($phpbb_root_path . 'styles/pbwow3/');
 
+			// Get the PBWoW style version from the style.cfg file
 			if (file_exists($style_root . 'style.cfg'))
 			{
 				$values = parse_cfg_file($style_root . 'style.cfg');
@@ -201,6 +203,12 @@ class pbwow_module
 			if ($submit)
 			{
 				$this->set_pbwow_config($config_name, $config_value);
+
+				// Enable/disable Battle.net profile fields when the API is enabled/disabled
+				if ($config_name == 'bnetchars_enable')
+				{
+					$this->toggle_game_cpf('bnet', $config_value);
+				}
 			}
 		}
 
@@ -406,7 +414,7 @@ class pbwow_module
 		$value = $enable ? '1' : '0';
 		$sql = 'UPDATE ' . $this->fields_table . "
 			SET field_active = '" . $value . "'
-			WHERE field_ident " . $db->sql_like_expression($db->get_any_char() . $game . $db->get_any_char());
+			WHERE field_ident " . $db->sql_like_expression($db->get_any_char() . 'pb_' . $game . $db->get_any_char());
 		$db->sql_query($sql);
 	}
 
