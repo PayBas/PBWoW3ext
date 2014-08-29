@@ -59,6 +59,7 @@ class pbwow
 	protected $pbwow_config;
 
 	protected $ranks;
+	protected $tp_ext_enabled;
 
 	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
@@ -77,6 +78,8 @@ class pbwow
 		$this->pbwow_config_table = $pbwow_config_table;
 		$this->pbwow_chars_table = $pbwow_chars_table;
 		$this->get_pbwow_config();
+
+		$this->tp_ext_enabled = $extension_manager->is_enabled('vse/topicpreview');
 	}
 
 
@@ -328,10 +331,10 @@ class pbwow
 						$bnet_r = str_replace(" ", "-", $bnet_r);
 						$bnet_n = str_replace(" ", "-", $bnet_n);
 
-						// Get API data (should use CURL instead, but I'll do it later)
+						// Get API data
 						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
 
-						$response = $this->file_get_contents_curl($URL);
+						$response = $this->file_get_contents_curl($URL, $apitimeout);
 
 						if ($response === false)
 						{
@@ -978,7 +981,7 @@ class pbwow
 	 */
 	public function topic_preview_modify_row($rowset)
 	{
-		if (!$this->extension_manager->is_enabled('vse/topicpreview') || !$this->pbwow_config['avatars_enable'])
+		if (!$this->tp_ext_enabled || !$this->pbwow_config['avatars_enable'])
 		{
 			return $rowset;
 		}
@@ -1158,12 +1161,13 @@ class pbwow
 	/**
 	 * Use cURL to get data from remote servers (such as Battle.net avatars)
 	 */
-	protected function file_get_contents_curl($url) {
+	protected function file_get_contents_curl($url, $timeout = 1) {
 		$ch = curl_init();
 		// TODO: make this asynchronous somehow, so the page doesn't have to wait for Battle.net
 		curl_setopt($ch, CURLOPT_HEADER, 0);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
 
 		$data = curl_exec($ch);
 		curl_close($ch);
