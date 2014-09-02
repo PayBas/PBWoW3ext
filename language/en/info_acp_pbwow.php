@@ -73,7 +73,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_CHARSDB_GOOD'				=> 'PBWoW characters table found (%s)',
 	'PBWOW_CHARSDB_BAD'					=> 'No PBWoW characters table found. Make sure that the table (%s) exists in your phpBB database.',
 	'PBWOW_CHARSDB_BAD_EXPLAIN'			=> 'The required PBWoW 3 Battle.net Characters database table should have been installed automatically when you installed the PBWoW extension. Please uninstall it, delete the data, and try installing it again.',
-	'PBWOW_FOPEN_BAD'					=> 'Your server does not allow &quot;file_get_contents&quot; (fopen). Check your php.ini file to set &quot;allow_url_fopen&quot;, or contact your server host.',
+	'PBWOW_CURL_BAD'					=> 'Your server does not allow &quot;cURL&quot;. Check your server config, or contact your server host.',
 
 	'PBWOW_DONATE'						=> 'Donate to PBWoW',
 	'PBWOW_DONATE_SHORT'				=> 'Make a donation to PBWoW',
@@ -137,6 +137,8 @@ $lang = array_merge($lang, array(
 	'PBWOW_SMALLRANKS_ENABLE'			=> 'Use small rank-images',
 	'PBWOW_SMALLRANKS_ENABLE_EXPLAIN'	=> 'Enable this if you wish to use small rank-images that overlay the avatar (as it does on PBWoW.com). Don\'t enable this if you are using larger rank-images.',
 
+	'PBWOW_BNET_APIKEY'					=> 'Battle.net API Key',
+	'PBWOW_BNET_APIKEY_EXPLAIN'			=> 'Enter your Battle.net game API key. If you don\'t have one, get one by creating a <a href="https://dev.battle.net/member/register">Mashery account</a>.',
 	'PBWOW_BNETCHARS'					=> 'Battle.net Character Information',
 	'PBWOW_BNETCHARS_ENABLE'			=> 'Enable Battle.net API character information',
 	'PBWOW_BNETCHARS_ENABLE_EXPLAIN'	=> 'Enable this feature to use the Battle.net API to retrieve character information (when available), for use in user profiles. The <u>Gaming Avatars</u> setting must be enabled to display Battle.net avatars!',

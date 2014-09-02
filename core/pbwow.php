@@ -229,6 +229,7 @@ class pbwow
 		{
 			$cachelife = isset($pbwow_config['bnetchars_cachetime']) ? intval($pbwow_config['bnetchars_cachetime']) : 86400;
 			$apitimeout = isset($pbwow_config['bnetchars_timeout']) ? intval($pbwow_config['bnetchars_timeout']) : 1;
+			$apikey = isset($pbwow_config['bnet_apikey']) ? $pbwow_config['bnet_apikey'] : false;
 
 			// Get all the characters of the requested users
 			$sql = 'SELECT * 
@@ -294,33 +295,39 @@ class pbwow
 						$callAPI = true;
 					}
 
-					if ($callAPI == true)
+					if ($callAPI == true && $apikey)
 					{
 						// CPF values haven't been assigned yet, so have to do it manually
 						switch ($bnet_h)
 						{
 							case 1:
-								$bnet_h = "us.battle.net";
+								$bnet_h = "us.api.battle.net";
+								$bnet_loc = "us.battle.net";
 								$loc = "us";
 								break;
 							case 2:
-								$bnet_h = "eu.battle.net";
+								$bnet_h = "eu.api.battle.net";
+								$bnet_loc = "eu.battle.net";
 								$loc = "eu";
 								break;
 							case 3:
-								$bnet_h = "kr.battle.net";
+								$bnet_h = "kr.api.battle.net";
+								$bnet_loc = "kr.battle.net";
 								$loc = "kr";
 								break;
 							case 4:
-								$bnet_h = "tw.battle.net";
+								$bnet_h = "tw.api.battle.net";
+								$bnet_loc = "tw.battle.net";
 								$loc = "tw";
 								break;
 							case 5:
 								$bnet_h = "www.battlenet.com.cn";
+								$bnet_loc = "www.battlenet.com.cn";
 								$loc = "cn";
 								break;
 							default:
-								$bnet_h = "us.battle.net";
+								$bnet_h = "us.api.battle.net";
+								$bnet_loc = "us.battle.net";
 								$loc = "us";
 								break;
 						}
@@ -332,8 +339,7 @@ class pbwow
 						$bnet_n = str_replace(" ", "-", $bnet_n);
 
 						// Get API data
-						$URL = "http://" . $bnet_h . "/api/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild";
-
+						$URL = "https://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild&apikey=" . $apikey;
 						$response = $this->file_get_contents_curl($URL, $apitimeout);
 
 						if ($response === false)
@@ -375,7 +381,7 @@ class pbwow
 							$data = json_decode($response, true);
 
 							// Sometimes the Battle.net API does give a valid response, but no valid data
-							if (!isset($data['name']))
+							if (!isset($data['name']) || $data['status'] === 'nok')
 							{
 								return $field_data;
 							}
@@ -385,7 +391,7 @@ class pbwow
 							$avatarURL = '';
 							if ($avatar)
 							{
-								$avatarURL = "http://" . $bnet_h . "/static-render/" . $loc . "/" . $avatar;
+								$avatarURL = "http://" . $bnet_loc . "/static-render/" . $loc . "/" . $avatar;
 								//$avatarIMG = @file_get_contents($IMGURL);
 							}
 
@@ -408,7 +414,7 @@ class pbwow
 							$data_gender = $data['gender'] + 2;
 							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
 							$data_level = $data['level'];
-							$bnetURL = "http://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/simple";
+							$bnetURL = "http://" . $bnet_loc . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/";
 
 							// Insert into character DB table
 							$sql_ary = array(
@@ -1168,6 +1174,7 @@ class pbwow
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($ch, CURLOPT_URL, $url);
 		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
 		$data = curl_exec($ch);
 		curl_close($ch);

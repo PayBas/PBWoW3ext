@@ -42,7 +42,7 @@ class pbwow_module
 		$user->add_lang('acp/board');
 		$this->tpl_name = 'acp_pbwow3';
 
-		$allow_fopen = ini_get('allow_url_fopen') ? true : false;
+		$allow_curl = function_exists('curl_init');
 		$legacy_dbtable1 = defined('PBWOW_CONFIG_TABLE') ? PBWOW_CONFIG_TABLE : '';
 		$legacy_dbtable2 = defined('PBWOW2_CONFIG_TABLE') ? PBWOW2_CONFIG_TABLE : '';
 
@@ -159,6 +159,7 @@ class pbwow_module
 
 						'legend6'             => 'PBWOW_BNETCHARS',
 						'bnetchars_enable'    => array('lang' => 'PBWOW_BNETCHARS_ENABLE', 'validate' => 'bool', 'type' => 'radio:enabled_disabled', 'explain' => true),
+						'bnet_apikey'         => array('lang' => 'PBWOW_BNET_APIKEY', 'validate' => 'string', 'type' => 'text:32:64', 'explain' => true),
 						'bnetchars_cachetime' => array('lang' => 'PBWOW_BNETCHARS_CACHETIME', 'validate' => 'int:0', 'type' => 'text:6:6', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 						'bnetchars_timeout'   => array('lang' => 'PBWOW_BNETCHARS_TIMEOUT', 'validate' => 'int:0', 'type' => 'text:1:1', 'explain' => true, 'append' => ' ' . $user->lang['SECONDS']),
 
@@ -283,7 +284,7 @@ class pbwow_module
 					'STYLE_VERSION'         => (isset($style_version)) ? $style_version : '',
 					'STYLE_VERSION_V'       => (isset($versions['style_version']['version'])) ? $versions['style_version']['version'] : '',
 					'U_VERSIONCHECK_FORCE'  => append_sid($this->u_action . '&amp;versioncheck_force=1'),
-					'S_ALLOW_FOPEN'         => $allow_fopen,
+					'S_ALLOW_CURL'          => $allow_curl,
 
 					'S_CPF_ON_MEMBERLIST'   => ($config['load_cpf_memberlist'] == 1) ? true : false,
 					'S_CPF_ON_VIEWPROFILE'  => ($config['load_cpf_viewprofile'] == 1) ? true : false,
@@ -299,6 +300,7 @@ class pbwow_module
 					'S_BNETCHARS_ACTIVE'    => (isset($this->pbwow_config['bnetchars_enable']) && $this->pbwow_config['bnetchars_enable']) ? true : false,
 					'S_BNETCHARS_CONSTOKAY' => ($chars_constokay) ? true : false,
 					'S_BNETCHARS_DBOKAY'    => ($chars_dbokay) ? true : false,
+					'BNET_APIKEY'			=> isset($this->pbwow_config['bnet_apikey']) ? $this->pbwow_config['bnet_apikey'] : false,
 					'S_PB_BNET_HOST'        => $pb_bnet_host,
 					'S_PB_BNET_REALM'       => $pb_bnet_realm,
 					'S_PB_BNET_NAME'        => $pb_bnet_name,

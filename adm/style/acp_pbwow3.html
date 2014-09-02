@@ -161,9 +161,10 @@
 				<p class="error"><strong>{L_PBWOW_CHARSDB_BAD}</strong></p>
 				<p>{L_PBWOW_CHARSDB_BAD_EXPLAIN}</p>
 				<!-- ENDIF -->
-				<!-- IF not S_ALLOW_FOPEN -->
-				<p class="error"><strong>{L_PBWOW_FOPEN_BAD}</strong></p>
+				<!-- IF not S_ALLOW_CURL -->
+				<p class="error"><strong>{L_PBWOW_CURL_BAD}</strong></p>
 				<!-- ENDIF -->
+				<dl><dt><label>{L_PBWOW_BNET_APIKEY}</label></dt><dd><!-- IF BNET_APIKEY --><strong>{BNET_APIKEY}</strong><!-- ELSE --><strong class="error">{L_PBWOW_NOT_DETECTED}</strong><!-- ENDIF --></dd></dl>
 			<!-- ELSE -->
 				<p class="error"><strong>{L_PBWOW_FATAL}</strong></p>
 			<!-- ENDIF -->
