@@ -893,39 +893,54 @@ class pbwow
 	 */
 	public function viewtopic_cache_guest($user_cache_data)
 	{
-		$user_cache_data += array(
-			'posts_rank_title'     => '',
-			'posts_rank_image'     => '',
-			'posts_rank_image_src' => '',
-		);
+		if ($this->pbwow_config['smallranks_enable'])
+		{
+			$user_cache_data += array(
+				'posts_rank_title'     => '',
+				'posts_rank_image'     => '',
+				'posts_rank_image_src' => '',
+			);
+		}
 
 		return $user_cache_data;
 	}
 
 	public function viewtopic_cache_user($user_cache_data, $row)
 	{
-		$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
+		if ($this->pbwow_config['smallranks_enable'])
+		{
+			$this->get_user_rank_global(0, $row['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
 
-		$user_cache_data += array(
-			'posts_rank_title'     => isset($posts_rank_title) ? $posts_rank_title : '',
-			'posts_rank_image'     => isset($posts_rank_image) ? $posts_rank_image : '',
-			'posts_rank_image_src' => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
-		);
+			$user_cache_data += array(
+				'posts_rank_title'     => isset($posts_rank_title) ? $posts_rank_title : '',
+				'posts_rank_image'     => isset($posts_rank_image) ? $posts_rank_image : '',
+				'posts_rank_image_src' => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
+			);
+		}
 
 		return $user_cache_data;
 	}
 
 	public function viewtopic_modify_post($user_poster_data, $post_row, $cp_row)
 	{
-		$post_row += array(
-			'POSTS_RANK_TITLE'   => $user_poster_data['posts_rank_title'],
-			'POSTS_RANK_IMG'     => $user_poster_data['posts_rank_image'],
-			'POSTS_RANK_IMG_SRC' => $user_poster_data['posts_rank_image_src'],
-		);
-
-		if ($this->pbwow_config['avatars_enable'] && empty($user_poster_data['avatar']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
+		if ($this->pbwow_config['smallranks_enable'])
 		{
-			$post_row['POSTER_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+			$post_row += array(
+				'S_HAS_MULTIPLE_RANKS' => ($user_poster_data['posts_rank_image'] !== $user_poster_data['rank_image']) ? true : false,
+				'POSTS_RANK_TITLE'     => $user_poster_data['posts_rank_title'],
+				'POSTS_RANK_IMG'       => $user_poster_data['posts_rank_image'],
+				'POSTS_RANK_IMG_SRC'   => $user_poster_data['posts_rank_image_src'],
+			);
+		}
+
+		if ($this->pbwow_config['avatars_enable'] && isset($cp_row['row']['PROFILE_PBAVATAR']))
+		{
+			$post_row['S_HAS_PBWOW_AVATAR'] = true;
+
+			if (empty($user_poster_data['avatar']))
+			{
+				$post_row['POSTER_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+			}
 		}
 
 		return $post_row;
@@ -936,9 +951,14 @@ class pbwow
 	 */
 	public function ucp_pm_view_messsage($msg_data, $cp_row)
 	{
-		if ($this->pbwow_config['avatars_enable'] && empty($msg_data['AUTHOR_AVATAR']) && isset($cp_row['row']['PROFILE_PBAVATAR']))
+		if ($this->pbwow_config['avatars_enable'] && isset($cp_row['row']['PROFILE_PBAVATAR']))
 		{
-			$msg_data['AUTHOR_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+			$msg_data['S_HAS_PBWOW_AVATAR'] = true;
+
+			if (empty($msg_data['AUTHOR_AVATAR']))
+			{
+				$msg_data['AUTHOR_AVATAR'] = $cp_row['row']['PROFILE_PBAVATAR'];
+			}
 		}
 
 		return $msg_data;
@@ -962,17 +982,26 @@ class pbwow
 	 */
 	public function memberlist_prepare_profile($data, $template_data)
 	{
-		$this->get_user_rank_global(0, $data['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
-
-		$template_data += array(
-			'POSTS_RANK_TITLE'   => isset($posts_rank_title) ? $posts_rank_title : '',
-			'POSTS_RANK_IMG'     => isset($posts_rank_image) ? $posts_rank_image : '',
-			'POSTS_RANK_IMG_SRC' => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
-		);
-
-		if ($this->pbwow_config['avatars_enable'] && empty($data['user_avatar']) && isset($data['pbavatar']))
+		if ($this->pbwow_config['smallranks_enable'])
 		{
-			$template_data['AVATAR_IMG'] = $data['pbavatar'];
+			$this->get_user_rank_global(0, $data['user_posts'], $posts_rank_title, $posts_rank_image, $posts_rank_image_src);
+
+			$template_data += array(
+				'S_HAS_MULTIPLE_RANKS' => ($posts_rank_title === $template_data['RANK_TITLE']) ? false : true,
+				'POSTS_RANK_TITLE'     => isset($posts_rank_title) ? $posts_rank_title : '',
+				'POSTS_RANK_IMG'       => isset($posts_rank_image) ? $posts_rank_image : '',
+				'POSTS_RANK_IMG_SRC'   => isset($posts_rank_image_src) ? $posts_rank_image_src : '',
+			);
+		}
+
+		if ($this->pbwow_config['avatars_enable'] && isset($data['pbavatar']))
+		{
+			$template_data['S_HAS_PBWOW_AVATAR'] = true;
+
+			if (empty($data['user_avatar']))
+			{
+				$template_data['AVATAR_IMG'] = $data['pbavatar'];
+			}
 		}
 
 		return $template_data;

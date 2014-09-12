@@ -1,12 +1,12 @@
-<!-- IF postrow.S_PROFILE_PB_WOW_RACE or postrow.S_PROFILE_PB_DIABLO_CLASS or postrow.S_PROFILE_PB_WILDSTAR_RACE -->
+<!-- IF postrow.S_HAS_PBWOW_AVATAR -->
 <div class="icons-frame">
 	<div class="game-icon-a">
 		<!-- IF postrow.PROFILE_PB_WOW_RACE_VALUE_RAW -->
 		<div class="icon-wow-{postrow.PROFILE_PB_WOW_RACE_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_WOW_GENDER and postrow.PROFILE_PB_WOW_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_WOW_RACE_VALUE}"></div>
 		<!-- ELSEIF postrow.PROFILE_PB_DIABLO_CLASS_VALUE_RAW -->
-		<div class="icon-diablo-{postrow.PROFILE_PB_DIABLO_CLASS_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_DIABLO_GENDER and postrow.PROFILE_PB_DIABLO_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_DIABLO_CLASS_VALUE}"></div>							
+		<div class="icon-diablo-{postrow.PROFILE_PB_DIABLO_CLASS_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_DIABLO_GENDER and postrow.PROFILE_PB_DIABLO_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_DIABLO_CLASS_VALUE}"></div>
 		<!-- ELSEIF postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW -->
-		<div class="icon-wildstar-{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_WILDSTAR_GENDER and postrow.PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE}"></div>							
+		<div class="icon-wildstar-{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE_RAW}<!-- IF postrow.S_PROFILE_PB_WILDSTAR_GENDER and postrow.PROFILE_PB_WILDSTAR_GENDER_VALUE_RAW > 1 --> female<!-- ENDIF -->" title="{postrow.PROFILE_PB_WILDSTAR_RACE_VALUE}"></div>
 		<!-- ENDIF -->
 	</div>
 	<div class="game-icon-b">
@@ -19,7 +19,7 @@
 		<!-- ENDIF -->
 	</div>
 	<div class="game-icon-c">
-		<!-- IF postrow.POSTS_RANK_IMG -->
+		<!-- IF S_SMALL_RANKS and postrow.POSTS_RANK_IMG -->
 		<div class="" style="background-image: url('{postrow.POSTS_RANK_IMG_SRC}');" title="{postrow.POSTS_RANK_TITLE}"></div>
 		<!-- ELSEIF postrow.PROFILE_PB_WOW_RACE_VALUE_RAW and postrow.PROFILE_PBFACTION -->
 		<div class="icon-wow-{postrow.PROFILE_PBFACTION}"></div>

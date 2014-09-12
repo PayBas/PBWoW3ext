@@ -122,6 +122,7 @@ class listener implements EventSubscriberInterface
 	{
 		if (sizeof($event['rowset']))
 		{
+			// Don't do the preview stuff for search pages in "view posts" mode.
 			if ($event['show_results'] && $event['show_results'] == 'posts')
 			{
 				return;
