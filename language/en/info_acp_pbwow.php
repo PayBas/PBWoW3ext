@@ -120,7 +120,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_HEADERLINKS_ENABLE_EXPLAIN'	=> 'By enabling this option, the HTML code entered below will be displayed inside the box at the top-right of the screen (in-line before the FAQ link). This is useful for portal and DKP links (some of which will be detected automatically).',
 	'PBWOW_HEADERLINKS_CODE'			=> 'Custom header links code',
 	'PBWOW_HEADERLINKS_CODE_EXPLAIN'	=> 'Enter your custom links here. These should be wrapped in &lt;li&gt; elements. To use icons, please define CSS classes inside your custom.css stylesheet.',
-	
+
 	'PBWOW_VIDEOBG'						=> '(Video) Background Settings',
 	'PBWOW_VIDEOBG_ENABLE'				=> 'Enable animated video backgrounds',
 	'PBWOW_VIDEOBG_ENABLE_EXPLAIN'		=> 'Some PBWoW styles support special animated video backgrounds (not all). You can enable these for cool effect, or disable them to save bandwidth (or if you are having problems).',

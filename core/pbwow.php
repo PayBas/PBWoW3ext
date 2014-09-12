@@ -232,8 +232,8 @@ class pbwow
 			$apikey = isset($pbwow_config['bnet_apikey']) ? $pbwow_config['bnet_apikey'] : false;
 
 			// Get all the characters of the requested users
-			$sql = 'SELECT * 
-				FROM ' . $this->pbwow_chars_table . ' 
+			$sql = 'SELECT *
+				FROM ' . $this->pbwow_chars_table . '
 				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
 			$result = $this->db->sql_query($sql);
 
@@ -600,7 +600,7 @@ class pbwow
 				// $wow_c = ($C == 3) ? 6 : $wow_c; // third item in CPF, map to class 6 (Death Knight)
 				// etc. etc.
 
-				/* For reference 
+				/* For reference
 				wow_r = 1 > Human
 				wow_r = 2 > Orc
 				wow_r = 3 > Dwarf
@@ -778,7 +778,7 @@ class pbwow
 			/* Wildstar */
 			else if ($ws_r !== null)
 			{
-				/* For reference 
+				/* For reference
 				ws_r = 1 > Human
 				ws_r = 2 > Cassian
 				ws_r = 3 > Granok

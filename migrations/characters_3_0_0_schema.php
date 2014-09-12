@@ -60,7 +60,7 @@ class characters_3_0_0_schema extends \phpbb\db\migration\migration
 			),
 		);
 	}
-	
+
 	public function revert_schema()
 	{
 		return array(

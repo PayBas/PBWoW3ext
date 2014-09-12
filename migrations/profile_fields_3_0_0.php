@@ -652,7 +652,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields_data
 					SET pf_' . $profilefield_name . ' = pf_' . $meta['profilefield_oldname'];
 				$this->db->sql_query($sql);
-				
+
 				// Drop the old column
 				$schema_change2 = array('drop_columns' => array(
 					$this->table_prefix . 'profile_fields_data' => array(
@@ -660,7 +660,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 					),
 				));
 				$this->db_tools->perform_schema_changes($schema_change2);
-			} 
+			}
 			else
 			{
 				// Create a new one
@@ -716,7 +716,7 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 
 				$insert_buffer->flush();
 				$insert_buffer2->flush();
-				
+
 				// Add a column to the profile fields data table
 				$schema_change = array('add_columns' => array(
 					$this->table_prefix . 'profile_fields_data'	=> array(

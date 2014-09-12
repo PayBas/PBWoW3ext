@@ -162,6 +162,11 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 				'config_default' => '0',
 			),
 			array(
+				'config_name' => 'bnet_apikey',
+				'config_value' => '',
+				'config_default' => '',
+			),
+			array(
 				'config_name' => 'bnetchars_cachetime',
 				'config_value' => '86400',
 				'config_default' => '86400',
@@ -172,7 +177,7 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 				'config_default' => '1',
 			),
 		);
-	
+
 		$sql = $this->db->sql_multi_insert($this->table_prefix . 'pbwow3_config', $sql_ary);
 		$this->sql_query($sql);
 	}
