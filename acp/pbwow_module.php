@@ -81,6 +81,13 @@ class pbwow_module
 			$this->toggle_game_cpf($cpf_game_toggle, $activate);
 		}
 
+		// Detect Battle.net characters table flush
+		$charsdb_flush = $request->variable('charsdb_flush', '');
+		if ($charsdb_flush && $chars_dbokay)
+		{
+			$this->charsdb_flush();
+		}
+
 		if ($mode == 'overview')
 		{
 			// Get the PBWoW extension version from the composer.json file
@@ -275,6 +282,8 @@ class pbwow_module
 			$pb_diablo_activate_url = $this->u_action . '&game=diablo&enable=' . ($pb_diablo_enabled ? '0' : '1');
 			$pb_wildstar_activate_url = $this->u_action . '&game=wildstar&enable=' . ($pb_wildstar_enabled ? '0' : '1');
 
+			$pb_charsdb_flush_url = $this->u_action . '&charsdb_flush=1';
+
 			$template->assign_vars(array(
 					'S_INDEX'               => true,
 
@@ -301,6 +310,7 @@ class pbwow_module
 					'S_BNETCHARS_CONSTOKAY' => ($chars_constokay) ? true : false,
 					'S_BNETCHARS_DBOKAY'    => ($chars_dbokay) ? true : false,
 					'BNET_APIKEY'			=> isset($this->pbwow_config['bnet_apikey']) ? $this->pbwow_config['bnet_apikey'] : false,
+					'U_CHARSDB_FLUSH'       => $pb_charsdb_flush_url,
 					'S_PB_BNET_HOST'        => $pb_bnet_host,
 					'S_PB_BNET_REALM'       => $pb_bnet_realm,
 					'S_PB_BNET_NAME'        => $pb_bnet_name,
@@ -418,6 +428,16 @@ class pbwow_module
 			SET field_active = '" . $value . "'
 			WHERE field_ident " . $db->sql_like_expression($db->get_any_char() . 'pb_' . $game . $db->get_any_char());
 		$db->sql_query($sql);
+	}
+
+	/**
+	 * Clears/flushes the Battle.net API characters table
+	 */
+	function charsdb_flush()
+	{
+		global $db;
+
+		$db->sql_query('TRUNCATE TABLE ' . $this->pbwow_chars_table);
 	}
 
 ##################################################

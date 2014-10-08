@@ -73,6 +73,8 @@ $lang = array_merge($lang, array(
 	'PBWOW_CHARSDB_GOOD'				=> 'PBWoW characters table found (%s)',
 	'PBWOW_CHARSDB_BAD'					=> 'No PBWoW characters table found. Make sure that the table (%s) exists in your phpBB database.',
 	'PBWOW_CHARSDB_BAD_EXPLAIN'			=> 'The required PBWoW 3 Battle.net Characters database table should have been installed automatically when you installed the PBWoW extension. Please uninstall it, delete the data, and try installing it again.',
+	'PBWOW_CHARSDB_FLUSH'				=> 'Flush/clear the characters table',
+	'PBWOW_CHARSDB_FLUSH_EXPLAIN'		=> 'This will clear all the Battle.net character information stored in the DB. It will be retrieved again automatically when needed.',
 	'PBWOW_CURL_BAD'					=> 'Your server does not allow &quot;cURL&quot;. Check your server config, or contact your server host.',
 
 	'PBWOW_DONATE'						=> 'Donate to PBWoW',

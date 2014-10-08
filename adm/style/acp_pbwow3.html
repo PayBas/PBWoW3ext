@@ -153,7 +153,10 @@
 	<fieldset>
 		<legend>{L_PBWOW_BNETCHARS_CHECK}</legend>
 		<!-- IF S_BNETCHARS_ACTIVE -->
-			<dl><dt><label>{L_PBWOW_BNETCHARS}</label></dt><dd><strong class="success">{L_PBWOW_ACTIVE}</strong></dd></dl>
+			<dl>
+				<dt><label>{L_PBWOW_BNETCHARS}</label></dt>
+				<dd><strong class="success">{L_PBWOW_ACTIVE}</strong></dd>
+			</dl>
 			<!-- IF S_BNETCHARS_CONSTOKAY -->
 				<!-- IF S_BNETCHARS_DBOKAY -->
 				<p class="success"><strong>{L_PBWOW_CHARSDB_GOOD}</strong></p>
@@ -164,7 +167,14 @@
 				<!-- IF not S_ALLOW_CURL -->
 				<p class="error"><strong>{L_PBWOW_CURL_BAD}</strong></p>
 				<!-- ENDIF -->
-				<dl><dt><label>{L_PBWOW_BNET_APIKEY}</label></dt><dd><!-- IF BNET_APIKEY --><strong>{BNET_APIKEY}</strong><!-- ELSE --><strong class="error">{L_PBWOW_NOT_DETECTED}</strong><!-- ENDIF --></dd></dl>
+				<dl>
+					<dt><label>{L_PBWOW_BNET_APIKEY}</label></dt>
+					<dd><!-- IF BNET_APIKEY --><strong>{BNET_APIKEY}</strong><!-- ELSE --><strong class="error">{L_PBWOW_NOT_DETECTED}</strong><!-- ENDIF --></dd>
+				</dl>
+				<dl>
+					<dt><label>{L_PBWOW_CHARSDB_FLUSH}</label><br /><span>{L_PBWOW_CHARSDB_FLUSH_EXPLAIN}</span></dt>
+					<dd><a class="button1" href="{U_CHARSDB_FLUSH}" style="vertical-align: sub;">{L_FLUSH}</a></dd>
+				</dl>
 			<!-- ELSE -->
 				<p class="error"><strong>{L_PBWOW_FATAL}</strong></p>
 			<!-- ENDIF -->
