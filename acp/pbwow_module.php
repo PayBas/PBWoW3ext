@@ -437,7 +437,7 @@ class pbwow_module
 	{
 		global $db;
 
-		$db->sql_query('TRUNCATE TABLE ' . $this->pbwow_chars_table);
+		$db->sql_query('DELETE FROM ' . $this->pbwow_chars_table . ' WHERE 1=1');
 	}
 
 ##################################################
