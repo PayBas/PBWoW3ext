@@ -1,17 +1,14 @@
 <!-- IF S_PBLOGO -->
 <style>
-.imageset.site_logo {
+#logo {
 	background: url("{PBLOGO_SRC}") no-repeat 50% 50%;
 	width: {PBLOGO_WIDTH}px;
-	height: {PBLOGO_HEIGHT}px;	
+	height: {PBLOGO_HEIGHT}px;
+	<!-- IF PBLOGO_MARGINS -->margin: {PBLOGO_MARGINS};<!-- ENDIF -->
 }
-<!-- IF PBLOGO_MARGINS -->
-#logo {
-	margin: {PBLOGO_MARGINS};
-}<!-- ENDIF -->
 
 @media screen and (max-width: 859px) {
-	.imageset.site_logo {
+	#logo {
 		background-size: 100% 100%;
 		width: {PBLOGO_WIDTH_MOB}px;
 		height: {PBLOGO_HEIGHT_MOB}px;

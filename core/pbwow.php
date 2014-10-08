@@ -82,7 +82,6 @@ class pbwow
 		$this->tp_ext_enabled = $extension_manager->is_enabled('vse/topicpreview');
 	}
 
-
 	/**
 	 * Assign global template vars, based on the ACP config of the extension
 	 */
@@ -345,7 +344,7 @@ class pbwow
 						if ($response === false)
 						{
 							// If the API data cannot be retrieved, register the number of tries to prevent flooding
-							if (isset($char_data[$user_id]) && $char_data[$user_id]['tries'] < 10)
+							if (isset($char_data[$user_id]))
 							{
 								$sql_ary = array(
 									'user_id' => $user_id,
@@ -413,7 +412,6 @@ class pbwow
 							$data_class = $data['class'] + 1;
 							$data_gender = $data['gender'] + 2;
 							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
-							$data_level = $data['level'];
 							$bnetURL = "http://" . $bnet_loc . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/";
 
 							// Insert into character DB table
@@ -429,7 +427,7 @@ class pbwow
 								'class'             => $data_class,
 								'race'              => $data_race,
 								'gender'            => $data_gender,
-								'level'             => $data_level,
+								'level'             => $data['level'],
 								'achievementPoints' => $data['achievementPoints'],
 								'URL'               => $bnetURL,
 								'avatar'            => $avatar,
@@ -466,7 +464,7 @@ class pbwow
 					{
 						// Merge with rest of CPF values
 						$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
-						//$field_data[$user_id]['pf_pbrealm']		= $char_data[$user_id]['realm'];
+						//$field_data[$user_id]['pf_pb_wow_realm'] = $char_data[$user_id]['realm'];
 						$field_data[$user_id]['pf_pb_wow_class'] = $char_data[$user_id]['class'];
 						$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
 						$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];

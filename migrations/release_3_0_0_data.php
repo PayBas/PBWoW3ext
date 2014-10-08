@@ -173,8 +173,8 @@ class release_3_0_0_data extends \phpbb\db\migration\migration
 			),
 			array(
 				'config_name' => 'bnetchars_timeout',
-				'config_value' => '1',
-				'config_default' => '1',
+				'config_value' => '2',
+				'config_default' => '2',
 			),
 		);
 
