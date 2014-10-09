@@ -41,6 +41,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_DETECTED'			=> 'detected',
 	'PBWOW_NOT_DETECTED'		=> 'not detected',
 	'PBWOW_OBSOLETE'			=> 'no longer used',
+	'PBWOW_FLUSH'				=> 'Flush',
 	'PBWOW_FATAL'				=> 'Fatal error! This really should never happen.',
 
 	'LOG_PBWOW_CONFIG'			=> '<strong>Altered PBWoW settings</strong><br />&raquo; %s',
