@@ -411,6 +411,7 @@ class pbwow
 							$data_race += 1;
 							$data_class = $data['class'] + 1;
 							$data_gender = $data['gender'] + 2;
+							$data_level = $data['level'];
 							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
 							$bnetURL = "http://" . $bnet_loc . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/";
 
@@ -427,7 +428,7 @@ class pbwow
 								'class'             => $data_class,
 								'race'              => $data_race,
 								'gender'            => $data_gender,
-								'level'             => $data['level'],
+								'level'             => $data_level,
 								'achievementPoints' => $data['achievementPoints'],
 								'URL'               => $bnetURL,
 								'avatar'            => $avatar,
