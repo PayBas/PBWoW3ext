@@ -230,6 +230,12 @@ class pbwow
 			$apitimeout = isset($pbwow_config['bnetchars_timeout']) ? intval($pbwow_config['bnetchars_timeout']) : 1;
 			$apikey = isset($pbwow_config['bnet_apikey']) ? $pbwow_config['bnet_apikey'] : false;
 
+			// No API key? Cancel everything
+			if (!$apikey)
+			{
+				return $field_data;
+			}
+
 			// Get all the characters of the requested users
 			$sql = 'SELECT *
 				FROM ' . $this->pbwow_chars_table . '
@@ -279,11 +285,13 @@ class pbwow
 								break; // More than 4 tries > just wait for TTL
 						}
 
+						// Maximum cache time exceeded > call the API
 						if ($age > $cachelife)
 						{
 							$callAPI = true;
 						}
 
+						// Changed character name?
 						if ($bnet_n !== $char_data[$user_id]['name'])
 						{
 							$callAPI = true;
@@ -294,7 +302,7 @@ class pbwow
 						$callAPI = true;
 					}
 
-					if ($callAPI == true && $apikey)
+					if ($callAPI == true)
 					{
 						// CPF values haven't been assigned yet, so have to do it manually
 						switch ($bnet_h)
@@ -340,10 +348,36 @@ class pbwow
 						// Get API data
 						$URL = "https://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild&apikey=" . $apikey;
 						$response = $this->file_get_contents_curl($URL, $apitimeout);
+						$data = array();
+						$error = false;
 
+						// Determine error type
 						if ($response === false)
 						{
-							// If the API data cannot be retrieved, register the number of tries to prevent flooding
+							$error = 'Battle.net connection problem';
+						}
+						else
+						{
+							$data = json_decode($response, true);
+
+							if (isset($data['code']))
+							{
+								$error = $data['detail'];
+							}
+							elseif (isset($data['status']))
+							{
+								$error = $data['reason'];
+							}
+							elseif (!isset($data['name']))
+							{
+								$error = 'Unknown API error';
+							}
+						}
+
+						// If the API data cannot be retrieved, register the number of tries to prevent flooding
+						if ($error)
+						{
+							// Character already exists in the DB
 							if (isset($char_data[$user_id]))
 							{
 								$sql_ary = array(
@@ -352,13 +386,14 @@ class pbwow
 									'tries'   => $char_data[$user_id]['tries'] + 1,
 									'name'    => $bnet_n,
 									'realm'   => $bnet_r,
-									'url'     => "Battle.net API error",
+									'url'     => $error,
 								);
 								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
 									SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
 									WHERE user_id = ' . $user_id;
 								$this->db->sql_query($sql);
 							}
+							// Not yet in DB, add a new entry
 							else
 							{
 								$sql_ary = array(
@@ -367,24 +402,16 @@ class pbwow
 									'tries'   => 1,
 									'name'    => $bnet_n,
 									'realm'   => $bnet_r,
-									'url'     => "Battle.net API error",
+									'url'     => $error,
 								);
 								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
 								$this->db->sql_query($sql);
 							}
 
-							$field_data[$user_id]['pf_pb_bnet_url'] = "Battle.net API error";
+							$field_data[$user_id]['pf_pb_bnet_url'] = $error;
 						}
 						else
 						{
-							$data = json_decode($response, true);
-
-							// Sometimes the Battle.net API does give a valid response, but no valid data
-							if (!isset($data['name']) || $data['status'] === 'nok')
-							{
-								return $field_data;
-							}
-
 							// Set avatar path
 							$avatar = (!empty($data['thumbnail'])) ? $data['thumbnail'] : '';
 							$avatarURL = '';
