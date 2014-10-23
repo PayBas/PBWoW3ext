@@ -243,6 +243,7 @@ class pbwow_module
 				'S_CONSTANTSOKAY'      => ($constantsokay) ? true : false,
 				'PBWOW_DBTABLE'        => $this->pbwow_config_table,
 				'S_DBOKAY'             => ($dbokay) ? true : false,
+				'S_CURL_DANGER'        => isset($this->pbwow_config['bnetchars_enable']) && $this->pbwow_config['bnetchars_enable'] && !$allow_curl,
 
 				'L_PBWOW_DB_GOOD'      => sprintf($user->lang['PBWOW_DB_GOOD'], $this->pbwow_config_table),
 				'L_PBWOW_DB_BAD'       => sprintf($user->lang['PBWOW_DB_BAD'], $this->pbwow_config_table),
