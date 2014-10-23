@@ -20,7 +20,6 @@ if (!defined('IN_PHPBB'))
 
 class pbwow
 {
-
 	/** @var \phpbb\config\config */
 	protected $config;
 
