@@ -175,7 +175,7 @@ class pbwow
 			'HEADERLINKS_CODE' 	=> ($headerlinks_enable && isset($headerlinks_code)) ? str_replace('&', '&amp;', html_entity_decode($headerlinks_code)) : false,
 			'ADS_INDEX_CODE' 	=> ($ads_index_enable && isset($ads_index_code)) ? str_replace('&', '&amp;', html_entity_decode($ads_index_code)) : false,
 			'S_PBWOW_AVATARS'	=> isset($avatars_enable) ? $avatars_enable : false,
-			'S_SMALL_RANKS' 	=> isset($smallranks_enable) ? $smallranks_enable : false //TODO use this somehow
+			'S_SMALL_RANKS' 	=> isset($smallranks_enable) ? $smallranks_enable : false,
 		);
 
 		// Assign vars
