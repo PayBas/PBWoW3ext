@@ -379,10 +379,12 @@ class pbwow
 							// Character already exists in the DB
 							if (isset($char_data[$user_id]))
 							{
+								$tries = ($char_data[$user_id]['tries'] < 100) ? $char_data[$user_id]['tries'] + 1 : 100; // Prevent int 128 out of range
+
 								$sql_ary = array(
 									'user_id' => $user_id,
 									'updated' => time(),
-									'tries'   => $char_data[$user_id]['tries'] + 1,
+									'tries'   => $tries,
 									'name'    => $bnet_n,
 									'realm'   => $bnet_r,
 									'url'     => $error,
