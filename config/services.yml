@@ -14,6 +14,7 @@ services:
             - @profilefields.manager
             - @template
             - @user
+            - @path_helper
             - %core.root_path%
             - %core.php_ext%
             - %tables.pbwow3_config%

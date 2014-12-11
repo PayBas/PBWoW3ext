@@ -47,6 +47,9 @@ class pbwow
 	/** @var \phpbb\user */
 	protected $user;
 
+	/** @var \phpbb\path_helper */
+	protected $path_helper;
+
 	/** @var string phpBB root path */
 	protected $root_path;
 
@@ -60,7 +63,7 @@ class pbwow
 	protected $ranks;
 	protected $tp_ext_enabled;
 
-	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
+	public function __construct(\phpbb\config\config $config, \phpbb\cache\service $cache, \phpbb\db\driver\driver_interface $db, \phpbb\db\tools $db_tools, \phpbb\event\dispatcher_interface $dispatcher, \phpbb\extension\manager $extension_manager, \phpbb\profilefields\manager $profilefields_manager, \phpbb\template\template $template, \phpbb\user $user, \phpbb\path_helper $path_helper, $root_path, $phpEx, $pbwow_config_table, $pbwow_chars_table)
 	{
 		$this->config = $config;
 		$this->cache = $cache;
@@ -71,6 +74,7 @@ class pbwow
 		$this->profilefields_manager = $profilefields_manager;
 		$this->template = $template;
 		$this->user = $user;
+		$this->path_helper = $path_helper;
 		$this->root_path = $root_path;
 		$this->phpEx = $phpEx;
 
@@ -105,7 +109,7 @@ class pbwow
 		{
 			$tpl_vars += array(
 				'S_PBLOGO'          => true,
-				'PBLOGO_SRC'        => html_entity_decode($logo_src),
+				'PBLOGO_SRC'        => $this->path_helper->update_web_root_path($this->root_path . html_entity_decode($logo_src)),
 				'PBLOGO_WIDTH'      => $logo_size_width,
 				'PBLOGO_HEIGHT'     => $logo_size_height,
 				'PBLOGO_WIDTH_MOB'  => floor(($logo_size_width * 0.8)),
