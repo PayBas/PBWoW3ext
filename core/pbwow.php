@@ -1238,5 +1238,3 @@ class pbwow
 		return $data;
 	}
 }
-
-?>

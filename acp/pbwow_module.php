@@ -582,5 +582,3 @@ class pbwow_module
 		return $info;
 	}
 }
-
-?>
