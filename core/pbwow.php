@@ -554,7 +554,16 @@ class pbwow
 			 * @var    bool    function_override Return the results right after this, or continue?
 			 * @since 3.0.0
 			 */
-			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'width', 'height', 'faction', 'function_override');
+			$vars = array(
+				'profile_row',
+				'tpl_fields',
+				'avatars_path',
+				'avatar',
+				'width',
+				'height',
+				'faction',
+				'function_override',
+			);
 			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_before', compact($vars)));
 
 			if ($function_override)
@@ -898,7 +907,17 @@ class pbwow
 			 * @var   int     faction       The faction of the character
 			 * @since 3.0.0
 			 */
-			$vars = array('profile_row', 'tpl_fields', 'avatars_path', 'avatar', 'valid', 'avail', 'width', 'height', 'faction');
+			$vars = array(
+				'profile_row',
+				'tpl_fields',
+				'avatars_path',
+				'avatar',
+				'valid',
+				'avail',
+				'width',
+				'height',
+				'faction',
+			);
 			extract($this->dispatcher->trigger_event('paybas.pbwow.modify_process_pf_after', compact($vars)));
 
 			// Add to template fields

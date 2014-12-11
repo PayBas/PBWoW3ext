@@ -3,8 +3,8 @@
     "type": "phpbb-extension",
     "description": "This extension includes all the functionality needed to get the PBWoW 3 style for phpBB up and running.",
     "homepage": "https://github.com/PayBas/PBWoW3ext",
-    "version": "3.0.0",
-    "time": "2014-10-14",
+    "version": "3.0.1",
+    "time": "2014-12-11",
     "license": "GPL-2.0",
     "authors": [
         {
@@ -21,7 +21,7 @@
     "extra": {
         "display-name": "PBWoW 3 Extension",
         "soft-require": {
-             "phpbb/phpbb": "3.1.*@dev"
+             "phpbb/phpbb": ">=3.1.2,<3.2.*@dev"
         },
         "version-check": {
             "host": "paybas.github.io",
