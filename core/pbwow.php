@@ -229,9 +229,9 @@ class pbwow
 
 		if (isset($pbwow_config['bnetchars_enable']) && $pbwow_config['bnetchars_enable'])
 		{
-			$cachelife = isset($pbwow_config['bnetchars_cachetime']) ? intval($pbwow_config['bnetchars_cachetime']) : 86400;
+			$cachelife  = isset($pbwow_config['bnetchars_cachetime']) ? intval($pbwow_config['bnetchars_cachetime']) : 86400;
 			$apitimeout = isset($pbwow_config['bnetchars_timeout']) ? intval($pbwow_config['bnetchars_timeout']) : 1;
-			$apikey = isset($pbwow_config['bnet_apikey']) ? $pbwow_config['bnet_apikey'] : false;
+			$apikey     = isset($pbwow_config['bnet_apikey']) ? $pbwow_config['bnet_apikey'] : false;
 
 			// No API key? Cancel everything
 			if (!$apikey)
@@ -240,277 +240,353 @@ class pbwow
 			}
 
 			// Get all the characters of the requested users
-			$sql = 'SELECT *
+			$sql    = 'SELECT *
 				FROM ' . $this->pbwow_chars_table . '
 				WHERE ' . $this->db->sql_in_set('user_id', $user_ids);
 			$result = $this->db->sql_query($sql);
 
-			$char_data = array();
+			$char_data = $no_call_list = array();
 			while ($row = $this->db->sql_fetchrow($result))
 			{
 				$char_data[$row['user_id']] = $row;
 			}
 			$this->db->sql_freeresult($result);
 
-			// For each requested user, we will do some magic
-			foreach ($user_ids as $user_id)
+			// Get a user list with all the API calls to be made
+			$call_list = $this->generate_api_call_list($user_ids, $field_data, $char_data, $cachelife, $apikey);
+
+			// Extract the users that have valid CPF input values, but don't need an API call
+			if (isset($call_list['no_call']))
 			{
-				$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] - 1 : 0; // 1 == none, so -1 for all
-				$bnet_r = (isset($field_data[$user_id]['pf_pb_bnet_realm'])) ? $field_data[$user_id]['pf_pb_bnet_realm'] : '';
-				$bnet_n = (isset($field_data[$user_id]['pf_pb_bnet_name'])) ? $field_data[$user_id]['pf_pb_bnet_name'] : '';
+				$no_call_list = $call_list['no_call'];
+				unset($call_list['no_call']);
+			}
 
-				if ($bnet_h && $bnet_r && $bnet_n)
+			// Get the character data from the Battle.net API
+			$api_data = $this->call_bnet_api($call_list, $apitimeout);
+
+			// Use the data from the API to save and merge with CPF data
+			$field_data = $this->process_api_data($api_data, $no_call_list, $char_data, $field_data);
+		}
+
+		return $field_data;
+	}
+
+	protected function generate_api_call_list($user_ids, $field_data, $char_data, $cachelife, $apikey)
+	{
+		$call_list = array();
+
+		// For each requested user, we will do some magic
+		foreach ($user_ids as $user_id)
+		{
+			$bnet_h = (isset($field_data[$user_id]['pf_pb_bnet_host'])) ? $field_data[$user_id]['pf_pb_bnet_host'] - 1 : 0; // 1 == none, so -1 for all
+			$bnet_r = (isset($field_data[$user_id]['pf_pb_bnet_realm'])) ? $field_data[$user_id]['pf_pb_bnet_realm'] : '';
+			$bnet_n = (isset($field_data[$user_id]['pf_pb_bnet_name'])) ? $field_data[$user_id]['pf_pb_bnet_name'] : '';
+
+			if ($bnet_h && $bnet_r && $bnet_n)
+			{
+				$callAPI = false;
+
+				// Determine if the API should be called, based on cache TTL, # of tries, and character change
+				if (isset($char_data[$user_id]))
 				{
-					$callAPI = false;
+					$age = time() - $char_data[$user_id]['updated'];
 
-					// Determine if the API should be called, based on cache TTL, # of tries, and character change
-					if (isset($char_data[$user_id]))
+					switch ($char_data[$user_id]["tries"])
 					{
-						$age = time() - $char_data[$user_id]['updated'];
-
-						switch ($char_data[$user_id]["tries"])
-						{
-							case 0:
-								break;
-							case 1:
-								$callAPI = ($age > 60) ? true : false;
-								break;
-							case 2:
-								$callAPI = ($age > 600) ? true : false;
-								break;
-							case 3:
-								$callAPI = ($age > ($cachelife / 24)) ? true : false;
-								break;
-							case 4:
-								$callAPI = ($age > ($cachelife / 4)) ? true : false;
-								break;
-							default:
-								break; // More than 4 tries > just wait for TTL
-						}
-
-						// Maximum cache time exceeded > call the API
-						if ($age > $cachelife)
-						{
-							$callAPI = true;
-						}
-
-						// Changed character name?
-						if ($bnet_n !== $char_data[$user_id]['name'])
-						{
-							$callAPI = true;
-						}
+						case 0:
+							break;
+						case 1:
+							$callAPI = ($age > 60) ? true : false;
+							break;
+						case 2:
+							$callAPI = ($age > 600) ? true : false;
+							break;
+						case 3:
+							$callAPI = ($age > ($cachelife / 24)) ? true : false;
+							break;
+						case 4:
+							$callAPI = ($age > ($cachelife / 4)) ? true : false;
+							break;
+						default:
+							break; // More than 4 tries > just wait for TTL
 					}
-					else
+
+					// Maximum cache time exceeded > call the API
+					if ($age > $cachelife)
 					{
 						$callAPI = true;
 					}
 
-					if ($callAPI == true)
+					// Changed character name?
+					if ($bnet_n !== $char_data[$user_id]['name'])
 					{
-						// CPF values haven't been assigned yet, so have to do it manually
-						switch ($bnet_h)
-						{
-							case 1:
-								$bnet_h = "us.api.battle.net";
-								$bnet_loc = "us.battle.net";
-								$loc = "us";
-								break;
-							case 2:
-								$bnet_h = "eu.api.battle.net";
-								$bnet_loc = "eu.battle.net";
-								$loc = "eu";
-								break;
-							case 3:
-								$bnet_h = "kr.api.battle.net";
-								$bnet_loc = "kr.battle.net";
-								$loc = "kr";
-								break;
-							case 4:
-								$bnet_h = "tw.api.battle.net";
-								$bnet_loc = "tw.battle.net";
-								$loc = "tw";
-								break;
-							case 5:
-								$bnet_h = "www.battlenet.com.cn";
-								$bnet_loc = "www.battlenet.com.cn";
-								$loc = "cn";
-								break;
-							default:
-								$bnet_h = "us.api.battle.net";
-								$bnet_loc = "us.battle.net";
-								$loc = "us";
-								break;
-						}
-
-						// Sanitize
-						$bnet_r = strtolower($bnet_r);
-						$bnet_r = str_replace("'", "", $bnet_r);
-						$bnet_r = str_replace(" ", "-", $bnet_r);
-						$bnet_n = str_replace(" ", "-", $bnet_n);
-
-						// Get API data
-						$URL = "https://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild&apikey=" . $apikey;
-						$response = $this->file_get_contents_curl($URL, $apitimeout);
-						$data = array();
-						$error = false;
-
-						// Determine error type
-						if ($response === false)
-						{
-							$error = 'Battle.net connection problem';
-						}
-						else
-						{
-							$data = json_decode($response, true);
-
-							if (isset($data['code']))
-							{
-								$error = $data['detail'];
-							}
-							elseif (isset($data['status']))
-							{
-								$error = $data['reason'];
-							}
-							elseif (!isset($data['name']))
-							{
-								$error = 'Unknown API error';
-							}
-						}
-
-						// If the API data cannot be retrieved, register the number of tries to prevent flooding
-						if ($error)
-						{
-							// Character already exists in the DB
-							if (isset($char_data[$user_id]))
-							{
-								$tries = ($char_data[$user_id]['tries'] < 100) ? $char_data[$user_id]['tries'] + 1 : 100; // Prevent int 128 out of range
-
-								$sql_ary = array(
-									'user_id' => $user_id,
-									'updated' => time(),
-									'tries'   => $tries,
-									'name'    => $bnet_n,
-									'realm'   => $bnet_r,
-									'url'     => $error,
-								);
-								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
-									SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-									WHERE user_id = ' . $user_id;
-								$this->db->sql_query($sql);
-							}
-							// Not yet in DB, add a new entry
-							else
-							{
-								$sql_ary = array(
-									'user_id' => $user_id,
-									'updated' => time(),
-									'tries'   => 1,
-									'name'    => $bnet_n,
-									'realm'   => $bnet_r,
-									'url'     => $error,
-								);
-								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
-								$this->db->sql_query($sql);
-							}
-
-							$field_data[$user_id]['pf_pb_bnet_url'] = $error;
-						}
-						else
-						{
-							// Set avatar path
-							$avatar = (!empty($data['thumbnail'])) ? $data['thumbnail'] : '';
-							$avatarURL = '';
-							if ($avatar)
-							{
-								$avatarURL = "http://" . $bnet_loc . "/static-render/" . $loc . "/" . $avatar;
-								//$avatarIMG = @file_get_contents($IMGURL);
-							}
-
-							// Conform Blizzard's race ID numbers to PBWoW, so the CPF will work correctly
-							$data_race = $data['race'];
-							switch ($data_race)
-							{
-								case 22:
-									$data_race = 12;
-									break;
-								case 24:
-								case 25:
-								case 26:
-									$data_race = 13;
-									break;
-								//default: $data_race; break;
-							}
-							$data_race += 1;
-							$data_class = $data['class'] + 1;
-							$data_gender = $data['gender'] + 2;
-							$data_level = $data['level'];
-							$data_guild = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
-							$bnetURL = "http://" . $bnet_loc . "/wow/character/" . $bnet_r . "/" . $bnet_n . "/";
-
-							// Insert into character DB table
-							$sql_ary = array(
-								'user_id'           => $user_id,
-								'updated'           => time(),
-								'tries'             => 0,
-								'game'              => "wow",
-								'lastModified'      => $data['lastModified'],
-								'name'              => $data['name'],
-								'realm'             => $data['realm'],
-								'battlegroup'       => $data['battlegroup'],
-								'class'             => $data_class,
-								'race'              => $data_race,
-								'gender'            => $data_gender,
-								'level'             => $data_level,
-								'achievementPoints' => $data['achievementPoints'],
-								'URL'               => $bnetURL,
-								'avatar'            => $avatar,
-								'avatarURL'         => $avatarURL,
-								'calcClass'         => $data['calcClass'],
-								'totalHK'           => $data['totalHonorableKills'],
-								'guild'             => $data_guild,
-							);
-
-							if (isset($char_data[$user_id]))
-							{
-								$sql = 'UPDATE ' . $this->pbwow_chars_table . '
-									SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
-									WHERE user_id = ' . $user_id;
-							}
-							else
-							{
-								$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
-							}
-							$this->db->sql_query($sql);
-
-							// Merge with rest of CPF values
-							$field_data[$user_id]['pf_pb_wow_guild'] = $data_guild;
-							//$field_data[$user_id]['pf_pb_wow_pbrealm'] = $data['realm'];
-							$field_data[$user_id]['pf_pb_wow_class'] = $data_class;
-							$field_data[$user_id]['pf_pb_wow_race'] = $data_race;
-							$field_data[$user_id]['pf_pb_wow_gender'] = $data_gender;
-							$field_data[$user_id]['pf_pb_wow_level'] = $data_level;
-							$field_data[$user_id]['pf_pb_bnet_url'] = $bnetURL;
-							$field_data[$user_id]['pf_pb_bnet_avatar'] = $avatarURL;
-						}
-					}
-					else if ($char_data[$user_id]['avatarURL']) // No API call needed, just use the current data
-					{
-						// Merge with rest of CPF values
-						$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
-						//$field_data[$user_id]['pf_pb_wow_realm'] = $char_data[$user_id]['realm'];
-						$field_data[$user_id]['pf_pb_wow_class'] = $char_data[$user_id]['class'];
-						$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
-						$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];
-						$field_data[$user_id]['pf_pb_wow_level'] = $char_data[$user_id]['level'];
-						$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
-						$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarURL'];
-					}
-					else // No API call, but also no current (complete) data
-					{
-						$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
-						$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
+						$callAPI = true;
 					}
 				}
+				else
+				{
+					$callAPI = true;
+				}
+
+				if ($callAPI == true)
+				{
+					// CPF values haven't been assigned yet, so have to do it manually
+					switch ($bnet_h)
+					{
+						case 1:
+							$bnet_h   = "us.api.battle.net";
+							$bnet_loc = "us.battle.net";
+							$loc      = "us";
+							break;
+						case 2:
+							$bnet_h   = "eu.api.battle.net";
+							$bnet_loc = "eu.battle.net";
+							$loc      = "eu";
+							break;
+						case 3:
+							$bnet_h   = "kr.api.battle.net";
+							$bnet_loc = "kr.battle.net";
+							$loc      = "kr";
+							break;
+						case 4:
+							$bnet_h   = "tw.api.battle.net";
+							$bnet_loc = "tw.battle.net";
+							$loc      = "tw";
+							break;
+						case 5:
+							$bnet_h   = "www.battlenet.com.cn";
+							$bnet_loc = "www.battlenet.com.cn";
+							$loc      = "cn";
+							break;
+						default:
+							$bnet_h   = "us.api.battle.net";
+							$bnet_loc = "us.battle.net";
+							$loc      = "us";
+							break;
+					}
+
+					// Sanitize
+					$bnet_r = strtolower($bnet_r);
+					$bnet_r = str_replace("'", "", $bnet_r);
+					$bnet_r = str_replace(" ", "-", $bnet_r);
+					$bnet_n = str_replace(" ", "-", $bnet_n);
+
+					// Get API data
+					$call_list[$user_id] = array(
+						'api_url'  => "https://" . $bnet_h . "/wow/character/" . $bnet_r . "/" . $bnet_n . "?fields=guild&apikey=" . $apikey,
+						'bnet_h'   => $bnet_h,
+						'bnet_r'   => $bnet_r,
+						'bnet_n'   => $bnet_n,
+						'bnet_loc' => $bnet_loc,
+						'loc'      => $loc,
+					);
+				}
+				else
+				{
+					$call_list['no_call'][] = $user_id;
+				}
+			}
+		}
+
+		return $call_list;
+	}
+
+	/**
+	 * Use cURL to get data from remote servers (such as Battle.net avatars)
+	 */
+	protected function call_bnet_api($call_list, $timeout = 1)
+	{
+		foreach ($call_list as $user_id => $call_data)
+		{
+			$ch = curl_init();
+			// TODO: make this asynchronous somehow, so the page doesn't have to wait for Battle.net
+			curl_setopt($ch, CURLOPT_HEADER, 0);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($ch, CURLOPT_URL, $call_data['api_url']);
+			curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+			$response = curl_exec($ch);
+			curl_close($ch);
+
+
+			$response_data = array();
+			$error = false;
+
+			// Determine error type and decode response
+			if ($response === false)
+			{
+				$error = 'Battle.net connection problem';
+			}
+			else
+			{
+				$response_data = json_decode($response, true);
+
+				if (isset($response_data['code']))
+				{
+					$error = $response_data['detail'];
+				}
+				elseif (isset($response_data['status']))
+				{
+					$error = $response_data['reason'];
+				}
+				elseif (!isset($response_data['name']))
+				{
+					$error = 'Unknown API error';
+				}
+			}
+
+			$call_list[$user_id]['data'] = $response_data;
+			$call_list[$user_id]['error'] = $error;
+		}
+
+		return $call_list;
+	}
+
+	protected function process_api_data($api_data, $no_call_list, $char_data, $field_data)
+	{
+		foreach ($api_data as $user_id => $data_array)
+		{
+			// If the API data cannot be retrieved, register the number of tries to prevent flooding
+			if ($data_array['error'])
+			{
+				// Character already exists in the DB
+				if (isset($char_data[$user_id]))
+				{
+					$tries = ($char_data[$user_id]['tries'] < 100) ? $char_data[$user_id]['tries'] + 1 : 100; // Prevent int 128 out of range
+
+					$sql_ary = array(
+						'user_id' => $user_id,
+						'updated' => time(),
+						'tries'   => $tries,
+						'name'    => $data_array['bnet_n'],
+						'realm'   => $data_array['bnet_r'],
+						'url'     => $data_array['error'],
+					);
+
+					$sql = 'UPDATE ' . $this->pbwow_chars_table . '
+						SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . $user_id;
+					$this->db->sql_query($sql);
+				}
+				// Not yet in DB, add a new entry
+				else
+				{
+					$sql_ary = array(
+						'user_id' => $user_id,
+						'updated' => time(),
+						'tries'   => 1,
+						'name'    => $data_array['bnet_n'],
+						'realm'   => $data_array['bnet_r'],
+						'url'     => $data_array['error'],
+					);
+
+					$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+					$this->db->sql_query($sql);
+				}
+
+				$field_data[$user_id]['pf_pb_bnet_url'] = $data_array['error'];
+			}
+			else
+			{
+				$data = $data_array['data'];
+
+				// Set avatar path
+				$avatar    = (!empty($data['thumbnail'])) ? $data['thumbnail'] : '';
+				$avatarURL = '';
+				if ($avatar)
+				{
+					$avatarURL = "http://" . $data_array['bnet_loc'] . "/static-render/" . $data_array['loc'] . "/" . $avatar;
+					//$avatarIMG = @file_get_contents($IMGURL);
+				}
+
+				// Conform Blizzard's race ID numbers to PBWoW, so the CPF will work correctly
+				$data_race = $data['race'];
+				switch ($data_race)
+				{
+					case 22:
+						$data_race = 12;
+						break;
+					case 24:
+					case 25:
+					case 26:
+						$data_race = 13;
+						break;
+					//default: $data_race; break;
+				}
+				$data_race += 1;
+				$data_class  = $data['class'] + 1;
+				$data_gender = $data['gender'] + 2;
+				$data_level  = $data['level'];
+				$data_guild  = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
+				$bnetURL     = "http://" . $data_array['bnet_loc'] . "/wow/character/" . $data_array['bnet_r'] . "/" . $data_array['bnet_n'] . "/";
+
+				// Insert into character DB table
+				$sql_ary = array(
+					'user_id'           => $user_id,
+					'updated'           => time(),
+					'tries'             => 0,
+					'game'              => "wow",
+					'lastModified'      => $data['lastModified'],
+					'name'              => $data['name'],
+					'realm'             => $data['realm'],
+					'battlegroup'       => $data['battlegroup'],
+					'class'             => $data_class,
+					'race'              => $data_race,
+					'gender'            => $data_gender,
+					'level'             => $data_level,
+					'achievementPoints' => $data['achievementPoints'],
+					'URL'               => $bnetURL,
+					'avatar'            => $avatar,
+					'avatarURL'         => $avatarURL,
+					'calcClass'         => $data['calcClass'],
+					'totalHK'           => $data['totalHonorableKills'],
+					'guild'             => $data_guild,
+				);
+
+				if (isset($char_data[$user_id]))
+				{
+					$sql = 'UPDATE ' . $this->pbwow_chars_table . '
+						SET ' . $this->db->sql_build_array('UPDATE', $sql_ary) . '
+						WHERE user_id = ' . $user_id;
+				}
+				else
+				{
+					$sql = 'INSERT INTO ' . $this->pbwow_chars_table . ' ' . $this->db->sql_build_array('INSERT', $sql_ary);
+				}
+				$this->db->sql_query($sql);
+
+				// Merge with rest of CPF values
+				$field_data[$user_id]['pf_pb_wow_guild']   = $data_guild;
+				//$field_data[$user_id]['pf_pb_wow_pbrealm'] = $data['realm'];
+				$field_data[$user_id]['pf_pb_wow_class']   = $data_class;
+				$field_data[$user_id]['pf_pb_wow_race']    = $data_race;
+				$field_data[$user_id]['pf_pb_wow_gender']  = $data_gender;
+				$field_data[$user_id]['pf_pb_wow_level']   = $data_level;
+				$field_data[$user_id]['pf_pb_bnet_url']    = $bnetURL;
+				$field_data[$user_id]['pf_pb_bnet_avatar'] = $avatarURL;
+			}
+		}
+
+		foreach ($no_call_list as $user_id)
+		{
+			if ($char_data[$user_id]['avatarURL']) // No API call needed, just use the current data
+			{
+				// Merge with rest of CPF values
+				$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
+				//$field_data[$user_id]['pf_pb_wow_realm'] = $char_data[$user_id]['realm'];
+				$field_data[$user_id]['pf_pb_wow_class'] = $char_data[$user_id]['class'];
+				$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
+				$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];
+				$field_data[$user_id]['pf_pb_wow_level'] = $char_data[$user_id]['level'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
+				$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarURL'];
+			}
+			else // No API call, but also no current (complete) data
+			{
+				$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
 			}
 		}
 
@@ -1241,23 +1317,5 @@ class pbwow
 			}
 			$this->cache->put('pbwow_config', $this->pbwow_config);
 		}
-	}
-
-	/**
-	 * Use cURL to get data from remote servers (such as Battle.net avatars)
-	 */
-	protected function file_get_contents_curl($url, $timeout = 1) {
-		$ch = curl_init();
-		// TODO: make this asynchronous somehow, so the page doesn't have to wait for Battle.net
-		curl_setopt($ch, CURLOPT_HEADER, 0);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-		curl_setopt($ch, CURLOPT_URL, $url);
-		curl_setopt($ch, CURLOPT_TIMEOUT, $timeout);
-		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-
-		$data = curl_exec($ch);
-		curl_close($ch);
-
-		return $data;
 	}
 }
