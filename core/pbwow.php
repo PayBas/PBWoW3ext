@@ -397,6 +397,7 @@ class pbwow
 	 */
 	protected function call_bnet_api($call_list, $timeout = 1)
 	{
+		// TODO: group API requests by $bnet_h, and open a socket for each to get them all in 1 go
 		foreach ($call_list as $user_id => $call_data)
 		{
 			$ch = curl_init();
@@ -498,7 +499,7 @@ class pbwow
 				if ($avatar)
 				{
 					$avatarURL = "http://" . $data_array['bnet_loc'] . "/static-render/" . $data_array['loc'] . "/" . $avatar;
-					//$avatarIMG = @file_get_contents($IMGURL);
+					//$avatarIMG = @file_get_contents($IMGURL); // TODO cache them locally
 				}
 
 				// Conform Blizzard's race ID numbers to PBWoW, so the CPF will work correctly
