@@ -45,7 +45,7 @@
 			<dd>
 			<!-- IF EXT_VERSION -->
 				<!-- IF EXT_VERSION_V -->
-				<strong class="<!-- IF EXT_VERSION == EXT_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{EXT_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_PBWOW_LATEST_VERSION}: {EXT_VERSION_V})
+				<strong class="<!-- IF EXT_VERSION == EXT_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{EXT_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_PBWOW_LATEST_VERSION}{L_COLON} {EXT_VERSION_V})
 				<!-- ELSE -->
 				{EXT_VERSION}
 				<!-- ENDIF -->
@@ -59,7 +59,7 @@
 			<dd>
 			<!-- IF STYLE_VERSION -->
 				<!-- IF STYLE_VERSION_V -->
-				<strong class="<!-- IF STYLE_VERSION == STYLE_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{STYLE_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_PBWOW_LATEST_VERSION}: {STYLE_VERSION_V})
+				<strong class="<!-- IF STYLE_VERSION == STYLE_VERSION_V -->success<!-- ELSE -->error<!-- ENDIF -->">{STYLE_VERSION}</strong>&nbsp;&nbsp;&nbsp;({L_PBWOW_LATEST_VERSION}{L_COLON} {STYLE_VERSION_V})
 				<!-- ELSE -->
 				{STYLE_VERSION}
 				<!-- ENDIF -->
@@ -235,7 +235,7 @@
 	<fieldset>
 		<legend>{L_PBWOW_DONATE}</legend>
 			<dl>
-				<dt><label>{L_PBWOW_DONATE_SHORT}:</label><br /><span>{L_PBWOW_DONATE_EXPLAIN}</span></dt>
+				<dt><label>{L_PBWOW_DONATE_SHORT}{L_COLON}</label><br /><span>{L_PBWOW_DONATE_EXPLAIN}</span></dt>
 				<dd><a href="http://pbwow.com/donate/" target="_blank"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif" border="0" alt="Donate using PayPal" style="cursor:pointer"></a></dd>
 			</dl>
 	</fieldset>
@@ -254,7 +254,7 @@
 			<legend>{options.LEGEND}</legend>
 	<!-- ELSE -->
 		<dl>
-			<dt><label for="{options.KEY}">{options.TITLE}:</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
+			<dt><label for="{options.KEY}">{options.TITLE}{L_COLON}</label><!-- IF options.S_EXPLAIN --><br /><span>{options.TITLE_EXPLAIN}</span><!-- ENDIF --></dt>
 			<dd>{options.CONTENT}</dd>
 		</dl>
 	<!-- ENDIF -->

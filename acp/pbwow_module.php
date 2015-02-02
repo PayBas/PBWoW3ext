@@ -10,14 +10,6 @@
 
 namespace paybas\pbwow\acp;
 
-/**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class pbwow_module
 {
 	public $u_action;

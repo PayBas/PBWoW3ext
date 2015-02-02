@@ -10,14 +10,6 @@
 
 namespace paybas\pbwow\migrations;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-    exit;
-}
-
 class release_3_0_0_data extends \phpbb\db\migration\migration
 {
 	static public function depends_on()

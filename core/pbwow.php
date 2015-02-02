@@ -10,14 +10,6 @@
 
 namespace paybas\pbwow\core;
 
-/**
- * @ignore
- */
-if (!defined('IN_PHPBB'))
-{
-	exit;
-}
-
 class pbwow
 {
 	/** @var \phpbb\config\config */
@@ -207,7 +199,7 @@ class pbwow
 
 					if (isset($pf['row']['PROFILE_PBAVATAR']) && !empty($pf['row']['PROFILE_PBAVATAR']))
 					{
-						$this->template->assign_vars(array( 'CURRENT_USER_AVATAR' => $pf['row']['PROFILE_PBAVATAR'] ));
+						$this->template->assign_var('CURRENT_USER_AVATAR', $pf['row']['PROFILE_PBAVATAR']);
 					}
 				}
 			}

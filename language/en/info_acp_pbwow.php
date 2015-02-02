@@ -139,10 +139,10 @@ $lang = array_merge($lang, array(
 	'PBWOW_AVATARS_PATH'				=> 'Gaming avatars path',
 	'PBWOW_AVATARS_PATH_EXPLAIN'		=> 'Path under your phpBB root directory where the gaming avatars are stored, e.g. <samp>images/avatars/gaming</samp>.<br />Character icons also require this path to be set.',
 	'PBWOW_SMALLRANKS_ENABLE'			=> 'Use small rank-images',
-	'PBWOW_SMALLRANKS_ENABLE_EXPLAIN'	=> 'Enable this if you wish to use small rank-images that overlay the avatar (as it does on PBWoW.com). Don\'t enable this if you are using larger rank-images.',
+	'PBWOW_SMALLRANKS_ENABLE_EXPLAIN'	=> 'Enable this if you wish to use small rank-images that overlay the avatar (as it does on PBWoW.com). Don&#39;t enable this if you are using larger rank-images.',
 
 	'PBWOW_BNET_APIKEY'					=> 'Battle.net API Key',
-	'PBWOW_BNET_APIKEY_EXPLAIN'			=> 'Enter your Battle.net game API key. If you don\'t have one, get one by creating a <a href="https://dev.battle.net/member/register">Mashery account</a>.',
+	'PBWOW_BNET_APIKEY_EXPLAIN'			=> 'Enter your Battle.net game API key. If you don&#39;t have one, get one by creating a <a href="https://dev.battle.net/member/register">Mashery account</a>.',
 	'PBWOW_BNETCHARS'					=> 'Battle.net Character Information',
 	'PBWOW_BNETCHARS_ENABLE'			=> 'Enable Battle.net API character information',
 	'PBWOW_BNETCHARS_ENABLE_EXPLAIN'	=> 'Enable this feature to use the Battle.net API to retrieve character information (when available), for use in user profiles. The <u>Gaming Avatars</u> setting must be enabled to display Battle.net avatars!',

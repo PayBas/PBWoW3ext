@@ -10,14 +10,6 @@
 
 namespace paybas\pbwow\migrations;
 
-/**
-* @ignore
-*/
-if (!defined('IN_PHPBB'))
-{
-    exit;
-}
-
 class release_3_0_0 extends \phpbb\db\migration\migration
 {
 	public function effectively_installed()
