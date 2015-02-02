@@ -537,9 +537,9 @@ class pbwow
 					'gender'            => $data_gender,
 					'level'             => $data_level,
 					'achievementPoints' => $data['achievementPoints'],
-					'URL'               => $bnetURL,
+					'url'               => $bnetURL,
 					'avatar'            => $avatar,
-					'avatarURL'         => $avatarURL,
+					'avatarurl'         => $avatarURL,
 					'calcClass'         => $data['calcClass'],
 					'totalHK'           => $data['totalHonorableKills'],
 					'guild'             => $data_guild,
@@ -580,13 +580,13 @@ class pbwow
 				$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
 				$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];
 				$field_data[$user_id]['pf_pb_wow_level'] = $char_data[$user_id]['level'];
-				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
-				$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarURL'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['url'];
+				$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarurl'];
 			}
 			else // No API call, but also no current (complete) data
 			{
 				$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
-				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['url'];
 			}
 		}
 
