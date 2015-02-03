@@ -490,7 +490,7 @@ class pbwow
 				$avatarURL = '';
 				if ($avatar)
 				{
-					$avatarURL = "http://" . $data_array['bnet_loc'] . "/static-render/" . $data_array['loc'] . "/" . $avatar;
+					$avatarURL = $this->config['server_protocol'] . $data_array['bnet_loc'] . "/static-render/" . $data_array['loc'] . "/" . $avatar;
 					//$avatarIMG = @file_get_contents($IMGURL); // TODO cache them locally
 				}
 
@@ -513,7 +513,7 @@ class pbwow
 				$data_gender = $data['gender'] + 2;
 				$data_level  = $data['level'];
 				$data_guild  = (isset($data['guild']) && is_array($data['guild'])) ? $data['guild']['name'] : "";
-				$bnetURL     = "http://" . $data_array['bnet_loc'] . "/wow/character/" . $data_array['bnet_r'] . "/" . $data_array['bnet_n'] . "/";
+				$bnetURL     = $this->config['server_protocol'] . $data_array['bnet_loc'] . "/wow/character/" . $data_array['bnet_r'] . "/" . $data_array['bnet_n'] . "/";
 
 				// Insert into character DB table
 				$sql_ary = array(
