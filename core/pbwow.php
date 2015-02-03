@@ -517,25 +517,25 @@ class pbwow
 
 				// Insert into character DB table
 				$sql_ary = array(
-					'user_id'           => $user_id,
-					'updated'           => time(),
-					'tries'             => 0,
-					'game'              => "wow",
-					'lastModified'      => $data['lastModified'],
-					'name'              => $data['name'],
-					'realm'             => $data['realm'],
-					'battlegroup'       => $data['battlegroup'],
-					'class'             => $data_class,
-					'race'              => $data_race,
-					'gender'            => $data_gender,
-					'level'             => $data_level,
-					'achievementPoints' => $data['achievementPoints'],
-					'URL'               => $bnetURL,
-					'avatar'            => $avatar,
-					'avatarURL'         => $avatarURL,
-					'calcClass'         => $data['calcClass'],
-					'totalHK'           => $data['totalHonorableKills'],
-					'guild'             => $data_guild,
+					'user_id'            => $user_id,
+					'updated'            => time(),
+					'tries'              => 0,
+					'game'               => "wow",
+					'last_modified'      => $data['lastModified'],
+					'name'               => $data['name'],
+					'realm'              => $data['realm'],
+					'battlegroup'        => $data['battlegroup'],
+					'class'              => $data_class,
+					'race'               => $data_race,
+					'gender'             => $data_gender,
+					'level'              => $data_level,
+					'achievement_points' => $data['achievementPoints'],
+					'url'                => $bnetURL,
+					'avatar'             => $avatar,
+					'avatar_url'         => $avatarURL,
+					'calc_class'         => $data['calcClass'],
+					'total_hk'           => $data['totalHonorableKills'],
+					'guild'              => $data_guild,
 				);
 
 				if (isset($char_data[$user_id]))
@@ -564,7 +564,7 @@ class pbwow
 
 		foreach ($no_call_list as $user_id)
 		{
-			if ($char_data[$user_id]['avatarURL']) // No API call needed, just use the current data
+			if ($char_data[$user_id]['avatar_url']) // No API call needed, just use the current data
 			{
 				// Merge with rest of CPF values
 				$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
@@ -573,13 +573,13 @@ class pbwow
 				$field_data[$user_id]['pf_pb_wow_race'] = $char_data[$user_id]['race'];
 				$field_data[$user_id]['pf_pb_wow_gender'] = $char_data[$user_id]['gender'];
 				$field_data[$user_id]['pf_pb_wow_level'] = $char_data[$user_id]['level'];
-				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
-				$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatarURL'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['url'];
+				$field_data[$user_id]['pf_pb_bnet_avatar'] = $char_data[$user_id]['avatar_url'];
 			}
 			else // No API call, but also no current (complete) data
 			{
 				$field_data[$user_id]['pf_pb_wow_guild'] = $char_data[$user_id]['guild'];
-				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['URL'];
+				$field_data[$user_id]['pf_pb_bnet_url'] = $char_data[$user_id]['url'];
 			}
 		}
 
