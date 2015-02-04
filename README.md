@@ -18,7 +18,7 @@ Extension for phpBB 3.1 to enhance the PBWoW 3 style with additional functionali
   - Video background settings (enable/disable, display on all pages or index only, fixed position)
 
 #### Requirements
-- phpBB 3.1-RC3 or higher
+- phpBB 3.1.3 or higher
 - PHP 5.3.3 or higher
 
 #### Languages supported
@@ -38,4 +38,4 @@ Extension for phpBB 3.1 to enhance the PBWoW 3 style with additional functionali
 ### License
 [GNU General Public License v2](http://opensource.org/licenses/GPL-2.0)
 
-© 2014 - PayBas
+© 2015 - PayBas

@@ -1,12 +1,11 @@
 <?php
-
 /**
-*
-* @package PBWoW Extension
-* @copyright (c) 2014 PayBas
-* @license http://opensource.org/licenses/gpl-2.0.php GNU General Public License v2
-*
-*/
+ *
+ * @package PBWoW Extension
+ * @copyright (c) 2015 PayBas
+ * @license GNU General Public License, version 2 (GPL-2.0)
+ *
+ */
 
 namespace paybas\pbwow\acp;
 
@@ -22,10 +21,9 @@ class pbwow_module
 	function main($id, $mode)
 	{
 		global $cache, $config, $request, $template, $user;
-		global $phpbb_root_path, $table_prefix, $phpbb_container;
+		global $phpbb_log, $phpbb_root_path, $table_prefix, $phpbb_container;
 
 		$db_tools = $phpbb_container->get('dbal.tools');
-		$log = $phpbb_container->get('log');
 
 		$this->fields_table = $phpbb_container->getParameter('tables.profile_fields');
 		$this->pbwow_config_table = $phpbb_container->getParameter('tables.pbwow3_config');
@@ -216,7 +214,7 @@ class pbwow_module
 		{
 			if ($mode != 'overview')
 			{
-				$log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PBWOW_CONFIG');
+				$phpbb_log->add('admin', $user->data['user_id'], $user->ip, 'LOG_PBWOW_CONFIG');
 				$cache->purge();
 				trigger_error($user->lang['CONFIG_UPDATED'] . adm_back_link($this->u_action));
 			}
