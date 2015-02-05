@@ -1,8 +1,8 @@
 {
-	"unstable": {
+	"stable": {
 		"3.0": {
-			"current": "3.0.0",
-			"announcement": "https://github.com/PayBas/PBWoW3ext/releases/tag/v3.0.0",
+			"current": "3.0.2",
+			"announcement": "https://github.com/PayBas/PBWoW3ext/releases/tag/v3.0.2",
 			"eol": null,
 			"security": false
 		}
