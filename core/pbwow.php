@@ -362,9 +362,9 @@ class pbwow
 					}
 
 					// Sanitize
-					$bnet_r = strtolower($bnet_r);
-					$bnet_r = str_replace("'", "", $bnet_r);
+					$bnet_r = str_replace("'", "", strtolower(trim($bnet_r)));
 					$bnet_r = str_replace(" ", "-", $bnet_r);
+					$bnet_r = html_entity_decode(preg_replace('~&([a-z]{1,2})(?:acute|cedil|circ|grave|lig|orn|ring|slash|th|tilde|uml);~i', '$1', htmlentities($bnet_r, ENT_QUOTES, 'UTF-8')), ENT_QUOTES, 'UTF-8');
 					$bnet_n = str_replace(" ", "-", $bnet_n);
 
 					// Get API data
