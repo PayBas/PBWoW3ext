@@ -640,8 +640,8 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 
 				// Copy the user data to the new column
 // TODO use buffer
-				$sql = "UPDATE " . $this->table_prefix . "profile_fields_data
-					SET pf_" . $profilefield_name . " = 'pf_" . $meta['profilefield_oldname'] . "'";
+				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields_data
+					SET pf_' . $profilefield_name . ' = pf_' . $meta['profilefield_oldname'];
 				$this->db->sql_query($sql);
 
 				// Drop the old column
