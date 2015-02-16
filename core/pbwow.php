@@ -421,7 +421,13 @@ class pbwow
 
 				if (isset($response_data['code']))
 				{
-					$error = $response_data['detail'];
+					if (is_int($response_data['code']))
+					{
+						$error = $response_data['code'] . ' - ' . $response_data['type'];
+					}
+					else {
+						$error = $response_data['detail'];
+					}
 				}
 				elseif (isset($response_data['status']))
 				{
