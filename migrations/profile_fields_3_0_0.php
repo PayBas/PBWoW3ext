@@ -625,9 +625,9 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 			{
 				// Update existing old version. We can safely assume that the phpBB 3.1 migration has already converted them to the new format succesfully
 
-				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields
-					SET field_name = "' . $profilefield_name . '", field_ident = "' . $profilefield_name . '"
-					WHERE field_ident = "' . $meta['profilefield_oldname'] . '"';
+				$sql = "UPDATE " . $this->table_prefix . "profile_fields
+					SET field_name = '" . $profilefield_name . "', field_ident = '" . $profilefield_name . "'
+					WHERE field_ident = '" . $meta['profilefield_oldname'] . "'";
 				$this->db->sql_query($sql);
 
 				// Add the new version column to the profile fields data table
@@ -640,8 +640,8 @@ class profile_fields_3_0_0 extends \phpbb\db\migration\migration
 
 				// Copy the user data to the new column
 // TODO use buffer
-				$sql = 'UPDATE ' . $this->table_prefix . 'profile_fields_data
-					SET pf_' . $profilefield_name . ' = pf_' . $meta['profilefield_oldname'];
+				$sql = "UPDATE " . $this->table_prefix . "profile_fields_data
+					SET pf_" . $profilefield_name . " = 'pf_" . $meta['profilefield_oldname'] . "'";
 				$this->db->sql_query($sql);
 
 				// Drop the old column
