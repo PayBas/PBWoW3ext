@@ -152,9 +152,9 @@ $lang = array_merge($lang, array(
 	'PBWOW_BNETCHARS_TIMEOUT'			=> 'Délai de la requête de l’API',
 	'PBWOW_BNETCHARS_TIMEOUT_EXPLAIN'	=> 'Définir le temps écoulé limite (en secondes) pour les requêtes vers l’API Battle.net. Il s’agit du temps maximum que le script attendra avant que Battle.net réponde. Augmenter la valeur si les données (correctes) ne sont pas reçues à temps, mais le temps de chargement de la page peut augmenter !',
 
-	'PBWOW_ADS_INDEX'					=> 'Bloc d’avertissement sur l’index',
-	'PBWOW_ADS_INDEX_ENABLE'			=> 'Activer l’avertissement sur l’index',
-	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Ceci affichera un bloc d’avertissement sur la page de l’index du forum (requiert l’extension Recent Topics).',
-	'PBWOW_ADS_INDEX_CODE'				=> 'Code de l’avertissement sur l’index',
-	'PBWOW_ADS_INDEX_CODE_EXPLAIN'		=> 'Ce bloc est adapté pour des publicités avec une <u>largeur</u> de : <b>300px</b>.<br />Si vous souhaitez utiliser/modifier un style CSS personnalisé, veuillez ajouter ceci au fichier <samp>styles/pbwow3/theme/custom.css</samp>.',
+	'PBWOW_ADS_INDEX'					=> 'Encart publicitaire sur l’index',
+	'PBWOW_ADS_INDEX_ENABLE'			=> 'Activer l’encart publicitaire sur l’index',
+	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Ceci affichera un encart publicitaire sur la page de l’index du forum (requiert l’extension Recent Topics).',
+	'PBWOW_ADS_INDEX_CODE'				=> 'Code de l’encart publicitaire sur l’index',
+	'PBWOW_ADS_INDEX_CODE_EXPLAIN'		=> 'Cet encart est adapté aux publicités ayant une <u>largeur</u> de : <b>300px</b>.<br />Si vous souhaitez utiliser/modifier un feuille style CSS personnalisée, veuillez ajouter ceci dans le fichier <samp>styles/pbwow3/theme/custom.css</samp>.',
 ));
