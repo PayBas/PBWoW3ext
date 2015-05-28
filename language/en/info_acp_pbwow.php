@@ -116,7 +116,7 @@ $lang = array_merge($lang, array(
 	'PBWOW_TOPBAR_ENABLE'				=> 'Enable the top header-bar',
 	'PBWOW_TOPBAR_ENABLE_EXPLAIN'		=> 'By enabling this option, a 40px high customizable bar will be displayed at the top of each page.',
 	'PBWOW_TOPBAR_CODE'					=> 'Top header-bar code',
-	'PBWOW_TOPBAR_CODE_EXPLAIN'			=> 'Enter your code here. Use &lt;span&gt; or &lt;a class="cell"&gt; elements to seperate blocks with borders. To use icons, either use &lt;img&gt; blocks or define special CSS classes inside your custom.css stylesheet (better).',
+	'PBWOW_TOPBAR_CODE_EXPLAIN'			=> 'Enter your code here. Use &lt;span&gt; or &lt;a class="cell"&gt; elements to separate blocks with borders. To use icons, either use &lt;img&gt; blocks or define special CSS classes inside your custom.css stylesheet (better).',
 	'PBWOW_TOPBAR_FIXED'				=> 'Fixed to top',
 	'PBWOW_TOPBAR_FIXED_EXPLAIN'		=> 'Fixing the top header-bar to the top of the screen will keep it visible and locked in place, even when scrolling.<br />This does not apply to mobile devices. It will revert back to default (scrolling) mode when viewed on small screens.',
 
@@ -155,6 +155,6 @@ $lang = array_merge($lang, array(
 	'PBWOW_ADS_INDEX'					=> 'Index Advertisement Block',
 	'PBWOW_ADS_INDEX_ENABLE'			=> 'Enable index advertisement',
 	'PBWOW_ADS_INDEX_ENABLE_EXPLAIN'	=> 'Enabling this ad will generate a narrow advertisement block on the forum index page (requires Recent Topics extension).',
-	'PBWOW_ADS_INDEX_CODE'				=> 'Index advertisment code',
+	'PBWOW_ADS_INDEX_CODE'				=> 'Index advertisement code',
 	'PBWOW_ADS_INDEX_CODE_EXPLAIN'		=> 'This block is suitable for advertisements with a <u>width</u> of: <b>300px</b>.<br />If you want to use/change custom CSS styling, please add it to <samp>styles/pbwow3/theme/custom.css</samp>',
 ));
